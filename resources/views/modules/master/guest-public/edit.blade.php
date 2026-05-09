@@ -39,6 +39,11 @@
             width: 100%;
             height: 300px;
             object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .environment-camera {
+            transform: scaleX(1) !important;
         }
 
         #countdown {
@@ -50,6 +55,7 @@
             font-weight: bold;
             color: white;
             display: none;
+            z-index: 10;
         }
 
         #flash {
@@ -57,7 +63,10 @@
             width: 100%;
             height: 100%;
             background: white;
+            top: 0;
+            left: 0;
             opacity: 0;
+            pointer-events: none;
         }
 
         .flash-animation {
@@ -100,25 +109,20 @@
             }
         }
 
-        #btnSelfie {
+        #btnSelfie,
+        #btnSwitchCamera {
             border-radius: 30px;
             padding: 10px 25px;
             font-weight: 600;
             transition: 0.3s;
         }
 
-        #btnSelfie:hover {
+        #btnSelfie:hover,
+        #btnSwitchCamera:hover {
             transform: scale(1.05);
-        }
-
-        .section-title {
-            font-weight: bold;
-            color: #0d6efd;
-            margin-bottom: 10px;
         }
     </style>
 @endpush
-
 
 @push('content-modules')
 
@@ -214,22 +218,61 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12 text-center">
-                                <div class="camera-wrapper mb-3">
-                                    <video id="video" autoplay playsinline></video>
-                                    <canvas id="canvas" style="display:none;"></canvas>
-                                    <div id="countdown"></div>
-                                    <div id="flash"></div>
-                                </div>
+                            <div class="col-md-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body text-center">
 
-                                <button type="button" id="btnSelfie" class="btn btn-primary btn-sm" onclick="takeSelfie()">
-                                    <i class="fa fa-camera"></i> Ambil Selfie Terbaru
-                                </button>
+                                        <h5 class="mb-2 text-primary">📸 Selfie Tamu</h5>
 
-                                <div id="previewSelfie" class="mt-3">
-                                    @if ($edit['selfie_path'])
-                                        <img src="{{ Storage::disk('s3')->url('selfie/' . $edit->selfie_path) }}">
-                                    @endif
+                                        <p class="text-muted small">
+                                            Ambil ulang foto jika diperlukan
+                                        </p>
+
+                                        <div id="cameraArea">
+
+                                            <div class="camera-wrapper">
+
+                                                <video id="video" autoplay playsinline></video>
+
+                                                <canvas id="canvas" style="display:none;"></canvas>
+
+                                                <div id="countdown"></div>
+
+                                                <div id="flash"></div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div id="previewSelfie" class="mt-3">
+
+                                            @if ($edit['selfie_path'])
+                                                <img src="{{ Storage::disk('s3')->url('selfie/' . $edit->selfie_path) }}">
+                                            @endif
+
+                                        </div>
+
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+
+                                            <button type="button" id="btnSelfie" class="btn btn-primary"
+                                                onclick="takeSelfie()">
+
+                                                <i class="fa fa-camera"></i>
+                                                Ambil Selfie
+
+                                            </button>
+
+                                            <button type="button" id="btnSwitchCamera" class="btn btn-secondary"
+                                                onclick="switchCamera()">
+
+                                                <i class="fa fa-sync"></i>
+                                                Ganti Kamera
+
+                                            </button>
+
+                                        </div>
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -255,26 +298,77 @@
 
         let video = document.getElementById('video');
 
-        navigator.mediaDevices.getUserMedia({
-                video: true
-            })
-            .then(function(stream) {
-                video.srcObject = stream;
-            })
-            .catch(function() {
-                alert("Kamera tidak bisa diakses");
-            });
+        let currentFacingMode = "user";
+
+        let currentStream = null;
 
         let takingPhoto = false;
 
-        function takeSelfie() {
+        async function startCamera() {
 
-            let selfie = document.getElementById("selfie").value;
-
-            if (selfie) {
-                resetSelfie();
-                return;
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
             }
+
+            try {
+
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: {
+                            ideal: currentFacingMode
+                        },
+                        width: {
+                            ideal: 1280
+                        },
+                        height: {
+                            ideal: 720
+                        }
+                    },
+                    audio: false
+                });
+
+                currentStream = stream;
+
+                video.srcObject = stream;
+
+                if (currentFacingMode === "environment") {
+
+                    video.classList.add("environment-camera");
+
+                } else {
+
+                    video.classList.remove("environment-camera");
+
+                }
+
+                await video.play();
+
+            } catch (error) {
+
+                console.log(error);
+
+                alert("Kamera tidak bisa diakses");
+
+            }
+
+        }
+
+        startCamera();
+
+        async function switchCamera() {
+
+            if (takingPhoto) return;
+
+            currentFacingMode =
+                currentFacingMode === "user" ?
+                "environment" :
+                "user";
+
+            await startCamera();
+
+        }
+
+        function takeSelfie() {
 
             if (takingPhoto) return;
 
@@ -285,6 +379,7 @@
             let count = 3;
 
             countdown.style.display = "block";
+
             countdown.innerText = count;
 
             let timer = setInterval(() => {
@@ -316,55 +411,61 @@
             let canvas = document.getElementById("canvas");
 
             canvas.width = video.videoWidth;
+
             canvas.height = video.videoHeight;
 
             let ctx = canvas.getContext("2d");
 
-            ctx.drawImage(video, 0, 0);
+            if (currentFacingMode === "user") {
+
+                ctx.translate(canvas.width, 0);
+
+                ctx.scale(-1, 1);
+
+            }
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             let image = canvas.toDataURL("image/png");
 
             document.getElementById("selfie").value = image;
 
             document.getElementById("previewSelfie").innerHTML =
-                `<img src="${image}" width="250">`;
+                `<img src="${image}" class="img-fluid">`;
 
-            shutter.play();
+            shutter.currentTime = 0;
+
+            shutter.play().catch(() => {});
 
             let flash = document.getElementById("flash");
 
             flash.classList.add("flash-animation");
 
             setTimeout(() => {
-                flash.classList.remove("flash-animation");
-            }, 300);
 
-            document.getElementById("cameraArea").style.display = "none";
+                flash.classList.remove("flash-animation");
+
+            }, 300);
 
             let btn = document.getElementById("btnSelfie");
 
-            btn.innerHTML = `<i class="fa fa-refresh"></i> Ambil Selfie Terbaru`;
+            btn.innerHTML =
+                `<i class="fa fa-refresh"></i> Ambil Ulang`;
 
             btn.classList.remove("btn-primary");
+
             btn.classList.add("btn-warning");
 
         }
 
-        function resetSelfie() {
+        window.addEventListener("beforeunload", () => {
 
-            document.getElementById("previewSelfie").innerHTML = "";
+            if (currentStream) {
 
-            document.getElementById("selfie").value = "";
+                currentStream.getTracks().forEach(track => track.stop());
 
-            document.getElementById("cameraArea").style.display = "block";
+            }
 
-            let btn = document.getElementById("btnSelfie");
-
-            btn.innerHTML = `<i class="fa fa-camera"></i> Ambil Selfie`;
-
-            btn.classList.remove("btn-warning");
-            btn.classList.add("btn-primary");
-
-        }
+        });
     </script>
 @endpush
