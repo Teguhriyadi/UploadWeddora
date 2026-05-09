@@ -5,7 +5,27 @@
 @push('style-css')
 
     <link href="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+        }
 
+        #dataTable {
+            width: 100% !important;
+            min-width: 1100px;
+        }
+
+        #dataTable th,
+        #dataTable td {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        #dataTable thead th {
+            background: #f8f9fc;
+        }
+    </style>
 @endpush
 
 @push('content-modules')
@@ -27,7 +47,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th class="text-center">No.</th>
