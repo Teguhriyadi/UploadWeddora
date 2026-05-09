@@ -7,7 +7,9 @@
     <link href="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <style>
         .table-responsive {
+            width: 100%;
             overflow-x: auto;
+            overflow-y: hidden;
             border-radius: 12px;
         }
 
@@ -24,6 +26,45 @@
 
         #dataTable thead th {
             background: #f8f9fc;
+        }
+
+        /* Wrapper DataTables */
+        div.dataTables_wrapper {
+            width: 100%;
+        }
+
+        /* Search + show entries */
+        div.dataTables_wrapper .dataTables_length,
+        div.dataTables_wrapper .dataTables_filter {
+            margin-bottom: 15px;
+        }
+
+        /* Pagination */
+        div.dataTables_wrapper .dataTables_paginate {
+            margin-top: 15px;
+        }
+
+        /* Info */
+        div.dataTables_wrapper .dataTables_info {
+            padding-top: 15px;
+        }
+
+        /* Responsive layout mobile */
+        @media (max-width: 768px) {
+
+            div.dataTables_wrapper .dataTables_length,
+            div.dataTables_wrapper .dataTables_filter,
+            div.dataTables_wrapper .dataTables_info,
+            div.dataTables_wrapper .dataTables_paginate {
+                text-align: center;
+                float: none !important;
+            }
+
+            div.dataTables_wrapper .dataTables_filter input {
+                width: 100%;
+                margin-left: 0 !important;
+                margin-top: 10px;
+            }
         }
     </style>
 @endpush
@@ -75,6 +116,9 @@
             $('#dataTable').DataTable({
                 processing: true,
                 serverSide: true,
+                responsive: false,
+                autoWidth: false,
+                scrollX: true,
                 ajax: "{{ url('/modules/guest-public') }}",
                 columns: [{
                         data: 'DT_RowIndex',
