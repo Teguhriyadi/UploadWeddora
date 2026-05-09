@@ -4,14 +4,6 @@
 
 @push('style-css')
     <style>
-        .form-card {
-            border: none;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(6px);
-        }
-
         .form-label {
             font-weight: 600;
             font-size: 14px;
@@ -307,7 +299,6 @@
 
         async function startCamera() {
 
-            // Stop stream sebelumnya
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
             }
@@ -333,7 +324,6 @@
 
                 video.srcObject = stream;
 
-                // Mirror hanya kamera depan
                 if (currentFacingMode === "environment") {
 
                     video.classList.add("environment-camera");
@@ -356,7 +346,6 @@
 
         }
 
-        // Jalankan kamera
         startCamera();
 
         async function switchCamera() {
@@ -376,7 +365,6 @@
 
             let selfie = document.getElementById("selfie").value;
 
-            // Jika sudah ada selfie → reset
             if (selfie) {
 
                 resetSelfie();
@@ -431,7 +419,6 @@
 
             let ctx = canvas.getContext("2d");
 
-            // Mirror hasil selfie jika kamera depan
             if (currentFacingMode === "user") {
 
                 ctx.translate(canvas.width, 0);
@@ -449,12 +436,10 @@
             document.getElementById("previewSelfie").innerHTML =
                 `<img src="${image}" class="img-fluid">`;
 
-            // Play shutter sound
             shutter.currentTime = 0;
 
             shutter.play().catch(() => {});
 
-            // Flash effect
             let flash = document.getElementById("flash");
 
             flash.classList.add("flash-animation");
@@ -465,10 +450,8 @@
 
             }, 300);
 
-            // Hide camera
             document.getElementById("cameraArea").style.display = "none";
 
-            // Update button
             let btn = document.getElementById("btnSelfie");
 
             btn.innerHTML =
@@ -499,7 +482,6 @@
 
         }
 
-        // Stop kamera saat keluar halaman
         window.addEventListener("beforeunload", () => {
 
             if (currentStream) {

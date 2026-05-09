@@ -23,7 +23,13 @@ class GuestPublicController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-
+                ->addColumn('jumlah_kedatangan', function ($row) {
+                    if ($row->jumlah_kedatangan == NULL) {
+                        return 0;
+                    } else {
+                        return $row->jumlah_kedatangan;
+                    }
+                })
                 ->addColumn('waktu_checkin', function ($row) {
                     return \Carbon\Carbon::parse($row->waktu_checkin)
                         ->locale('id')
