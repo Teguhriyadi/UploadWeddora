@@ -28,28 +28,23 @@
             background: #f8f9fc;
         }
 
-        /* Wrapper DataTables */
         div.dataTables_wrapper {
             width: 100%;
         }
 
-        /* Search + show entries */
         div.dataTables_wrapper .dataTables_length,
         div.dataTables_wrapper .dataTables_filter {
             margin-bottom: 15px;
         }
 
-        /* Pagination */
         div.dataTables_wrapper .dataTables_paginate {
             margin-top: 15px;
         }
 
-        /* Info */
         div.dataTables_wrapper .dataTables_info {
             padding-top: 15px;
         }
 
-        /* Responsive layout mobile */
         @media (max-width: 768px) {
 
             div.dataTables_wrapper .dataTables_length,
@@ -91,7 +86,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th class="text-center">No.</th>
@@ -122,6 +117,11 @@
                 responsive: false,
                 autoWidth: false,
                 scrollX: true,
+                pageLength: 25,
+                lengthMenu: [
+                    [25, 50, 75, 100],
+                    [25, 50, 75, 100]
+                ],
                 ajax: "{{ url('/modules/guest') }}",
                 columns: [{
                         data: 'DT_RowIndex',
