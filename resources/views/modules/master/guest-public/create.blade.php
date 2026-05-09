@@ -134,10 +134,10 @@
         }
 
         /* .btn-success {
-            border-radius: 30px;
-            padding: 10px;
-            font-weight: bold;
-        } */
+                border-radius: 30px;
+                padding: 10px;
+                font-weight: bold;
+            } */
 
         .section-title {
             font-weight: bold;
@@ -172,7 +172,7 @@
                     <input type="hidden" name="selfie" id="selfie">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-7">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label">
                                         Nama Tamu <span class="text-danger">*</span>
@@ -208,7 +208,9 @@
                                     <textarea name="alamat" class="form-control" rows="4" placeholder="Masukkan Alamat">{{ old('alamat') }}</textarea>
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-body text-center">
 
