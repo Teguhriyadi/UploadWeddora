@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string("pekerjaan", 150)->nullable();
             $table->text("alamat")->nullable();
             $table->dateTime("waktu_checkin");
+            $table->integer("jumlah_kedatangan")->nullable(0);
             $table->uuid("users_id", 50);
             $table->foreign('users_id')->references('id')->on('users');
             $table->timestamps();

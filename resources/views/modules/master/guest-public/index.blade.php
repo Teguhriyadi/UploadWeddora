@@ -36,6 +36,7 @@
                             <th>Pekerjaan</th>
                             <th>Alamat</th>
                             <th class="text-center">Waktu Checkin</th>
+                            <th class="text-center">Jumlah Kedatangan</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -80,6 +81,11 @@
                     {
                         data: 'waktu_checkin',
                         name: 'waktu_checkin',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'jumlah_kedatangan',
+                        name: 'jumlah_kedatangan',
                         className: 'text-center'
                     },
                     {

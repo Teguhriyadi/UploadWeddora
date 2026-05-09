@@ -85,6 +85,7 @@ class GuestPublicController extends Controller
                 "alamat" => $request["alamat"],
                 "waktu_checkin" => now(),
                 "users_id" => Auth::user()->id,
+                "jumlah_kedatangan" => $request["jumlah_kedatangan"],
                 "selfie_path" => $fileName,
             ]);
 

@@ -18,18 +18,6 @@
             color: #444;
         }
 
-        .form-control {
-            border-radius: 12px;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            transition: 0.2s;
-        }
-
-        .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, .2);
-        }
-
         .camera-wrapper {
             width: 100%;
             max-width: 420px;
@@ -59,6 +47,11 @@
             width: 100%;
             height: 300px;
             object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .environment-camera {
+            transform: scaleX(1) !important;
         }
 
         #countdown {
@@ -70,6 +63,7 @@
             color: white;
             display: none;
             font-weight: bold;
+            z-index: 10;
         }
 
         #flash {
@@ -80,6 +74,7 @@
             top: 0;
             left: 0;
             opacity: 0;
+            pointer-events: none;
         }
 
         .flash-animation {
@@ -122,27 +117,17 @@
             }
         }
 
-        #btnSelfie {
+        #btnSelfie,
+        #btnSwitchCamera {
             border-radius: 30px;
             padding: 10px 25px;
             font-weight: 600;
             transition: 0.3s;
         }
 
-        #btnSelfie:hover {
+        #btnSelfie:hover,
+        #btnSwitchCamera:hover {
             transform: scale(1.05);
-        }
-
-        /* .btn-success {
-                border-radius: 30px;
-                padding: 10px;
-                font-weight: bold;
-            } */
-
-        .section-title {
-            font-weight: bold;
-            color: #0d6efd;
-            margin-bottom: 10px;
         }
     </style>
 @endpush
@@ -193,6 +178,12 @@
                                         class="form-control @error('nomor_handphone') is-invalid @enderror"
                                         name="nomor_handphone" placeholder="Masukkan Nomor Handphone"
                                         value="{{ old('nomor_handphone') }}">
+
+                                    @error('nomor_handphone')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">
@@ -200,6 +191,28 @@
                                     </label>
                                     <input type="text" class="form-control @error('pekerjaan') is-invalid @enderror"
                                         name="pekerjaan" placeholder="Masukkan Pekerjaan" value="{{ old('pekerjaan') }}">
+
+                                    @error('pekerjaan')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        Jumlah Kedatangan
+                                        <small class="text-danger">*</small>
+                                    </label>
+                                    <input type="number" min="0"
+                                        class="form-control @error('jumlah_kedatangan') is-invalid @enderror"
+                                        name="jumlah_kedatangan" placeholder="Masukkan Jumlah Kedatangan"
+                                        value="{{ old('jumlah_kedatangan') }}">
+
+                                    @error('jumlah_kedatangan')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">
@@ -233,10 +246,29 @@
 
                                         <div id="previewSelfie"></div>
 
-                                        <button type="button" id="btnSelfie" class="btn btn-primary mt-3"
+                                        {{-- <button type="button" id="btnSelfie" class="btn btn-primary mt-3"
                                             onclick="takeSelfie()">
                                             <i class="fa fa-camera"></i> Ambil Selfie
-                                        </button>
+                                        </button> --}}
+
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+
+                                            <button type="button" id="btnSelfie" class="btn btn-primary"
+                                                onclick="takeSelfie()">
+
+                                                <i class="fa fa-camera"></i>
+                                                Ambil Selfie
+
+                                            </button>
+
+                                            <button type="button" class="btn btn-secondary" onclick="switchCamera()">
+
+                                                <i class="fa fa-sync"></i>
+                                                Ganti Kamera
+
+                                            </button>
+
+                                        </div>
 
                                     </div>
                                 </div>
@@ -245,7 +277,7 @@
                     </div>
                     <div class="card-footer">
                         <button type="reset" class="btn btn-danger btn-sm">
-                            <i class="fa fa-times"></i> BATAL
+                            <i class="fa fa-times"></i> Batal
                         </button>
                         <button type="submit" class="btn btn-success btn-sm">
                             <i class="fa fa-save"></i> Simpan
@@ -267,25 +299,90 @@
 
         let video = document.getElementById('video');
 
-        navigator.mediaDevices.getUserMedia({
-                video: true
-            })
-            .then(function(stream) {
-                video.srcObject = stream;
-            })
-            .catch(function() {
-                alert("Kamera tidak bisa diakses");
-            });
+        let currentFacingMode = "user";
+
+        let currentStream = null;
 
         let takingPhoto = false;
+
+        async function startCamera() {
+
+            // Stop stream sebelumnya
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+
+            try {
+
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: {
+                            ideal: currentFacingMode
+                        },
+                        width: {
+                            ideal: 1280
+                        },
+                        height: {
+                            ideal: 720
+                        }
+                    },
+                    audio: false
+                });
+
+                currentStream = stream;
+
+                video.srcObject = stream;
+
+                // Mirror hanya kamera depan
+                if (currentFacingMode === "environment") {
+
+                    video.classList.add("environment-camera");
+
+                } else {
+
+                    video.classList.remove("environment-camera");
+
+                }
+
+                await video.play();
+
+            } catch (error) {
+
+                console.log(error);
+
+                alert("Kamera tidak bisa diakses");
+
+            }
+
+        }
+
+        // Jalankan kamera
+        startCamera();
+
+        async function switchCamera() {
+
+            if (takingPhoto) return;
+
+            currentFacingMode =
+                currentFacingMode === "user" ?
+                "environment" :
+                "user";
+
+            await startCamera();
+
+        }
 
         function takeSelfie() {
 
             let selfie = document.getElementById("selfie").value;
 
+            // Jika sudah ada selfie → reset
             if (selfie) {
+
                 resetSelfie();
+
                 return;
+
             }
 
             if (takingPhoto) return;
@@ -297,6 +394,7 @@
             let count = 3;
 
             countdown.style.display = "block";
+
             countdown.innerText = count;
 
             let timer = setInterval(() => {
@@ -328,36 +426,58 @@
             let canvas = document.getElementById("canvas");
 
             canvas.width = video.videoWidth;
+
             canvas.height = video.videoHeight;
 
             let ctx = canvas.getContext("2d");
 
-            ctx.drawImage(video, 0, 0);
+            // Mirror hasil selfie jika kamera depan
+            if (currentFacingMode === "user") {
+
+                ctx.translate(canvas.width, 0);
+
+                ctx.scale(-1, 1);
+
+            }
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             let image = canvas.toDataURL("image/png");
 
             document.getElementById("selfie").value = image;
 
             document.getElementById("previewSelfie").innerHTML =
-                `<img src="${image}">`;
+                `<img src="${image}" class="img-fluid">`;
 
+            // Play shutter sound
             shutter.currentTime = 0;
+
             shutter.play().catch(() => {});
 
+            // Flash effect
             let flash = document.getElementById("flash");
+
             flash.classList.add("flash-animation");
 
             setTimeout(() => {
+
                 flash.classList.remove("flash-animation");
+
             }, 300);
 
+            // Hide camera
             document.getElementById("cameraArea").style.display = "none";
 
+            // Update button
             let btn = document.getElementById("btnSelfie");
 
-            btn.innerHTML = `<i class="fa fa-refresh"></i> Ambil Ulang`;
+            btn.innerHTML =
+                `<i class="fa fa-refresh"></i> Ambil Ulang`;
+
             btn.classList.remove("btn-primary");
+
             btn.classList.add("btn-warning");
+
         }
 
         function resetSelfie() {
@@ -370,11 +490,24 @@
 
             let btn = document.getElementById("btnSelfie");
 
-            btn.innerHTML = `<i class="fa fa-camera"></i> Ambil Selfie`;
+            btn.innerHTML =
+                `<i class="fa fa-camera"></i> Ambil Selfie`;
 
             btn.classList.remove("btn-warning");
+
             btn.classList.add("btn-primary");
 
         }
+
+        // Stop kamera saat keluar halaman
+        window.addEventListener("beforeunload", () => {
+
+            if (currentStream) {
+
+                currentStream.getTracks().forEach(track => track.stop());
+
+            }
+
+        });
     </script>
 @endpush

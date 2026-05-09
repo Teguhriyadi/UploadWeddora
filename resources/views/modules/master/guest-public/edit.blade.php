@@ -4,31 +4,10 @@
 
 @push('style-css')
     <style>
-        .form-card {
-            border: none;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(6px);
-            padding: 20px;
-        }
-
         .form-label {
             font-weight: 600;
             font-size: 14px;
             color: #444;
-        }
-
-        .form-control {
-            border-radius: 12px;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            transition: 0.2s;
-        }
-
-        .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, .2);
         }
 
         .camera-wrapper {
@@ -157,7 +136,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="card shadow mb-4 form-card">
+            <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <a href="{{ url('/modules/guest-public') }}" class="btn btn-danger btn-sm">
                         <i class="fa fa-sign-out-alt"></i> Kembali
@@ -171,7 +150,7 @@
 
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-7">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label">Nama Tamu <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('nama') is-invalid @enderror"
@@ -185,21 +164,57 @@
                                     <label class="form-label">No. Handphone</label>
                                     <input type="text" class="form-control" name="nomor_handphone"
                                         value="{{ old('nomor_handphone', $edit['nomor_handphone']) }}">
+
+                                    @error('nomor_handphone')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label">Pekerjaan</label>
                                     <input type="text" class="form-control" name="pekerjaan"
                                         value="{{ old('pekerjaan', $edit['pekerjaan']) }}">
+
+                                    @error('pekerjaan')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        Jumlah Kedatangan
+                                        <small class="text-danger">*</small>
+                                    </label>
+                                    <input type="number" min="0"
+                                        class="form-control @error('jumlah_kedatangan') is-invalid @enderror"
+                                        name="jumlah_kedatangan" placeholder="Masukkan Jumlah Kedatangan"
+                                        value="{{ old('jumlah_kedatangan', $edit['jumlah_kedatangan']) }}">
+
+                                    @error('jumlah_kedatangan')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label">Alamat</label>
                                     <textarea name="alamat" class="form-control" rows="4">{{ old('alamat', $edit['alamat']) }}</textarea>
+
+                                    @error('alamat')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
-
-                            <div class="col-md-5 text-center">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
                                 <div class="camera-wrapper mb-3">
                                     <video id="video" autoplay playsinline></video>
                                     <canvas id="canvas" style="display:none;"></canvas>
