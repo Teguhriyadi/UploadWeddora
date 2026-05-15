@@ -1009,6 +1009,7 @@ namespace App\Models {
     /**
      * App\Models\GuestPublic
      *
+     * @property int|null $jumlah_kedatangan
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property string|null $selfie_path
@@ -1029,6 +1030,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereSelfiePath($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereJumlahKedatangan($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic query()

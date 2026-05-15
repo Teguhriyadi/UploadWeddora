@@ -6,7 +6,7 @@
     </button>
 
     <!-- Topbar Navbar -->
-    <ul class="navbar-nav ml-auto" id="accordionSidebar">
+    <ul class="navbar-nav ml-auto">
 
         <!-- Nav Item - Search Dropdown (Visible Only XS) -->
         <li class="nav-item dropdown no-arrow d-sm-none">
