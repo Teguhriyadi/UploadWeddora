@@ -305,8 +305,8 @@
 
     /* 🔥 QR disesuaikan biar tidak makan space */
     .qr img {
-        width: 130px;
-        height: 130px;
+        width: 250px;
+        height: 250px;
     }
 
     /* 🔥 recipient lebih kecil */
