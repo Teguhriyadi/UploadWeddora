@@ -283,17 +283,14 @@
 
         @media (max-width: 480px) {
 
-            /* 🔥 kecilkan padding biar lega */
             .card {
                 padding: 14px 14px 18px;
             }
 
-            /* 🔥 logo lebih kecil */
             .logo-img {
                 width: 50px;
             }
 
-            /* 🔥 judul lebih compact */
             .title {
                 font-size: 18px;
                 letter-spacing: 0.06em;
@@ -303,18 +300,15 @@
                 font-size: 12px;
             }
 
-            /* 🔥 QR disesuaikan biar tidak makan space */
             .qr img {
                 width: 200px;
                 height: 200px;
             }
 
-            /* 🔥 recipient lebih kecil */
             .recipient-name {
                 font-size: 18px;
             }
 
-            /* 🔥 event text lebih compact */
             .event-name {
                 font-size: 22px;
                 line-height: 1.1;
