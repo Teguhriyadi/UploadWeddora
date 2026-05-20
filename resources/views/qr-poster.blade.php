@@ -366,7 +366,7 @@
 
             <section class="recipient">
                 <div class="recipient-label">Kepada Yth:</div>
-                <div class="recipient-name">{{ $guest?->nama_tamu ?? 'Tamu Undangan' }}</div>
+                <div class="recipient-name">{{ $guest?->nama_undangan ?? 'Tamu Undangan' }}</div>
             </section>
 
             <section class="notes">
