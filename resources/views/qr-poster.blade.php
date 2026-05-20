@@ -111,8 +111,8 @@
         }
 
         .qr img {
-            width: clamp(160px, 30vmin, 240px);
-            height: clamp(160px, 30vmin, 240px);
+            width: clamp(145px, 26vmin, 180px);
+            height: clamp(145px, 26vmin, 180px);
         }
 
         .divider {
@@ -169,7 +169,7 @@
         .event-name {
             margin-top: 6px;
             font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
-            font-size: clamp(32px, 5.6vmin, 46px);
+            font-size: clamp(24px, 4.3vmin, 34px);
             line-height: 1.02;
             letter-spacing: 0.01em;
             color: var(--accent);
@@ -209,32 +209,56 @@
             letter-spacing: 0.02em;
         }
 
-        .guest {
+        .recipient {
             text-align: center;
-            margin-top: 10px;
+            margin-top: clamp(10px, 2vh, 14px);
         }
 
-        .guest-label {
+        .recipient-label {
             color: var(--muted);
             font-size: 14px;
         }
 
-        .guest-name {
-            margin-top: 8px;
+        .recipient-name {
+            margin-top: 10px;
             font-weight: 500;
-            font-size: clamp(20px, 4.4vmin, 30px);
+            font-size: clamp(18px, 3.6vmin, 24px);
             letter-spacing: 0.01em;
             color: #556b2f;
         }
 
-        .guest-family {
-            margin-top: 4px;
+        .recipient-line {
+            width: min(82%, 360px);
+            margin: 14px auto 0;
+            border-bottom: 2px dotted rgba(85, 107, 47, 0.55);
+        }
+
+        .notes {
+            text-align: center;
+            margin-top: clamp(10px, 2vh, 14px);
+        }
+
+        .notes-title {
+            font-weight: 800;
+            color: var(--ink);
+            font-size: 16px;
+            letter-spacing: 0.02em;
+        }
+
+        .notes-text {
+            margin-top: 6px;
             color: var(--muted);
-            font-size: 15px;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .closing {
+            text-align: center;
+            margin-top: clamp(10px, 2vh, 14px);
         }
 
         .thanks {
-            margin: 14px 0 0;
+            margin: 0;
             color: var(--muted);
             font-size: 13px;
             line-height: 1.55;
@@ -273,6 +297,19 @@
                 <img src="{{ $qr_url }}" alt="QR Code {{ $kode_token }}" width="240" height="240">
             </section>
 
+            <section class="recipient">
+                <div class="recipient-label">Kepada Yth:</div>
+                <div class="recipient-name">{{ $guest?->nama_tamu ?? 'Tamu Undangan' }}</div>
+            </section>
+
+            <section class="notes">
+                <div class="notes-title">Notes:</div>
+                <div class="notes-text">
+                    Mohon untuk membawa dan menunjukkan<br>
+                    kartu ini ke penerima tamu.
+                </div>
+            </section>
+
             <div class="divider" aria-hidden="true">
                 <div class="divider-dot">
                     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -290,9 +327,7 @@
                 @endif
             </section>
 
-            <section class="guest">
-                <div class="guest-label">Kepada Yth:</div>
-                <div class="guest-name">{{ $guest?->nama_tamu ?? 'Tamu Undangan' }}</div>
+            <section class="closing">
                 <p class="thanks">
                     Terima kasih atas doa, ucapan &amp; kehadirannya.<br>
                     Semoga Allah membalas kebaikan Anda.
