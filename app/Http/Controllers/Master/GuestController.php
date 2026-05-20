@@ -205,4 +205,22 @@ class GuestController extends Controller
     {
         return Excel::download(new GuestExport, 'data-guest.xlsx');
     }
+
+    public function upload_file(Request $request)
+    {
+        try {
+
+            DB::beginTransaction();
+
+            DB::commit();
+
+            return back()->with("success", "Upload Data Berhasil di Lakukan");
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return back()->with("error", $e->getMessage());
+        }
+    }
 }

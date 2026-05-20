@@ -4,8 +4,10 @@ namespace App\Http\Controllers\QRCode;
 
 use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Event;
 use App\Models\Guest;
 use App\Models\GuestCheckin;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,9 +18,29 @@ class ScanQRGuestController extends Controller
         return view("modules.scan-qr-guest.index");
     }
 
+    public function poster(string $kode_token)
+    {
+        $event = Event::first(['*']);
+
+        $guest = Guest::where('kode_token', '=', $kode_token, 'and')->first();
+
+        $eventName = $event?->nama_event ?: 'WEDDORA';
+        $eventDate = $event?->tanggal
+            ? Carbon::parse($event->tanggal)->locale('id')->translatedFormat('l, d F Y')
+            : null;
+
+        return view('qr-poster', [
+            'kode_token' => $kode_token,
+            'guest' => $guest,
+            'event_name' => $eventName,
+            'event_date' => $eventDate,
+            'qr_url' => 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' . urlencode($kode_token),
+        ]);
+    }
+
     public function store(Request $request)
     {
-        $guest = Guest::where('kode_token', $request->kode_token)->first();
+        $guest = Guest::where('kode_token', '=', $request->kode_token, 'and')->first();
 
         if (!$guest) {
             return response()->json([
@@ -27,7 +49,7 @@ class ScanQRGuestController extends Controller
             ]);
         }
 
-        $sudahCheckin = GuestCheckin::where('guest_id', $guest->id)->exists();
+        $sudahCheckin = GuestCheckin::where('guest_id', '=', $guest->id, 'and')->exists();
 
         if ($sudahCheckin) {
             return response()->json([

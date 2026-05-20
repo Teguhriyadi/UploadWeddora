@@ -11,7 +11,7 @@ class EventSeeder extends Seeder
     public function run(): void
     {
         Event::create([
-            "nama_event" => "Lomba 17 Agustus",
+            "nama_event" => "Naufal & Dewinta",
             "tanggal" => "2002-02-02 10:00:00",
             "lokasi" => "Hotel Zamrud, Cirebon"
         ]);

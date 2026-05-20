@@ -83,6 +83,9 @@
             <a href="{{ url('/modules/guest/download') }}" class="btn btn-success btn-sm">
                 <i class="fa fa-download"></i> Download Data
             </a>
+            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">
+                <i class="fa fa-book"></i> Upload Data
+            </button>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -101,6 +104,48 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <i class="fa fa-book"></i> Upload Data
+                    </h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <form action="{{ url('/modules/guest/upload-file') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="file_upload">
+                                Upload File
+                                <small class="text-danger">*</small>
+                            </label>
+                            <input type="file" class="form-control" name="file_upload" id="file_upload">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
+                            <i class="fa fa-times"></i> Batal
+                        </button>
+
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fa fa-book"></i> Upload
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

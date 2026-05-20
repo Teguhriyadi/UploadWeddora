@@ -16,6 +16,8 @@ Route::get("/", function() {
     return redirect()->to("/login");
 });
 
+Route::get('/qr/{kode_token}', [ScanQRGuestController::class, 'poster']);
+
 Route::middleware(["web", "guest"])->group(function () {
     Route::prefix("login")->group(function () {
         Route::get("/", [LoginController::class, "login"]);
@@ -40,6 +42,8 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::resource("kategori", KategoriController::class);
 
         Route::get("/guest/download", [GuestController::class, "download"]);
+
+        Route::post("/guest/upload-file", [GuestController::class, 'upload_file']);
         Route::resource("guest", GuestController::class);
 
         Route::resource("scan-qr-guest", ScanQRGuestController::class);

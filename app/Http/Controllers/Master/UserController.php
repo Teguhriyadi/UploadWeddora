@@ -31,7 +31,7 @@ class UserController extends Controller
                             <button class="btn btn-success btn-sm btn-toggle-status"
                                 data-id="' . $row->id . '"
                                 data-status="0">
-                                Aktif
+                                <i class="fa fa-check"></i> Aktif
                             </button>
                         ';
                     }
@@ -40,7 +40,7 @@ class UserController extends Controller
                         <button class="btn btn-danger btn-sm btn-toggle-status"
                             data-id="' . $row->id . '"
                             data-status="1">
-                            Non Aktif
+                            <i class="fa fa-times"></i> Non Aktif
                         </button>
                     ';
                 })
