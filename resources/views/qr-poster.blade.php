@@ -39,7 +39,7 @@
         .card {
             width: min(520px, 100%);
             background: var(--paper);
-            border: 2px solid var(--accent);
+            /* border: 2px solid var(--accent); */
             padding: clamp(22px, 3.5vh, 36px) clamp(20px, 4vw, 34px) clamp(18px, 3vh, 30px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
             position: relative;
@@ -49,8 +49,14 @@
             content: "";
             position: absolute;
             inset: clamp(8px, 1.4vh, 10px);
-            border: 1px solid rgba(122, 130, 111, 0.6);
+            border: 3px solid rgba(122, 130, 111, 0.6);
             pointer-events: none;
+            z-index: 0;
+        }
+
+        .card > * {
+            position: relative;
+            z-index: 1;
         }
 
         .logo {
@@ -61,19 +67,19 @@
         }
 
         .logo-img-wrap {
-            width: clamp(92px, 20vmin, 120px);
-            height: clamp(34px, 6vmin, 48px);
-            overflow: hidden;
+            width: clamp(110px, 22vmin, 150px);
+            overflow: visible;
             display: grid;
             place-items: center;
         }
 
         .logo-img {
             width: 100%;
-            height: 100%;
+            height: auto;
             display: block;
-            object-fit: cover;
-            object-position: center 20%;
+            object-fit: contain;
+            object-position: center;
+            max-height: clamp(100px, 10vmin, 88px);
         }
 
         .logo-name {
@@ -120,26 +126,33 @@
         .divider::before,
         .divider::after {
             content: "";
-            height: 1px;
-            background: rgba(122, 130, 111, 0.55);
+            height: 2px;
+            background: rgba(85, 107, 47, 0.65);
         }
 
         .divider-dot {
             width: 30px;
             height: 30px;
             border-radius: 999px;
-            border: 1px solid rgba(122, 130, 111, 0.7);
-            display: grid;
-            place-items: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 0;
             overflow: hidden;
-            background: #fff;
+            background: #556b2f;
         }
 
-        .divider-dot img {
-            width: 38px;
-            height: 38px;
-            object-fit: cover;
-            object-position: center;
+        .divider-dot svg {
+            width: 19px;
+            height: 19px;
+            display: block;
+            margin: 0;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transform: translate(2.0px, 0.5px);
         }
 
         .event {
@@ -208,10 +221,10 @@
 
         .guest-name {
             margin-top: 8px;
-            font-weight: 800;
+            font-weight: 500;
             font-size: clamp(20px, 4.4vmin, 30px);
             letter-spacing: 0.01em;
-            color: var(--ink);
+            color: #556b2f;
         }
 
         .guest-family {
@@ -248,7 +261,7 @@
             <header>
                 <div class="logo">
                     <div class="logo-img-wrap">
-                        <img class="logo-img" src="{{ asset('templating/img/Weddora-Logo.jpeg') }}" alt="Weddora">
+                        <img class="logo-img" src="{{ asset('templating/img/Logo-Weddora.png') }}" alt="Weddora">
                     </div>
                 </div>
 
@@ -262,26 +275,16 @@
 
             <div class="divider" aria-hidden="true">
                 <div class="divider-dot">
-                    <img src="{{ asset('templating/img/Weddora-Logo.jpeg') }}" alt="" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M12 20.6s-7.2-4.4-9.5-8.5C.6 8.7 2.2 5.5 5.4 5.4c1.7 0 3.2.9 4.1 2.2.9-1.3 2.4-2.2 4.1-2.2 3.2.1 4.8 3.3 2.9 6.7-2.3 4.1-9.5 8.5-9.5 8.5z"/>
+                    </svg>
                 </div>
             </div>
 
             <section class="event">
                 <div class="event-label">The Wedding of</div>
                 <div class="event-name">{!! str_replace('&amp;', '<span class="amp">&amp;</span>', e($event_name)) !!}</div>
-                {{-- <div class="ornament" aria-hidden="true">
-                    <svg viewBox="0 0 220 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="">
-                        <path d="M12 12C38 12 44 4 58 4C72 4 78 12 96 12C114 12 120 4 134 4C148 4 154 12 180 12" stroke-width="1.4" stroke-linecap="round"/>
-                        <path d="M12 12C38 12 44 20 58 20C72 20 78 12 96 12C114 12 120 20 134 20C148 20 154 12 180 12" stroke-width="1.4" stroke-linecap="round"/>
-                        <circle cx="196" cy="12" r="3.2" stroke-width="1.2"/>
-                        <circle cx="196" cy="12" r="1.3" stroke-width="0"/>
-                        <circle cx="196" cy="12" r="1.3" fill="rgba(122, 130, 111, 0.75)"/>
-                        <circle cx="196" cy="6.2" r="2.1" stroke-width="1.1"/>
-                        <circle cx="196" cy="17.8" r="2.1" stroke-width="1.1"/>
-                        <circle cx="190.6" cy="12" r="2.1" stroke-width="1.1"/>
-                        <circle cx="201.4" cy="12" r="2.1" stroke-width="1.1"/>
-                    </svg>
-                </div> --}}
+
                 @if($event_date)
                     <div class="event-date">{{ $event_date }}</div>
                 @endif
@@ -289,10 +292,7 @@
 
             <section class="guest">
                 <div class="guest-label">Kepada Yth:</div>
-                <div class="guest-name">{{ $guest?->nama_tamu ?? 'Fatur Muhammad' }}</div>
-                @if($guest?->keluarga)
-                    <div class="guest-family">{{ $guest->keluarga }}</div>
-                @endif
+                <div class="guest-name">{{ $guest?->nama_tamu ?? 'Tamu Undangan' }}</div>
                 <p class="thanks">
                     Terima kasih atas doa, ucapan &amp; kehadirannya.<br>
                     Semoga Allah membalas kebaikan Anda.
