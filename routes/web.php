@@ -43,6 +43,8 @@ Route::middleware(["web", "autentikasi"])->group(function () {
 
         Route::get("/guest/download", [GuestController::class, "download"]);
 
+        Route::post("/guest/update-status-undangan", [GuestController::class, "update_status_undangan"]);
+        Route::post("/guest/update-kehadiran", [GuestController::class, "update_kehadiran"]);
         Route::post("/guest/upload-file", [GuestController::class, 'upload_file']);
         Route::resource("guest", GuestController::class);
 

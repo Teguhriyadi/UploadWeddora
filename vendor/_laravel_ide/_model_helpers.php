@@ -339,7 +339,12 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property mixed $status_kehadiran
      * @property int $jumlah_undangan
-     * @property string|null $keluarga
+     * @property mixed $keterangan
+     * @property mixed $kehadiran
+     * @property mixed $jenis_undangan
+     * @property mixed $relasi
+     * @property mixed $status_undangan
+     * @property string|null $nama_undangan
      * @property string $nama_tamu
      * @property string|null $kode_token
      * @property string $kategori_id
@@ -351,7 +356,12 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereKategoriId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereKodeToken($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereNamaTamu($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereKeluarga($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereNamaUndangan($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereStatusUndangan($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereRelasi($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereJenisUndangan($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereKehadiran($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereKeterangan($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereJumlahUndangan($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereStatusKehadiran($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Guest>|Guest whereCreatedAt($value)
@@ -1009,11 +1019,11 @@ namespace App\Models {
     /**
      * App\Models\GuestPublic
      *
-     * @property int|null $jumlah_kedatangan
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property string|null $selfie_path
      * @property string $users_id
+     * @property int $jumlah_kedatangan
      * @property string $waktu_checkin
      * @property string|null $alamat
      * @property string|null $pekerjaan
@@ -1026,11 +1036,11 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic wherePekerjaan($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereAlamat($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereWaktuCheckin($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereJumlahKedatangan($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereUsersId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereSelfiePath($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereUpdatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic whereJumlahKedatangan($value)
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<GuestPublic>|GuestPublic query()

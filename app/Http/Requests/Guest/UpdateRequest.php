@@ -9,18 +9,22 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kategori_id' => 'required|exists:kategori,id',
             'nama_tamu' => 'required',
-            'keluarga' => 'required'
+            'nama_undangan' => 'required',
+            'relasi' => 'required',
+            'jenis_undangan' => 'required',
+            'keterangan' => 'required'
         ];
     }
 
     public function messages()
     {
         return [
-            'kategori_id.required' => 'Nama Kategori Wajib Diisi',
-            'nama_tamu.required' => 'Kategori Tamu Wajib Diisi',
-            'keluarga.required' => 'Keluarga Wajib Diisi'
+            'nama_tamu.required' => 'Nama Tamu Wajib Diisi',
+            'nama_undangan.required' => 'Nama Undangan Wajib Diisi',
+            'relasi.required' => 'Relasi Wajib Diisi',
+            'jenis_undangan.required' => 'Jenis Undangan Wajib Diisi',
+            'keterangan.required' => 'Keterangan Wajib Diisi'
         ];
     }
 }

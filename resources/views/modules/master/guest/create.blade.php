@@ -19,7 +19,7 @@
     @endif
 
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <a href="{{ url('/modules/guest') }}" class="btn btn-danger btn-sm">
@@ -30,11 +30,8 @@
                     @csrf
                     <div class="card-body">
                         <div class="mb-3 row">
-                            <label for="kategori_id" class="col-sm-2 col-form-label">
-                                Kategori Tamu
-                                <span class="text-danger">*</span>
-                            </label>
-                            <div class="col-sm-10">
+                            <label for="kategori_id" class="col-sm-2 col-form-label">Kategori Tamu</label>
+                            <div class="col-sm-6">
                                 <select name="kategori_id"
                                     class="form-control select2 @error('kategori_id') is-invalid @enderror"
                                     id="kategori_id">
@@ -55,11 +52,11 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="nama_tamu" class="col-sm-2 col-form-label">
+                            <label for="staticEmail" class="col-sm-2 col-form-label">
                                 Nama Tamu
                                 <span class="text-danger">*</span>
                             </label>
-                            <div class="col-sm-10">
+                            <div class="col-sm-8">
                                 <input type="text" class="form-control @error('nama_tamu') is-invalid @enderror"
                                     name="nama_tamu" id="nama_tamu" placeholder="Masukkan Nama Tamu"
                                     value="{{ old('nama_tamu') }}">
@@ -72,16 +69,16 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="keluarga" class="col-sm-2 col-form-label">
-                                Keluarga
+                            <label for="nama_undangan" class="col-sm-2 col-form-label">
+                                Nama di Undangan
                                 <span class="text-danger">*</span>
                             </label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control @error('keluarga') is-invalid @enderror"
-                                    name="keluarga" id="keluarga" placeholder="Masukkan Nama Keluarga"
-                                    value="{{ old('keluarga') }}">
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control @error('nama_undangan') is-invalid @enderror"
+                                    name="nama_undangan" id="nama_undangan" placeholder="Masukkan di Undangan"
+                                    value="{{ old('nama_undangan') }}">
 
-                                @error('keluarga')
+                                @error('nama_undangan')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>
@@ -89,12 +86,60 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="jumlah_undangan" class="col-sm-2 col-form-label">Jumlah Undangan</label>
-                            <div class="col-sm-10">
-                                <input type="number" class="form-control" name="jumlah_undangan" id="jumlah_undangan"
-                                    placeholder="0" min="1" value="{{ old('jumlah_undangan') }}">
+                            <label for="relasi" class="col-sm-2 col-form-label">
+                                Relasi
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-6">
+                                <select name="relasi" class="form-control select2 @error('relasi') is-invalid @enderror" id="relasi">
+                                    <option value="">- Pilih -</option>
+                                    <option {{ old('relasi') == "Saudara" ? 'selected' : '' }} value="Saudara">Saudara</option>
+                                    <option {{ old('relasi') == "Teman Kerja" ? 'selected' : '' }} value="Teman Kerja">Teman Kerja</option>
+                                    <option {{ old('relasi') == "Teman SMA" ? 'selected' : '' }} value="Teman SMA">Teman SMA</option>
+                                    <option {{ old('relasi') == "Relasi Ortu" ? 'selected' : '' }} value="Relasi Ortu">Relasi Ortu</option>
+                                    <option {{ old('relasi') == "Teman Kuliah" ? 'selected' : '' }} value="Teman Kuliah">Teman Kuliah</option>
+                                    <option {{ old('relasi') == "Atasan" ? 'selected' : '' }} value="Atasan">Atasan</option>
+                                </select>
 
-                                @error('jumlah_undangan')
+                                @error('relasi')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="jenis_undangan" class="col-sm-2 col-form-label">
+                                Jenis Undangan
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-6">
+                                <select name="jenis_undangan" class="form-control select2 @error('jenis_undangan') is-invalid @enderror" id="jenis_undangan">
+                                    <option value="">- Pilih -</option>
+                                    <option {{ old('jenis_undangan') == "Cetak" ? 'selected' : '' }} value="Cetak">Cetak</option>
+                                    <option {{ old('jenis_undangan') == "Digital" ? 'selected' : '' }} value="Digital">Digital</option>
+                                </select>
+
+                                @error('jenis_undangan')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="keterangan" class="col-sm-2 col-form-label">
+                                Keterangan
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-6">
+                                <select name="keterangan" class="form-control select2 @error('keterangan') is-invalid @enderror" id="keterangan">
+                                    <option value="">- Pilih -</option>
+                                    <option {{ old('keterangan') == 'CPP' ? 'selected' : '' }} value="CPP">CPP</option>
+                                    <option {{ old('keterangan') == 'CPW' ? 'selected' : '' }} value="CPW">CPW</option>
+                                </select>
+
+                                @error('keterangan')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>
@@ -123,7 +168,7 @@
             $('.select2').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
-                placeholder: 'Pilih Kategori'
+                placeholder: '- Pilih -'
             });
         });
     </script>

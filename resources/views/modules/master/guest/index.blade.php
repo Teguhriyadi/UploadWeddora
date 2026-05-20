@@ -80,9 +80,9 @@
             <a href="{{ url('/modules/guest/create') }}" class="btn btn-primary btn-sm">
                 <i class="fa fa-plus"></i> Tambah Data
             </a>
-            <a href="{{ url('/modules/guest/download') }}" class="btn btn-success btn-sm">
+            {{-- <a href="{{ url('/modules/guest/download') }}" class="btn btn-success btn-sm">
                 <i class="fa fa-download"></i> Download Data
-            </a>
+            </a> --}}
             <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">
                 <i class="fa fa-book"></i> Upload Data
             </button>
@@ -93,11 +93,16 @@
                     <thead>
                         <tr>
                             <th class="text-center">No.</th>
+                            <th>Link Undangan</th>
                             <th class="text-center">Kategori</th>
                             <th>Kode Token</th>
-                            <th>Nama Tamu</th>
-                            <th>Keluarga</th>
-                            <th>Jumlah Diundang</th>
+                            <th>Nama</th>
+                            <th>Nama Undangan</th>
+                            <th>Status Undangan Terkirim</th>
+                            <th>Kehadiran</th>
+                            <th>Relasi</th>
+                            <th class="text-center">Jenis Undangan</th>
+                            <th>Keterangan</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Aksi</th>
                         </tr>
@@ -175,6 +180,11 @@
                         className: 'text-center'
                     },
                     {
+                        data: "link_undangan",
+                        name: "link_undangan",
+                        className: 'text-center'
+                    },
+                    {
                         data: 'kategori',
                         name: 'kategori.nama_kategori',
                         className: 'text-center'
@@ -188,12 +198,30 @@
                         name: 'nama_tamu'
                     },
                     {
-                        data: 'keluarga',
-                        name: 'keluarga'
+                        data: 'nama_undangan',
+                        name: 'nama_undangan'
                     },
                     {
-                        data: 'jumlah_undangan',
-                        name: 'jumlah_undangan'
+                        data: 'status_undangan',
+                        name: 'status_undangan'
+                    },
+                    {
+                        data: 'kehadiran',
+                        name: 'kehadiran',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'relasi',
+                        name: 'relasi'
+                    },
+                    {
+                        data: 'jenis_undangan',
+                        name: 'jenis_undangan',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'keterangan',
+                        name: 'keterangan'
                     },
                     {
                         data: 'status',
@@ -209,6 +237,101 @@
                     }
                 ]
             });
+        });
+    </script>
+    <script>
+        $(document).on('change', '.change-kehadiran', function() {
+
+            let id = $(this).data('id');
+            let value = $(this).val();
+            let select = $(this);
+
+            Swal.fire({
+                title: 'Apakah ingin mengubah data ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, ubah',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: '{{ url('/modules/guest/update-kehadiran') }}',
+                        type: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            id: id,
+                            kehadiran: value
+                        },
+                        success: function(response) {
+
+                            Swal.fire('Berhasil', response.message, 'success');
+
+                            // 🔥 penting: update data-old
+                            select.data('old', value);
+
+                        },
+                        error: function(xhr) {
+
+                            Swal.fire('Gagal', xhr.responseJSON?.message || 'Error', 'error');
+
+                            select.val(select.data('old'));
+
+                        }
+                    });
+
+                } else {
+                    select.val(select.data('old'));
+                }
+            });
+
+        });
+
+        $(document).on('change', '.change-status-undangan', function() {
+
+            let id = $(this).data('id');
+            let value = $(this).val();
+
+            $.ajax({
+                url: '{{ url('/modules/guest/update-status-undangan') }}',
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    id: id,
+                    status_undangan: value
+                },
+                success: function(response) {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+
+                },
+
+                error: function(xhr) {
+
+                    let message = 'Terjadi kesalahan';
+
+                    if (xhr.responseJSON?.message) {
+                        message = xhr.responseJSON.message;
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: message
+                    });
+
+                }
+            });
+
         });
     </script>
 @endpush

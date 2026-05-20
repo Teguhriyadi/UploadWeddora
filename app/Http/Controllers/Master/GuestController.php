@@ -6,6 +6,7 @@ use App\Exports\GuestExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guest\CreateRequest;
 use App\Http\Requests\Guest\UpdateRequest;
+use App\Imports\GuestImport;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\Kategori;
@@ -25,7 +26,9 @@ class GuestController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-
+                ->addColumn('link_undangan', function ($row) {
+                    return '<a href="'.env('APP_URL').'/qr/'.$row['kode_token'].'" class="btn btn-info btn-sm" target="_blank">Link Undangan</a>';
+                })
                 ->addColumn('kategori', function ($row) {
                     return $row->kategori?->nama_kategori;
                 })
@@ -35,6 +38,30 @@ class GuestController extends Controller
                         return '<span class="badge bg-success text-white">Sudah Hadir</span>';
                     }
                     return '<span class="badge bg-danger text-white">Belum Hadir</span>';
+                })
+                ->addColumn('kehadiran', function ($row) {
+
+                    $selected0 = $row->kehadiran == '0' ? 'selected' : '';
+                    $selected1 = $row->kehadiran == '1' ? 'selected' : '';
+
+                    return '
+                        <select class="form-control form-select-sm change-kehadiran" data-id="' . $row->id . '">
+                            <option value="0" ' . $selected0 . '>Kemungkinan Tidak Hadir</option>
+                            <option value="1" ' . $selected1 . '>Pasti Hadir</option>
+                        </select>
+                    ';
+                })
+                ->addColumn('status_undangan', function ($row) {
+
+                    $selected0 = $row->status_undangan == '0' ? 'selected' : '';
+                    $selected1 = $row->status_undangan == '1' ? 'selected' : '';
+
+                    return '
+                        <select class="form-control form-select-sm change-status-undangan" data-id="' . $row->id . '">
+                            <option value="0" ' . $selected0 . '>Belum Terkirim</option>
+                            <option value="1" ' . $selected1 . '>Terkirim</option>
+                        </select>
+                    ';
                 })
 
                 ->addColumn('action', function ($row) {
@@ -53,7 +80,7 @@ class GuestController extends Controller
                 ';
                 })
 
-                ->rawColumns(['status', 'action'])
+                ->rawColumns(['status', 'action', 'kehadiran', 'link_undangan', 'status_undangan'])
                 ->make(true);
         }
 
@@ -94,8 +121,10 @@ class GuestController extends Controller
                 "kategori_id" => $request["kategori_id"],
                 "kode_token" => $token,
                 "nama_tamu" => $request["nama_tamu"],
-                "keluarga" => $request["keluarga"],
-                "jumlah_undangan" => $request["jumlah_undangan"]
+                "nama_undangan" => $request["nama_undangan"],
+                "relasi" => $request["relasi"],
+                "jenis_undangan" => $request["jenis_undangan"],
+                "keterangan" => $request["keterangan"]
             ]);
 
             DB::commit();
@@ -105,7 +134,7 @@ class GuestController extends Controller
 
             DB::rollBack();
 
-            return back()->with("error", $e->getMessage());
+            return back()->with("error", $e->getMessage())->withInput();
         }
     }
 
@@ -212,15 +241,76 @@ class GuestController extends Controller
 
             DB::beginTransaction();
 
+            $request->validate([
+                'file_upload' => 'required|mimes:xlsx,xls,csv'
+            ]);
+
+            Excel::import(new GuestImport, $request->file('file_upload'));
+
             DB::commit();
 
             return back()->with("success", "Upload Data Berhasil di Lakukan");
-
         } catch (\Exception $e) {
 
             DB::rollBack();
 
             return back()->with("error", $e->getMessage());
+        }
+    }
+
+    public function update_kehadiran(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'id' => 'required',
+                'kehadiran' => 'required|in:0,1'
+            ]);
+
+            $guest = Guest::findOrFail($request->id);
+
+            $guest->update([
+                'kehadiran' => $request->kehadiran
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status kehadiran berhasil diupdate'
+            ]);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function update_status_undangan(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'id' => 'required',
+                'status_undangan' => 'required|in:0,1'
+            ]);
+
+            $guest = Guest::findOrFail($request->id);
+
+            $guest->update([
+                'status_undangan' => $request->status_undangan
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status kehadiran berhasil diupdate'
+            ]);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }
