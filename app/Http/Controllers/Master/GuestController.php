@@ -166,7 +166,6 @@ class GuestController extends Controller
 
             Guest::where("id", $id)->update([
                 "kategori_id" => $request["kategori_id"],
-                "kode_token" => $token,
                 "nama_tamu" => $request["nama_tamu"],
                 "nama_undangan" => $request["nama_undangan"],
                 "relasi" => $request["relasi"],
