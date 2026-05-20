@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +18,8 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             overflow: hidden;
         }
@@ -30,10 +32,11 @@
         }
 
         .page {
-            height: 100svh;
-            display: grid;
-            place-items: center;
-            padding: clamp(12px, 2.5vh, 18px);
+            min-height: 100svh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
         }
 
         .card {
@@ -54,7 +57,7 @@
             z-index: 0;
         }
 
-        .card > * {
+        .card>* {
             position: relative;
             z-index: 1;
         }
@@ -277,8 +280,78 @@
                 box-shadow: none;
             }
         }
+
+        @media (max-width: 480px) {
+
+    /* 🔥 kecilkan padding biar lega */
+    .card {
+        padding: 14px 14px 18px;
+    }
+
+    /* 🔥 logo lebih kecil */
+    .logo-img {
+        width: 90px;
+    }
+
+    /* 🔥 judul lebih compact */
+    .title {
+        font-size: 18px;
+        letter-spacing: 0.06em;
+    }
+
+    .subtitle {
+        font-size: 12px;
+    }
+
+    /* 🔥 QR disesuaikan biar tidak makan space */
+    .qr img {
+        width: 130px;
+        height: 130px;
+    }
+
+    /* 🔥 recipient lebih kecil */
+    .recipient-name {
+        font-size: 18px;
+    }
+
+    /* 🔥 event text lebih compact */
+    .event-name {
+        font-size: 22px;
+        line-height: 1.1;
+    }
+
+    .event-label {
+        font-size: 13px;
+    }
+
+    .event-date {
+        font-size: 12px;
+    }
+
+    /* 🔥 notes & closing lebih rapat tapi tetap enak */
+    .notes-text {
+        font-size: 12px;
+    }
+
+    .thanks {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    /* 🔥 divider lebih kecil */
+    .divider-dot {
+        width: 24px;
+        height: 24px;
+    }
+
+    .divider-dot svg {
+        width: 14px;
+        height: 14px;
+    }
+}
     </style>
 </head>
+
 <body>
     <div class="page">
         <main class="card">
@@ -313,7 +386,8 @@
             <div class="divider" aria-hidden="true">
                 <div class="divider-dot">
                     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                        <path d="M12 20.6s-7.2-4.4-9.5-8.5C.6 8.7 2.2 5.5 5.4 5.4c1.7 0 3.2.9 4.1 2.2.9-1.3 2.4-2.2 4.1-2.2 3.2.1 4.8 3.3 2.9 6.7-2.3 4.1-9.5 8.5-9.5 8.5z"/>
+                        <path
+                            d="M12 20.6s-7.2-4.4-9.5-8.5C.6 8.7 2.2 5.5 5.4 5.4c1.7 0 3.2.9 4.1 2.2.9-1.3 2.4-2.2 4.1-2.2 3.2.1 4.8 3.3 2.9 6.7-2.3 4.1-9.5 8.5-9.5 8.5z" />
                     </svg>
                 </div>
             </div>
@@ -322,7 +396,7 @@
                 <div class="event-label">The Wedding of</div>
                 <div class="event-name">{!! str_replace('&amp;', '<span class="amp">&amp;</span>', e($event_name)) !!}</div>
 
-                @if($event_date)
+                @if ($event_date)
                     <div class="event-date">{{ $event_date }}</div>
                 @endif
             </section>
@@ -336,4 +410,5 @@
         </main>
     </div>
 </body>
+
 </html>
