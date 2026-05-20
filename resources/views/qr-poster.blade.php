@@ -119,7 +119,7 @@
         }
 
         .divider {
-            margin: clamp(12px, 2.2vh, 18px) 0 clamp(10px, 2vh, 14px);
+            margin: clamp(2px, 2.2vh, 2px) 0 clamp(10px, 2vh, 14px);
             display: grid;
             align-items: center;
             grid-template-columns: 1fr auto 1fr;
@@ -172,7 +172,7 @@
         .event-name {
             margin-top: 6px;
             font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
-            font-size: clamp(24px, 4.3vmin, 34px);
+            font-size: clamp(20px, 4.3vmin, 20px);
             line-height: 1.02;
             letter-spacing: 0.01em;
             color: var(--accent);
@@ -223,7 +223,7 @@
         }
 
         .recipient-name {
-            margin-top: 10px;
+            margin-top: 5px;
             font-weight: 500;
             font-size: clamp(18px, 3.6vmin, 24px);
             letter-spacing: 0.01em;
@@ -238,7 +238,7 @@
 
         .notes {
             text-align: center;
-            margin-top: clamp(10px, 2vh, 14px);
+            margin-top: clamp(5px, 2vh, 5px);
         }
 
         .notes-title {
@@ -283,72 +283,72 @@
 
         @media (max-width: 480px) {
 
-    /* 🔥 kecilkan padding biar lega */
-    .card {
-        padding: 14px 14px 18px;
-    }
+            /* 🔥 kecilkan padding biar lega */
+            .card {
+                padding: 14px 14px 18px;
+            }
 
-    /* 🔥 logo lebih kecil */
-    .logo-img {
-        width: 90px;
-    }
+            /* 🔥 logo lebih kecil */
+            .logo-img {
+                width: 50px;
+            }
 
-    /* 🔥 judul lebih compact */
-    .title {
-        font-size: 18px;
-        letter-spacing: 0.06em;
-    }
+            /* 🔥 judul lebih compact */
+            .title {
+                font-size: 18px;
+                letter-spacing: 0.06em;
+            }
 
-    .subtitle {
-        font-size: 12px;
-    }
+            .subtitle {
+                font-size: 12px;
+            }
 
-    /* 🔥 QR disesuaikan biar tidak makan space */
-    .qr img {
-        width: 200px;
-        height: 200px;
-    }
+            /* 🔥 QR disesuaikan biar tidak makan space */
+            .qr img {
+                width: 200px;
+                height: 200px;
+            }
 
-    /* 🔥 recipient lebih kecil */
-    .recipient-name {
-        font-size: 18px;
-    }
+            /* 🔥 recipient lebih kecil */
+            .recipient-name {
+                font-size: 18px;
+            }
 
-    /* 🔥 event text lebih compact */
-    .event-name {
-        font-size: 22px;
-        line-height: 1.1;
-    }
+            /* 🔥 event text lebih compact */
+            .event-name {
+                font-size: 22px;
+                line-height: 1.1;
+            }
 
-    .event-label {
-        font-size: 13px;
-    }
+            .event-label {
+                font-size: 13px;
+            }
 
-    .event-date {
-        font-size: 12px;
-    }
+            .event-date {
+                font-size: 12px;
+            }
 
-    /* 🔥 notes & closing lebih rapat tapi tetap enak */
-    .notes-text {
-        font-size: 12px;
-    }
+            /* 🔥 notes & closing lebih rapat tapi tetap enak */
+            .notes-text {
+                font-size: 12px;
+            }
 
-    .thanks {
-        font-size: 11px;
-        line-height: 1.4;
-    }
+            .thanks {
+                font-size: 11px;
+                line-height: 1.4;
+            }
 
-    /* 🔥 divider lebih kecil */
-    .divider-dot {
-        width: 24px;
-        height: 24px;
-    }
+            /* 🔥 divider lebih kecil */
+            .divider-dot {
+                width: 24px;
+                height: 24px;
+            }
 
-    .divider-dot svg {
-        width: 14px;
-        height: 14px;
-    }
-}
+            .divider-dot svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
     </style>
 </head>
 
