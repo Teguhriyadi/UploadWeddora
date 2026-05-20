@@ -166,9 +166,12 @@ class GuestController extends Controller
 
             Guest::where("id", $id)->update([
                 "kategori_id" => $request["kategori_id"],
+                "kode_token" => $token,
                 "nama_tamu" => $request["nama_tamu"],
-                "keluarga" => $request["keluarga"],
-                "jumlah_undangan" => $request["jumlah_undangan"]
+                "nama_undangan" => $request["nama_undangan"],
+                "relasi" => $request["relasi"],
+                "jenis_undangan" => $request["jenis_undangan"],
+                "keterangan" => $request["keterangan"]
             ]);
 
             DB::commit();
