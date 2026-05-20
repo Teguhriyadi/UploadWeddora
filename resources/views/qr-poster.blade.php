@@ -114,8 +114,8 @@
         }
 
         .qr img {
-            width: clamp(145px, 26vmin, 180px);
-            height: clamp(145px, 26vmin, 180px);
+            width: clamp(250px, 26vmin, 250px);
+            height: clamp(250px, 26vmin, 250px);
         }
 
         .divider {
