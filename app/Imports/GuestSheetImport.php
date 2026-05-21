@@ -11,17 +11,28 @@ class GuestSheetImport implements ToCollection
 {
     public function collection(Collection $rows)
     {
-        $dataRows = $rows->slice(11); // mulai dari baris 12
-
         $event = Event::first();
 
         foreach ($rows as $index => $row) {
 
             if ($index < 11) continue;
 
-            $nama = $row[1] ?? null;
+            $nama  = trim($row[1] ?? '');
+            $token = trim($row[9] ?? '');
 
-            if (!$nama) continue;
+            if (empty($nama)) {
+                continue;
+            }
+
+            if (empty($token)) {
+                continue;
+            }
+
+            $exists = Guest::where('kode_token', $token)->exists();
+
+            if ($exists) {
+                continue;
+            }
 
             Guest::create([
                 'nama_tamu'       => $nama,
@@ -31,7 +42,7 @@ class GuestSheetImport implements ToCollection
                 'jenis_undangan'  => $row[5] ?? null,
                 'kehadiran'       => $this->mapKehadiran($row[6] ?? null),
                 'keterangan'      => $row[7] ?? null,
-                'kode_token'           => $row[9] ?? null,
+                'kode_token'      => $token,
                 'event_id'        => $event["id"]
             ]);
         }
@@ -53,8 +64,8 @@ class GuestSheetImport implements ToCollection
         $value = strtolower(trim($value));
 
         return match ($value) {
-            'Pasti Hadir' => '1',
-            'Kemungkinan Tidak Hadir' => '0',
+            'pasti hadir' => '1',
+            'kemungkinan tidak hadir' => '0',
             default => '0',
         };
     }
