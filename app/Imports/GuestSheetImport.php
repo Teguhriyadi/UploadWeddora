@@ -71,9 +71,9 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
     {
         $value = strtolower(trim($value));
 
-        return match (true) {
-            str_contains($value, 'terkirim') => '1',
-            str_contains($value, 'belum') => '0',
+        return match ($value) {
+            'terkirim' => '1',
+            'belum terkirim' => '0',
             default => '0',
         };
     }
@@ -82,8 +82,11 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
     {
         $value = strtolower(trim($value));
 
-        if (str_contains($value, 'pasti')) return '1';
-        return '0';
+        return match ($value) {
+            'pasti hadir' => '1',
+            'kemungkinan tidak hadir' => '0',
+            default => '0',
+        };
     }
 
     private function mapJenis($value)
