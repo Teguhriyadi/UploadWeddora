@@ -18,7 +18,7 @@ class GuestSheetImport implements ToCollection
             if ($index < 11) continue;
 
             $nama  = trim($row[1] ?? '');
-            $token = trim($row[9] ?? '');
+            $token = trim($row[10] ?? '');
 
             // wajib ada nama
             if (empty($nama)) {
