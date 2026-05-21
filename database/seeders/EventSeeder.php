@@ -12,7 +12,7 @@ class EventSeeder extends Seeder
     {
         Event::create([
             "nama_event" => "Naufal & Dewinta",
-            "tanggal" => "2002-02-02 10:00:00",
+            "tanggal" => "2026-06-13 12:00:00",
             "lokasi" => "Hotel Zamrud, Cirebon"
         ]);
     }
