@@ -20,18 +20,19 @@ class GuestSheetImport implements ToCollection
             $nama  = trim($row[1] ?? '');
             $token = trim($row[9] ?? '');
 
+            // wajib ada nama
             if (empty($nama)) {
                 continue;
             }
 
-            if (empty($token)) {
-                continue;
-            }
+            // cek duplicate HANYA kalau token ada
+            if (!empty($token)) {
 
-            $exists = Guest::where('kode_token', $token)->exists();
+                $exists = Guest::where('kode_token', $token)->exists();
 
-            if ($exists) {
-                continue;
+                if ($exists) {
+                    continue;
+                }
             }
 
             Guest::create([
@@ -42,8 +43,8 @@ class GuestSheetImport implements ToCollection
                 'jenis_undangan'  => $row[5] ?? null,
                 'kehadiran'       => $this->mapKehadiran($row[6] ?? null),
                 'keterangan'      => $row[7] ?? null,
-                'kode_token'      => $token,
-                'event_id'        => $event["id"]
+                'kode_token'      => $token ?: null,
+                'event_id'        => $event->id
             ]);
         }
     }
