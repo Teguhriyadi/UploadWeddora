@@ -27,7 +27,7 @@ class GuestController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('link_undangan', function ($row) {
-                    return '<a href="'.env('APP_URL').'/qr/'.$row['kode_token'].'" class="btn btn-info btn-sm" target="_blank">Link Undangan</a>';
+                    return '<a href="'.env('APP_URL').'/qr/'.$row['kode_token'].'" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-search"></i> Lihat Link</a>';
                 })
                 ->addColumn('kategori', function ($row) {
                     return $row->kategori?->nama_kategori;

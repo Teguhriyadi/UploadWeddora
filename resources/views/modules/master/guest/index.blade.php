@@ -93,6 +93,7 @@
                     <thead>
                         <tr>
                             <th class="text-center">No.</th>
+                            <th class="text-center">Aksi</th>
                             <th>Link Undangan</th>
                             <th class="text-center">Kategori</th>
                             <th>Kode Token</th>
@@ -104,7 +105,6 @@
                             <th class="text-center">Jenis Undangan</th>
                             <th>Keterangan</th>
                             <th class="text-center">Status</th>
-                            <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -180,6 +180,12 @@
                         className: 'text-center'
                     },
                     {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                    {
                         data: "link_undangan",
                         name: "link_undangan",
                         className: 'text-center'
@@ -225,12 +231,6 @@
                     },
                     {
                         data: 'status',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    },
-                    {
-                        data: 'action',
                         orderable: false,
                         searchable: false,
                         className: 'text-center'
