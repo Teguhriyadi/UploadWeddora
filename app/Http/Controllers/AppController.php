@@ -56,4 +56,9 @@ class AppController extends Controller
             'chartTotal'
         ));
     }
+
+    public function error_page()
+    {
+        return view("modules.error-page");
+    }
 }

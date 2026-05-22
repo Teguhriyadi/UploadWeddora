@@ -20,9 +20,13 @@ class ScanQRGuestController extends Controller
 
     public function poster(string $kode_token)
     {
-        $event = Event::first(['*']);
-
         $guest = Guest::where('kode_token', '=', $kode_token, 'and')->first();
+
+        if (!$guest) {
+            return redirect()->to("/modules/error-page");
+        }
+
+        $event = Event::first(['*']);
 
         $eventName = $event?->nama_event ?: 'WEDDORA';
         $eventDate = $event?->tanggal

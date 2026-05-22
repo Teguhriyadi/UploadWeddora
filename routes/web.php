@@ -63,6 +63,8 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::resource("input-attendance", InputAttendanceController::class);
 
         Route::resource("guest-public", GuestPublicController::class);
+
+        Route::get("/error-page", [AppController::class, "error_page"]);
     });
 
     Route::get("/logout", [LoginController::class, "logout"]);
