@@ -26,9 +26,6 @@ class GuestController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('link_undangan', function ($row) {
-                    return '<a href="'.env('APP_URL').'/qr/'.$row['kode_token'].'" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-search"></i> Lihat Link</a>';
-                })
                 ->addColumn('kategori', function ($row) {
                     return $row->kategori?->nama_kategori;
                 })
@@ -67,20 +64,28 @@ class GuestController extends Controller
                 ->addColumn('action', function ($row) {
                     return '
                     <a href="/modules/guest/' . $row->id . '/edit" class="btn btn-warning btn-sm">
-                        <i class="fa fa-edit"></i> Edit
+                        <i class="fa fa-edit"></i>
                     </a>
 
                     <form action="/modules/guest/' . $row->id . '" method="POST" style="display:inline;">
                         ' . csrf_field() . '
                         ' . method_field("DELETE") . '
                         <button onclick="return confirm(\'Yakin?\')" class="btn btn-danger btn-sm">
-                            <i class="fa fa-trash"></i> Hapus
+                            <i class="fa fa-trash"></i>
                         </button>
                     </form>
+
+                    <a href="' . env('APP_URL') . '/qr/' . $row['kode_token'] . '" class="btn btn-info btn-sm" target="_blank">
+                        <i class="fa fa-search"></i>
+                    </a>
+
+                    <a href="' . url('/modules/guest/generate-card/' . $row['kode_token']) . '" class="btn btn-success btn-sm">
+                        <i class="fa fa-download"></i>
+                    </a>
                 ';
                 })
 
-                ->rawColumns(['status', 'action', 'kehadiran', 'link_undangan', 'status_undangan'])
+                ->rawColumns(['status', 'action', 'kehadiran', 'status_undangan'])
                 ->make(true);
         }
 
@@ -314,5 +319,22 @@ class GuestController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function show_generate($token)
+    {
+        $guest = Guest::where('kode_token', $token)->firstOrFail();
+
+        $event_name = Event::first();
+        $event_date = "13 Juni 2026";
+
+        $html = view('qr-poster-generate', compact(
+            'guest',
+            'event_name',
+            'event_date'
+        ))->render();
+
+        return response($html)
+            ->header('Content-Type', 'text/html');
     }
 }

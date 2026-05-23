@@ -94,7 +94,6 @@
                         <tr>
                             <th class="text-center">No.</th>
                             <th class="text-center">Aksi</th>
-                            <th>Link Undangan</th>
                             <th class="text-center">Kategori</th>
                             <th>Kode Token</th>
                             <th>Nama</th>
@@ -183,11 +182,6 @@
                         data: 'action',
                         orderable: false,
                         searchable: false,
-                        className: 'text-center'
-                    },
-                    {
-                        data: "link_undangan",
-                        name: "link_undangan",
                         className: 'text-center'
                     },
                     {

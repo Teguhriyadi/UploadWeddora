@@ -42,6 +42,30 @@ class ScanQRGuestController extends Controller
         ]);
     }
 
+    public function backup(string $kode_token)
+    {
+        $guest = Guest::where('kode_token', '=', $kode_token, 'and')->first();
+
+        if (!$guest) {
+            return redirect()->to("/modules/error-page");
+        }
+
+        $event = Event::first(['*']);
+
+        $eventName = $event?->nama_event ?: 'WEDDORA';
+        $eventDate = $event?->tanggal
+            ? Carbon::parse($event->tanggal)->locale('id')->translatedFormat('l, d F Y')
+            : null;
+
+        return view('qr-poster-backup', [
+            'kode_token' => $kode_token,
+            'guest' => $guest,
+            'event_name' => $eventName,
+            'event_date' => $eventDate,
+            'qr_url' => 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' . urlencode($kode_token),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $guest = Guest::where('kode_token', '=', $request->kode_token, 'and')->first();
