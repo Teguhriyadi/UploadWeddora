@@ -19,7 +19,7 @@
     <style>
         body {
             height: 100vh;
-            background: url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070') center/cover no-repeat;
+            background: url('{{ url("templating/img/BG_Login.jpg") }}') center/cover no-repeat;
             display: flex;
             justify-content: center;
             align-items: center;
