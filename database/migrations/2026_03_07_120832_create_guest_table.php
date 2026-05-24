@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid("event_id", 50);
             $table->uuid("kategori_id", 50)->nullable();
             $table->string("kode_token", 150)->unique()->nullable();
-            $table->string("nama_tamu", 150);
+            $table->string("nama_tamu", 150)->nullable();
             $table->string("nama_undangan", 150)->nullable();
             $table->enum("status_undangan", ["1", "0"])->default("0");
             $table->enum("relasi", ["Saudara", "Teman Kerja", "Teman SMA", "Relasi Ortu", "Teman Kuliah", "Atasan"]);

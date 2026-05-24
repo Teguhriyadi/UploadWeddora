@@ -25,22 +25,26 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
 
             $data = array_values($row->toArray());
 
-            $nama           = trim($data[1] ?? '');
-            $namaUndangan   = $data[2] ?? null;
-            $status         = $this->mapStatus($data[3] ?? null);
-            $relasi         = $this->mapRelasi($data[4] ?? null);
-            $jenis          = $this->mapJenis($data[5] ?? null);
-            $kehadiran      = $this->mapKehadiran($data[6] ?? null);
-            $keterangan     = $this->mapKeterangan($data[7] ?? null);
-            $token          = isset($data[10]) ? strtoupper(trim($data[10])) : null;
+            $nama         = trim($data[1] ?? '');
+            $namaUndangan = trim($data[2] ?? null);
+            $status       = $this->mapStatus($data[3] ?? null);
+            $relasi       = $this->mapRelasi($data[4] ?? null);
+            $jenis        = $this->mapJenis($data[5] ?? null);
+            $kehadiran    = $this->mapKehadiran($data[6] ?? null);
+            $keterangan   = $this->mapKeterangan($data[7] ?? null);
+            $token        = isset($data[10]) ? strtoupper(trim($data[10])) : null;
 
-            if (!$nama) continue;
+            // ✅ RULE BARU:
+            // kalau dua-duanya kosong → skip
+            if (!$nama && !$namaUndangan) continue;
 
+            // optional: skip header noise
             if (stripos($nama, 'nama') !== false) continue;
 
             Guest::create([
-                'nama_tamu'       => $nama,
-                'nama_undangan'   => $namaUndangan,
+                // kalau nama kosong, pakai null (atau bisa fallback ke namaUndangan kalau mau)
+                'nama_tamu'       => $nama ?: null,
+                'nama_undangan'   => $namaUndangan ?: null,
                 'status_undangan' => $status,
                 'relasi'          => $relasi,
                 'jenis_undangan'  => $jenis,
