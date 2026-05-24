@@ -77,9 +77,9 @@
                                 <tr>
                                     <th style="width: 5%" class="text-center">No</th>
                                     <th style="width: 10%" class="text-center">Foto Kehadiran</th>
-                                    <th class="text-center">Kategori</th>
+                                    <th>Nama di Undangan</th>
                                     <th>Nama Tamu</th>
-                                    <th>Keluarga</th>
+                                    <th>Relasi</th>
                                     <th class="text-center">Metode</th>
                                     <th class="text-center">Tanggal Waktu</th>
                                 </tr>
@@ -103,11 +103,9 @@
                                                 </button>
                                             @endif
                                         </td>
-                                        <td class="text-center">
-                                            {{ $item->guest->kategori->nama_kategori }}
-                                        </td>
+                                        <td>{{ $item->guest->nama_undangan }}</td>
                                         <td>{{ $item->guest->nama_tamu }}</td>
-                                        <td>{{ $item->guest->keluarga }}</td>
+                                        <td>{{ $item->guest->relasi }}</td>
                                         <td class="text-center text-uppercase">
                                             {{ $item->metode }}
                                         </td>

@@ -35,9 +35,9 @@ class InputAttendanceController extends Controller
     {
         try {
 
-            if (!$request->selfie) {
-                return back()->with("error", "Harus Foto Selfie Terlebih Dahulu");
-            }
+            // if (!$request->selfie) {
+            //     return back()->with("error", "Harus Foto Selfie Terlebih Dahulu");
+            // }
 
             DB::beginTransaction();
 
@@ -49,7 +49,11 @@ class InputAttendanceController extends Controller
                 return back()->with("error", "Nama Tamu " . $guest['nama_tamu'] . ' Sudah Masuk ke Dalam Acara');
             }
 
-            $fileName = ImageHelper::uploadBase64ToS3($request->selfie);
+            if ($request->selfie) {
+                $fileName = ImageHelper::uploadBase64ToS3($request->selfie);
+            } else {
+                $fileName = NULL;
+            }
 
             GuestCheckin::create([
                 "guest_id" => $guest["id"],
@@ -79,9 +83,9 @@ class InputAttendanceController extends Controller
         $guest = Guest::with('kategori')->findOrFail($id);
         return response()->json([
             'nama' => $guest->nama_tamu,
-            'kategori' => $guest->kategori->nama_kategori ?? '-',
-            'keluarga' => $guest->keluarga,
-            'jumlah' => $guest->jumlah_undangan
+            'relasi' => $guest->relasi,
+            'jenis_undangan' => $guest->jenis_undangan,
+            'keterangan' => $guest->keterangan
         ]);
     }
 
@@ -101,7 +105,8 @@ class InputAttendanceController extends Controller
                 'id' => $item->id,
                 'nama_tamu' => $item->nama_tamu,
                 'keluarga' => $item->keluarga,
-                'kategori' => $item->kategori->nama_kategori ?? ''
+                'kategori' => $item->kategori->nama_kategori ?? '',
+                'nama_undangan' => $item->nama_undangan
             ];
         });
 

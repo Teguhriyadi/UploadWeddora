@@ -82,7 +82,11 @@ class GuestPublicController extends Controller
 
             DB::beginTransaction();
 
-            $fileName = ImageHelper::uploadBase64ToS3($request->selfie);
+            if ($request->selfie) {
+                $fileName = ImageHelper::uploadBase64ToS3($request->selfie);
+            } else {
+                $fileName = NULL;
+            }
 
             GuestPublic::create([
                 "nama" => $request['nama'],

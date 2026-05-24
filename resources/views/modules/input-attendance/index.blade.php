@@ -125,7 +125,7 @@
             <h3 class="fw-bold text-primary mb-1">📷 Input Kehadiran</h3>
             <p class="text-muted mb-3">Pilih tamu dan ambil selfie sebelum check-in</p>
 
-            <form action="{{ url('/modules/input-attendance') }}" method="POST" onsubmit="return validateForm()">
+            <form action="{{ url('/modules/input-attendance') }}" method="POST">
                 @csrf
 
                 <input type="hidden" name="selfie" id="selfie">
@@ -142,9 +142,9 @@
                 <div class="info-box d-none" id="infoGuest">
                     <h6 class="mb-2 text-primary">👤 Informasi Tamu</h6>
                     <p><b>Nama:</b> <span id="guestNama"></span></p>
-                    <p><b>Kategori:</b> <span id="guestKategori"></span></p>
-                    <p><b>Keluarga:</b> <span id="guestKeluarga"></span></p>
-                    <p><b>Jumlah:</b> <span id="guestJumlah"></span></p>
+                    <p><b>Relasi:</b> <span id="guestRelasi"></span></p>
+                    <p><b>Jenis Undangan:</b> <span id="guestJenisUndangan"></span></p>
+                    <p><b>Keterangan:</b> <span id="guestKeterangan"></span></p>
                 </div>
 
                 <hr>
@@ -204,7 +204,7 @@
                     processResults: data => ({
                         results: data.map(item => ({
                             id: item.id,
-                            text: `(${item.kategori}) ${item.nama_tamu}`
+                            text: `(${item.nama_tamu}) - ${item.nama_undangan}`
                         }))
                     })
                 }
@@ -220,9 +220,9 @@
             $.get(`{{ url('/modules/guest/info') }}/` + id, function(data) {
                 $('#infoGuest').removeClass('d-none');
                 $('#guestNama').text(data.nama);
-                $('#guestKategori').text(data.kategori);
-                $('#guestKeluarga').text(data.keluarga);
-                $('#guestJumlah').text(data.jumlah);
+                $('#guestRelasi').text(data.relasi);
+                $('#guestJenisUndangan').text(data.jenis_undangan);
+                $('#guestKeterangan').text(data.keterangan);
             });
         });
 
