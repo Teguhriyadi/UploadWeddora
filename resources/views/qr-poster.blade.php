@@ -387,7 +387,7 @@
             </div>
 
             <section class="event">
-                <div class="event-label">The Wedding of</div>
+                <div class="event-label">The Engagement of</div>
                 <div class="event-name">{!! str_replace('&amp;', '<span class="amp">&amp;</span>', e($event_name)) !!}</div>
 
                 @if ($event_date)
