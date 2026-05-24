@@ -76,6 +76,7 @@
     @endif
 
     <div class="card shadow mb-4">
+        @if (Auth::user()->role->nama_role == "Administrator")
         <div class="card-header py-3">
             <a href="{{ url('/modules/guest/create') }}" class="btn btn-primary btn-sm">
                 <i class="fa fa-plus"></i> Tambah Data
@@ -90,6 +91,7 @@
                 <i class="fa fa-download"></i> Generate Kategori Cetak
             </a>
         </div>
+        @endif
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">

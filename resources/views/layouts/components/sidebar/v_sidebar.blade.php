@@ -1,7 +1,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <div class="sidebar-brand text-center py-4">
         <div class="brand-title">
-             {{ config('app.name') }}
+            {{ config('app.name') }}
         </div>
     </div>
 
@@ -12,12 +12,14 @@
         </a>
     </li>
 
-    <li class="nav-item {{ Request::is('modules/kategori*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/modules/kategori') }}">
-            <i class="fas fa-layer-group"></i>
-            <span>Kategori</span>
-        </a>
-    </li>
+    @if (Auth::user()->role->nama_role == 'Administrator')
+        <li class="nav-item {{ Request::is('modules/kategori*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/kategori') }}">
+                <i class="fas fa-layer-group"></i>
+                <span>Kategori</span>
+            </a>
+        </li>
+    @endif
 
     <li class="nav-item {{ Request::is('modules/guest') || Request::is('modules/guest/*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ url('/modules/guest') }}">
@@ -54,18 +56,20 @@
         </a>
     </li>
 
-    <li class="nav-item {{ Request::is('modules/role*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/modules/role') }}">
-            <i class="fas fa-user-shield"></i>
-            <span>Role</span>
-        </a>
-    </li>
+    @if (Auth::user()->role->nama_role == 'Administrator')
+        <li class="nav-item {{ Request::is('modules/role*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/role') }}">
+                <i class="fas fa-user-shield"></i>
+                <span>Role</span>
+            </a>
+        </li>
 
-    <li class="nav-item {{ Request::is('modules/users*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/modules/users') }}">
-            <i class="fas fa-users"></i>
-            <span>Users</span>
-        </a>
-    </li>
+        <li class="nav-item {{ Request::is('modules/users*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/users') }}">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+        </li>
+    @endif
 
 </ul>
