@@ -86,6 +86,9 @@
             <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">
                 <i class="fa fa-book"></i> Upload Data
             </button>
+            <a href="{{ url('/modules/guest/generate-all') }}" class="btn btn-success btn-sm">
+                <i class="fa fa-download"></i> Generate Kategori
+            </a>
         </div>
         <div class="card-body">
             <div class="table-responsive">

@@ -337,4 +337,18 @@ class GuestController extends Controller
         return response($html)
             ->header('Content-Type', 'text/html');
     }
+
+    public function generate_all()
+    {
+        $guests = Guest::where('jenis_undangan', 'Cetak')->get();
+
+        $event_name = Event::first();
+        $event_date = "13 Juni 2026";
+
+        return view('qr-generate-all', compact(
+            'guests',
+            'event_name',
+            'event_date'
+        ));
+    }
 }

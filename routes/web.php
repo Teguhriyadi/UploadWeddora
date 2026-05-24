@@ -43,6 +43,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
 
         Route::get("/guest/generate-card/{token}", [GuestController::class, "show_generate"]);
         Route::get("/guest/download", [GuestController::class, "download"]);
+        Route::get("/guest/generate-all", [GuestController::class, "generate_all"]);
 
         Route::post("/guest/update-status-undangan", [GuestController::class, "update_status_undangan"]);
         Route::post("/guest/update-kehadiran", [GuestController::class, "update_kehadiran"]);
