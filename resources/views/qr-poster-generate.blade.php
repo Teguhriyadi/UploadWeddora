@@ -7,7 +7,7 @@
     <title>QR Buku Tamu</title>
     <style>
         @page {
-            size: 10cm 13cm;
+            size: 8cm 13cm;
             margin: 0;
         }
 
@@ -15,7 +15,7 @@
         body {
             margin: 0;
             padding: 0;
-            width: 1181px;
+            width: 945px;
             height: 1535px;
             overflow: hidden;
             background: #fff;
@@ -34,7 +34,7 @@
         }
 
         .page {
-            width: 10cm;
+            width: 8cm;
             height: 13cm;
             display: flex;
             justify-content: center;
@@ -67,7 +67,6 @@
 
         .logo-img-wrap {
             width: 14mm;
-            /* 🔥 sebelumnya lebih besar, sekarang diperkecil */
         }
 
         .logo-img {
@@ -75,7 +74,6 @@
             height: auto;
         }
 
-        /* TITLE */
         .title {
             margin: 0;
             text-align: center;
@@ -91,7 +89,6 @@
             color: #6b6f66;
         }
 
-        /* QR 🔽 diperkecil */
         .qr {
             display: grid;
             justify-items: center;
@@ -118,8 +115,6 @@
             font-weight: 600;
             color: #556b2f;
         }
-
-        /* NOTES */
         .notes {
             text-align: center;
             margin-top: 2mm;
@@ -157,8 +152,6 @@
             font-size: 8.5pt;
             color: #6b6f66;
         }
-
-        /* CLOSING */
         .closing {
             text-align: center;
             margin-top: 2mm;
