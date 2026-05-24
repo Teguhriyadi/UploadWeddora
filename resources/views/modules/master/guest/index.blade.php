@@ -87,7 +87,7 @@
                 <i class="fa fa-book"></i> Upload Data
             </button>
             <a href="{{ url('/modules/guest/generate-all') }}" class="btn btn-success btn-sm">
-                <i class="fa fa-download"></i> Generate Kategori
+                <i class="fa fa-download"></i> Generate Kategori Cetak
             </a>
         </div>
         <div class="card-body">
