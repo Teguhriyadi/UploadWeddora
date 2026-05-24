@@ -7,7 +7,7 @@
     <title>QR Buku Tamu</title>
     <style>
         @page {
-            size: 8cm 13cm;
+            size: 8.5cm 11cm;
             margin: 0;
         }
 
@@ -15,8 +15,8 @@
         body {
             margin: 0;
             padding: 0;
-            width: 945px;
-            height: 1535px;
+            width: 1004px;
+            height: 1299px;
             overflow: hidden;
             background: #fff;
         }
@@ -28,171 +28,188 @@
         body {
             font-family: Arial, Helvetica, sans-serif;
             color: #2d2f2a;
-
             font-kerning: none;
             text-rendering: optimizeLegibility;
         }
 
         .page {
-            width: 8cm;
-            height: 13cm;
+            width: 8.5cm;
+            height: 11cm;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .card {
-            width: 10cm;
-            height: 13cm;
+            width: 8.5cm;
+            height: 11cm;
             position: relative;
             background: #fff;
-            padding: 6mm 7mm;
+            padding: 4mm 5mm;
             overflow: hidden;
         }
 
         .card::before {
             content: "";
             position: absolute;
-            inset: 3mm;
+            inset: 2.5mm;
             border: 1px solid rgba(122, 130, 111, 0.6);
             pointer-events: none;
         }
 
-        /* LOGO 🔽 diperkecil */
+        /* LOGO */
         .logo {
             display: grid;
             justify-items: center;
-            margin-bottom: 1.5mm;
+            margin-bottom: 1mm;
         }
 
         .logo-img-wrap {
-            width: 14mm;
+            width: 11mm;
         }
 
         .logo-img {
             width: 100%;
             height: auto;
+            display: block;
         }
 
+        /* TITLE */
         .title {
             margin: 0;
             text-align: center;
-            font-size: 12pt;
+            font-size: 10pt;
             color: #7a826f;
             font-weight: 800;
+            line-height: 1.15;
         }
 
         .subtitle {
-            margin: 1mm 0 2mm;
+            margin: 0.8mm 0 1.5mm;
             text-align: center;
-            font-size: 8.5pt;
+            font-size: 7pt;
             color: #6b6f66;
+            line-height: 1.25;
         }
 
+        /* QR */
         .qr {
             display: grid;
             justify-items: center;
-            margin-top: 2mm;
+            margin-top: 1.5mm;
         }
 
         .qr img {
-            width: 32mm;
-            height: 32mm;
+            width: 25mm;
+            height: 25mm;
+            object-fit: contain;
         }
 
+        /* RECIPIENT */
         .recipient {
             text-align: center;
-            margin-top: 2mm;
+            margin-top: 1.5mm;
         }
 
         .recipient-label {
-            font-size: 8.5pt;
+            font-size: 7pt;
             color: #6b6f66;
         }
 
         .recipient-name {
-            font-size: 11pt;
-            font-weight: 600;
+            font-size: 9pt;
+            font-weight: 700;
             color: #556b2f;
+            line-height: 1.2;
+            margin-top: 0.8mm;
         }
+
+        /* NOTES */
         .notes {
             text-align: center;
-            margin-top: 2mm;
+            margin-top: 1.5mm;
         }
 
         .notes-title {
-            font-size: 8.5pt;
+            font-size: 7pt;
             font-weight: 700;
+            margin-bottom: 0.8mm;
         }
 
         .notes-text {
-            font-size: 8pt;
+            font-size: 6.3pt;
             color: #6b6f66;
-            line-height: 1.25;
+            line-height: 1.3;
         }
 
         /* EVENT */
         .event {
             text-align: center;
-            margin-top: 2mm;
+            margin-top: 1.5mm;
         }
 
         .event-label {
-            font-size: 8.5pt;
+            font-size: 7pt;
             color: #6b6f66;
         }
 
         .event-name {
-            font-size: 12.5pt;
-            font-weight: 600;
+            font-size: 10pt;
+            font-weight: 700;
             color: #7a826f;
+            line-height: 1.15;
+            margin-top: 0.8mm;
         }
 
         .event-date {
-            font-size: 8.5pt;
+            font-size: 7pt;
             color: #6b6f66;
+            margin-top: 0.8mm;
         }
+
+        /* CLOSING */
         .closing {
             text-align: center;
-            margin-top: 2mm;
+            margin-top: 1.5mm;
         }
 
         .thanks {
-            font-size: 8pt;
+            font-size: 6.3pt;
             color: #6b6f66;
-            line-height: 1.25;
+            line-height: 1.3;
             margin: 0;
         }
 
+        /* DIVIDER */
         .divider {
-            margin: 3mm 0;
+            margin: 2mm 0;
             display: grid;
             align-items: center;
             grid-template-columns: 1fr auto 1fr;
-            gap: 10px;
+            gap: 8px;
         }
 
         .divider::before,
         .divider::after {
             content: "";
-            height: 1.5px;
+            height: 1px;
             background: rgba(85, 107, 47, 0.65);
         }
 
         .divider-dot {
-            width: 16px;
-            height: 16px;
+            width: 13px;
+            height: 13px;
+            padding-left: 1px;
             border-radius: 50%;
             background: #556b2f;
             display: flex;
-            padding-left: 2px;
             align-items: center;
             justify-content: center;
         }
 
         .divider-dot svg {
-            width: 10px;
-            height: 10px;
+            width: 7px;
+            height: 7px;
             fill: none;
             stroke: #fff;
             stroke-width: 2;
