@@ -297,32 +297,34 @@
 
                 stopScanner();
 
-                const qrVideo = document.getElementById('reader');
-
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: {
-                            ideal: "environment"
-                        }
-                    }
-                });
-
-                qrVideo.srcObject = stream;
-
-                await qrVideo.play();
-
                 codeReader = new ZXing.BrowserQRCodeReader();
 
                 scanning = true;
 
-                codeReader.decodeFromVideoElement(
-                    qrVideo,
+                const devices = await ZXing.BrowserQRCodeReader.listVideoInputDevices();
+
+                if (!devices || devices.length === 0) {
+                    Swal.fire('Error', 'Tidak ada kamera ditemukan', 'error');
+                    return;
+                }
+
+                let selectedDeviceId = devices[0].deviceId;
+
+                // 🔥 pilih kamera belakang kalau ada
+                for (let device of devices) {
+                    if (device.label.toLowerCase().includes('back')) {
+                        selectedDeviceId = device.deviceId;
+                        break;
+                    }
+                }
+
+                codeReader.decodeFromVideoDevice(
+                    selectedDeviceId,
+                    'reader',
                     (result, err) => {
 
                         if (result && scanning) {
-
-                            console.log(result.text);
-
+                            console.log("QR:", result.text);
                             onScanSuccess(result.text);
                         }
                     }
@@ -344,22 +346,21 @@
 
             scanning = false;
 
-            const qrVideo = document.getElementById('reader');
-
-            if (qrVideo.srcObject) {
-
-                qrVideo.srcObject
-                    .getTracks()
-                    .forEach(track => track.stop());
-
-                qrVideo.srcObject = null;
+            if (codeReader) {
+                try {
+                    codeReader.reset();
+                } catch (e) {
+                    console.log(e);
+                }
+                codeReader = null;
             }
 
-            if (codeReader) {
+            // 🔥 FIX: jangan paksa null srcObject (ini yang bikin black screen)
+            const qrVideo = document.getElementById('reader');
 
-                codeReader.reset();
-
-                codeReader = null;
+            if (qrVideo && qrVideo.srcObject) {
+                qrVideo.srcObject.getTracks().forEach(track => track.stop());
+                qrVideo.srcObject = null;
             }
         }
 
@@ -410,5 +411,15 @@
         }
 
         startCamera();
+
+        document.addEventListener("click", async () => {
+            try {
+                await navigator.mediaDevices.getUserMedia({
+                    video: true
+                });
+            } catch (e) {}
+        }, {
+            once: true
+        });
     </script>
 @endpush
