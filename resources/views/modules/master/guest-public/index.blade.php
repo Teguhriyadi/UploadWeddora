@@ -65,16 +65,6 @@
 @endpush
 
 @push('content-modules')
-    @if (session('success'))
-        <div class="alert alert-success">
-            <strong>Berhasil</strong>, {{ session('success') }}
-        </div>
-    @elseif(session('error'))
-        <div class="alert alert-danger">
-            <strong>Gagal</strong>, {{ session('error') }}
-        </div>
-    @endif
-
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <a href="{{ url('/modules/guest-public/create') }}" class="btn btn-primary btn-sm">
@@ -161,5 +151,48 @@
                 ]
             });
         });
+
+        $(document).on('submit', '.delete-form', function(e) {
+
+            e.preventDefault();
+
+            let form = this;
+
+            Swal.fire({
+                title: 'Hapus Data?',
+                text: 'Data yang dihapus tidak dapat dikembalikan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+
+            });
+
+        });
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: '{{ session('success') }}',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: '{{ session('error') }}'
+            });
+        @endif
     </script>
 @endpush

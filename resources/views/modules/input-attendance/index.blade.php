@@ -105,7 +105,6 @@
                             <div class="info-box d-none" id="infoGuest">
                                 <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 10px;">
                                     <h6 class="mb-0 text-primary font-weight-bold">Informasi Tamu</h6>
-                                    <span class="badge badge-pill badge-light">Siap Lanjut</span>
                                 </div>
                                 <div class="mt-3 row">
                                     <div class="col-sm-6">
@@ -115,6 +114,10 @@
                                     <div class="col-sm-6 mt-3 mt-sm-0">
                                         <div class="text-muted small">Relasi</div>
                                         <div class="font-weight-bold" id="guestRelasi"></div>
+                                    </div>
+                                    <div class="col-sm-6 mt-3">
+                                        <div class="text-muted small">Nama di Undangan</div>
+                                        <div class="font-weight-bold" id="guestNamaUndangan"></div>
                                     </div>
                                     <div class="col-sm-6 mt-3">
                                         <div class="text-muted small">Jenis Undangan</div>
@@ -252,6 +255,7 @@
             $.get(`{{ url('/modules/guest/info') }}/` + id, function(data) {
                 $('#infoGuest').removeClass('d-none');
                 $('#guestNama').text(data.nama || '-');
+                $('#guestNamaUndangan').text(data.nama_undangan || '-');
                 $('#guestRelasi').text(data.relasi || '-');
                 $('#guestJenisUndangan').text(data.jenis_undangan || '-');
                 $('#guestKeterangan').text(data.keterangan || '-');

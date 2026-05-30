@@ -65,26 +65,26 @@ class GuestController extends Controller
                 ->addColumn('action', function ($row) {
                     if (Auth::user()->role->nama_role == "Administrator") {
                         return '
-                        <a href="/modules/guest/' . $row->id . '/edit" class="btn btn-warning btn-sm">
-                            <i class="fa fa-edit"></i>
-                        </a>
+                            <a href="/modules/guest/' . $row->id . '/edit" class="btn btn-warning btn-sm">
+                                <i class="fa fa-edit"></i>
+                            </a>
 
-                        <form action="/modules/guest/' . $row->id . '" method="POST" style="display:inline;">
-                            ' . csrf_field() . '
-                            ' . method_field("DELETE") . '
-                            <button onclick="return confirm(\'Yakin?\')" class="btn btn-danger btn-sm">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </form>
+                            <form action="/modules/guest/' . $row->id . '" method="POST" style="display:inline;" class="delete-form">
+                                ' . csrf_field() . '
+                                ' . method_field("DELETE") . '
+                                <button class="btn btn-danger btn-sm">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
 
-                        <a href="' . env('APP_URL') . '/qr/' . $row['kode_token'] . '" class="btn btn-info btn-sm" target="_blank">
-                            <i class="fa fa-search"></i>
-                        </a>
+                            <a href="' . env('APP_URL') . '/qr/' . $row['kode_token'] . '" class="btn btn-info btn-sm" target="_blank">
+                                <i class="fa fa-search"></i>
+                            </a>
 
-                        <a href="' . url('/modules/guest/generate-card/' . $row['kode_token']) . '" class="btn btn-success btn-sm">
-                            <i class="fa fa-download"></i>
-                        </a>
-                    ';
+                            <a href="' . url('/modules/guest/generate-card/' . $row['kode_token']) . '" class="btn btn-success btn-sm">
+                                <i class="fa fa-download"></i>
+                            </a>
+                        ';
                     } else {
                         return "-";
                     }
@@ -139,7 +139,7 @@ class GuestController extends Controller
 
             DB::commit();
 
-            return back()->with("success", "Data Berhasil di Tambahkan");
+            return redirect()->to("/modules/guest")->with("success", "Data Berhasil di Tambahkan");
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -185,7 +185,7 @@ class GuestController extends Controller
 
             DB::commit();
 
-            return back()->with("success", "Data Berhasil di Simpan");
+            return redirect()->to("/modules/guest")->with("success", "Data Berhasil di Simpan");
         } catch (\Exception $e) {
 
             DB::rollBack();

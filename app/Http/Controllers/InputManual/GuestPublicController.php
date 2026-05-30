@@ -42,10 +42,10 @@ class GuestPublicController extends Controller
                         <i class="fa fa-edit"></i> Edit
                     </a>
 
-                    <form action="/modules/guest-public/' . $row->id . '" method="POST" style="display:inline;">
+                    <form action="/modules/guest-public/' . $row->id . '" method="POST" style="display:inline;" class="delete-form">
                         ' . csrf_field() . '
                         ' . method_field("DELETE") . '
-                        <button onclick="return confirm(\'Yakin?\')" class="btn btn-danger btn-sm">
+                        <button class="btn btn-danger btn-sm">
                             <i class="fa fa-trash"></i> Hapus
                         </button>
                     </form>
@@ -101,7 +101,7 @@ class GuestPublicController extends Controller
 
             DB::commit();
 
-            return back()->with("success", "Data Berhasil di Tambahkan");
+            return redirect()->to("/modules/guest-public")->with("success", "Data Berhasil di Tambahkan");
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -155,7 +155,7 @@ class GuestPublicController extends Controller
 
             DB::commit();
 
-            return back()->with("success", "Data berhasil di simpan");
+            return redirect()->to("/modules/guest-public")->with("success", "Data berhasil di simpan");
         } catch (\Exception $e) {
 
             DB::rollBack();

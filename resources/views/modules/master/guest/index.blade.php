@@ -65,32 +65,22 @@
 @endpush
 
 @push('content-modules')
-    @if (session('success'))
-        <div class="alert alert-success">
-            <strong>Berhasil</strong>, {{ session('success') }}
-        </div>
-    @elseif(session('error'))
-        <div class="alert alert-danger">
-            <strong>Gagal</strong>, {{ session('error') }}
-        </div>
-    @endif
-
     <div class="card shadow mb-4">
-        @if (Auth::user()->role->nama_role == "Administrator")
-        <div class="card-header py-3">
-            <a href="{{ url('/modules/guest/create') }}" class="btn btn-primary btn-sm">
-                <i class="fa fa-plus"></i> Tambah Data
-            </a>
-            {{-- <a href="{{ url('/modules/guest/download') }}" class="btn btn-success btn-sm">
+        @if (Auth::user()->role->nama_role == 'Administrator')
+            <div class="card-header py-3">
+                <a href="{{ url('/modules/guest/create') }}" class="btn btn-primary btn-sm">
+                    <i class="fa fa-plus"></i> Tambah Data
+                </a>
+                {{-- <a href="{{ url('/modules/guest/download') }}" class="btn btn-success btn-sm">
                 <i class="fa fa-download"></i> Download Data
             </a> --}}
-            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">
-                <i class="fa fa-book"></i> Upload Data
-            </button>
-            <a href="{{ url('/modules/guest/generate-all') }}" class="btn btn-success btn-sm">
-                <i class="fa fa-download"></i> Generate Kategori Cetak
-            </a>
-        </div>
+                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">
+                    <i class="fa fa-book"></i> Upload Data
+                </button>
+                <a href="{{ url('/modules/guest/generate-all') }}" class="btn btn-success btn-sm">
+                    <i class="fa fa-download"></i> Generate Kategori Cetak
+                </a>
+            </div>
         @endif
         <div class="card-body">
             <div class="table-responsive">
@@ -332,5 +322,48 @@
             });
 
         });
+
+        $(document).on('submit', '.delete-form', function(e) {
+
+            e.preventDefault();
+
+            let form = this;
+
+            Swal.fire({
+                title: 'Hapus Data?',
+                text: 'Data yang dihapus tidak dapat dikembalikan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+
+            });
+
+        });
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: '{{ session('success') }}',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: '{{ session('error') }}'
+            });
+        @endif
     </script>
 @endpush

@@ -83,6 +83,7 @@ class InputAttendanceController extends Controller
         $guest = Guest::with('kategori')->findOrFail($id);
         return response()->json([
             'nama' => $guest->nama_tamu,
+            'nama_undangan' => $guest->nama_undangan,
             'relasi' => $guest->relasi,
             'jenis_undangan' => $guest->jenis_undangan,
             'keterangan' => $guest->keterangan
