@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@push('title-modules', 'Scan QR Code Tamu')
-
 @push('style-css')
     <style>
         .card {
@@ -269,11 +267,12 @@
             if (name === 'NotReadableError' || name === 'TrackStartError') {
                 return 'Kamera sedang dipakai aplikasi lain atau gagal dibuka. Tutup aplikasi kamera lain lalu coba lagi.';
             }
-            return 'Coba tap "Mulai Scan" lagi. Kalau tetap gagal, cek permission kamera di browser.';
+            return 'Kalau tetap gagal, cek permission kamera di browser.';
         }
 
         function stopScanner() {
             state.scanning = false;
+            state.scanSessionId = (state.scanSessionId || 0) + 1;
             if (state.codeReader) {
                 try {
                     state.codeReader.reset();
@@ -297,12 +296,7 @@
                     return;
                 }
 
-                await navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-                    stream.getTracks().forEach(track => track.stop());
-                });
-
-                state.codeReader = new ZXing.BrowserQRCodeReader();
-                state.scanning = true;
+                const mySession = state.scanSessionId;
 
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 const videoDevices = (devices || []).filter(d => d.kind === 'videoinput');
@@ -311,6 +305,20 @@
                     Swal.fire('Error', 'Tidak ada kamera ditemukan', 'error');
                     return;
                 }
+
+                let preferredDeviceId = null;
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: {
+                                ideal: state.scanFacingMode
+                            }
+                        }
+                    });
+                    const track = stream.getVideoTracks()[0];
+                    preferredDeviceId = track?.getSettings?.().deviceId || null;
+                    stream.getTracks().forEach(t => t.stop());
+                } catch (e) {}
 
                 const callback = (result, err) => {
                     if (!state.scanning) return;
@@ -332,26 +340,44 @@
                     }
                 }
 
-                const deviceIds = [...preferred, ...fallback].filter(Boolean);
+                const ordered = [];
+                if (preferredDeviceId) {
+                    ordered.push(preferredDeviceId);
+                }
+                for (let id of [...preferred, ...fallback]) {
+                    if (!id) continue;
+                    if (!ordered.includes(id)) ordered.push(id);
+                }
+
                 let lastErr = null;
-                for (let id of deviceIds) {
-                    try {
-                        await state.codeReader.decodeFromVideoDevice(id, 'reader', callback);
-                        lastErr = null;
-                        break;
-                    } catch (e) {
-                        lastErr = e;
-                        stopScanner();
-                        state.codeReader = new ZXing.BrowserQRCodeReader();
-                        state.scanning = true;
+
+                const tryDevice = (index) => {
+                    if (state.scanSessionId !== mySession) return;
+                    if (index >= ordered.length) {
+                        setLoading(false);
+                        const err = lastErr || new Error('No camera device available');
+                        throw err;
                     }
-                }
 
-                if (lastErr) {
-                    throw lastErr;
-                }
+                    const deviceId = ordered[index];
+                    stopScanner();
+                    state.scanSessionId = mySession;
+                    state.codeReader = new ZXing.BrowserQRCodeReader();
+                    state.scanning = true;
+                    setLoading(false);
 
-                setLoading(false);
+                    const p = state.codeReader.decodeFromVideoDevice(deviceId, 'reader', callback);
+                    if (p && typeof p.catch === 'function') {
+                        p.catch((e) => {
+                            if (state.scanSessionId !== mySession) return;
+                            lastErr = e;
+                            setLoading(true);
+                            tryDevice(index + 1);
+                        });
+                    }
+                };
+
+                tryDevice(0);
             } catch (e) {
                 setLoading(false);
                 const msg = e && e.message ? e.message : '';
@@ -553,12 +579,18 @@
             state.selfieFacingMode = 'user';
             elBtnCamFront.classList.add('active');
             elBtnCamBack.classList.remove('active');
+            if (state.selfieStream) {
+                startSelfieStream().catch(() => {});
+            }
         });
 
         elBtnCamBack.addEventListener('click', () => {
             state.selfieFacingMode = 'environment';
             elBtnCamBack.classList.add('active');
             elBtnCamFront.classList.remove('active');
+            if (state.selfieStream) {
+                startSelfieStream().catch(() => {});
+            }
         });
 
         elBtnStartSelfie.addEventListener('click', async () => {
@@ -575,7 +607,7 @@
             state.scanFacingMode = 'user';
             elBtnScanFront.classList.add('active');
             elBtnScanBack.classList.remove('active');
-            if (state.scanning && !state.kode_token) {
+            if (!state.kode_token) {
                 startScanner();
             }
         });
@@ -584,15 +616,20 @@
             state.scanFacingMode = 'environment';
             elBtnScanBack.classList.add('active');
             elBtnScanFront.classList.remove('active');
-            if (state.scanning && !state.kode_token) {
+            if (!state.kode_token) {
                 startScanner();
             }
         });
 
         $('#selfieModal').on('shown.bs.modal', async function() {
-            elBtnCamFront.classList.add('active');
-            elBtnCamBack.classList.remove('active');
             state.selfieFacingMode = state.selfieFacingMode || 'user';
+            if (state.selfieFacingMode === 'environment') {
+                elBtnCamBack.classList.add('active');
+                elBtnCamFront.classList.remove('active');
+            } else {
+                elBtnCamFront.classList.add('active');
+                elBtnCamBack.classList.remove('active');
+            }
             try {
                 await startSelfieStream();
             } catch (e) {}
