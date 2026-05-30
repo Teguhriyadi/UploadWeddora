@@ -36,7 +36,7 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
 
             if (!$nama && !$namaUndangan) continue;
 
-            if (stripos($namaUndangan, 'nama_undangan') !== false) continue;
+            if (stripos($namaUndangan, 'nama_di_undangan') !== false) continue;
 
             Guest::create([
                 'nama_tamu'       => $nama ?: null,
