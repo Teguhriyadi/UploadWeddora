@@ -32,11 +32,13 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
             $jenis        = $this->mapJenis($data[5] ?? null);
             $kehadiran    = $this->mapKehadiran($data[6] ?? null);
             $keterangan   = $this->mapKeterangan($data[7] ?? null);
-            $token        = isset($data[10]) ? strtoupper(trim($data[10])) : null;
+            $token        = isset($data[10]) ? strtoupper(trim($data[11])) : null;
 
-            if (!$nama && !$namaUndangan) continue;
+            if ($nama === '' && $namaUndangan === '') {
+                continue;
+            }
 
-            if (stripos($namaUndangan, 'nama_di_undangan') !== false) continue;
+            if (stripos($nama, 'nama_di_undangan') !== false) continue;
 
             Guest::create([
                 'nama_tamu'       => $nama ?: null,
