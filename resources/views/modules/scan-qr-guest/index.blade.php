@@ -49,6 +49,7 @@
             border-radius: 16px;
             overflow: hidden;
             background: #000;
+            position: relative;
         }
 
         #selfieVideo {
@@ -58,8 +59,33 @@
         }
 
         .selfie-preview-img {
-            max-width: 100%;
+            width: 100%;
+            max-width: 180px;
             border-radius: 12px;
+        }
+
+        .countdown-layer {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .countdown-number {
+            width: 96px;
+            height: 96px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.55);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 46px;
+            font-weight: 800;
+            line-height: 1;
         }
     </style>
 @endpush
@@ -79,6 +105,12 @@
 
                     <div id="scanSection">
                         <div class="mb-2 font-weight-bold text-dark">1) Scan QR Code</div>
+                        <div class="d-flex flex-wrap align-items-center justify-content-center mb-2" style="gap: 8px;">
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Pilih Kamera Scan">
+                                <button type="button" class="btn btn-outline-secondary active" id="btnScanFront">Kamera Depan</button>
+                                <button type="button" class="btn btn-outline-secondary" id="btnScanBack">Kamera Belakang</button>
+                            </div>
+                        </div>
                         <div class="video-shell mb-3">
                             <video id="reader" autoplay playsinline muted></video>
                             <div class="video-overlay">
@@ -157,6 +189,9 @@
                     <div class="selfie-shell">
                         <video id="selfieVideo" autoplay playsinline muted></video>
                         <canvas id="selfieCanvas" style="display:none;"></canvas>
+                        <div class="countdown-layer" id="selfieCountdownLayer">
+                            <div class="countdown-number" id="selfieCountdownNumber">3</div>
+                        </div>
                     </div>
 
                     <div class="mt-3 text-center" id="selfieModalPreview"></div>
@@ -164,7 +199,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Tutup</button>
                     <button type="button" class="btn btn-primary" id="btnCapture">Ambil Foto</button>
-                    <button type="button" class="btn btn-success d-none" id="btnUseSelfie">Gunakan Foto</button>
                 </div>
             </div>
         </div>
@@ -184,6 +218,7 @@
             selfieStream: null,
             selfieFacingMode: 'user',
             selfieDraft: null,
+            scanFacingMode: 'user',
         };
 
         const elReader = document.getElementById('reader');
@@ -206,7 +241,11 @@
         const elBtnCamBack = document.getElementById('btnCamBack');
         const elBtnStartSelfie = document.getElementById('btnStartSelfie');
         const elBtnCapture = document.getElementById('btnCapture');
-        const elBtnUseSelfie = document.getElementById('btnUseSelfie');
+        const elSelfieCountdownLayer = document.getElementById('selfieCountdownLayer');
+        const elSelfieCountdownNumber = document.getElementById('selfieCountdownNumber');
+
+        const elBtnScanFront = document.getElementById('btnScanFront');
+        const elBtnScanBack = document.getElementById('btnScanBack');
 
         function setStep(stepText) {
             elStepBadge.innerText = stepText;
@@ -258,9 +297,7 @@
                     return;
                 }
 
-                await navigator.mediaDevices.getUserMedia({
-                    video: true
-                }).then(stream => {
+                await navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
                     stream.getTracks().forEach(track => track.stop());
                 });
 
@@ -275,26 +312,62 @@
                     return;
                 }
 
-                let selectedDeviceId = videoDevices[0].deviceId;
-                for (let device of videoDevices) {
-                    const label = (device.label || '').toLowerCase();
-                    if (label.includes('back') || label.includes('environment') || label.includes('rear')) {
-                        selectedDeviceId = device.deviceId;
-                        break;
-                    }
-                }
-
-                state.codeReader.decodeFromVideoDevice(selectedDeviceId, 'reader', (result, err) => {
+                const callback = (result, err) => {
                     if (!state.scanning) return;
                     if (result && result.text) {
                         onScan(result.text);
                     }
-                });
+                };
+
+                const preferred = [];
+                const fallback = [];
+                for (let device of videoDevices) {
+                    const label = (device.label || '').toLowerCase();
+                    const isBack = label.includes('back') || label.includes('environment') || label.includes('rear');
+                    const isFront = label.includes('front') || label.includes('user') || label.includes('facetime');
+                    if (state.scanFacingMode === 'environment') {
+                        (isBack ? preferred : fallback).push(device.deviceId);
+                    } else {
+                        (isFront ? preferred : fallback).push(device.deviceId);
+                    }
+                }
+
+                const deviceIds = [...preferred, ...fallback].filter(Boolean);
+                let lastErr = null;
+                for (let id of deviceIds) {
+                    try {
+                        await state.codeReader.decodeFromVideoDevice(id, 'reader', callback);
+                        lastErr = null;
+                        break;
+                    } catch (e) {
+                        lastErr = e;
+                        stopScanner();
+                        state.codeReader = new ZXing.BrowserQRCodeReader();
+                        state.scanning = true;
+                    }
+                }
+
+                if (lastErr) {
+                    throw lastErr;
+                }
+
                 setLoading(false);
             } catch (e) {
                 setLoading(false);
                 const msg = e && e.message ? e.message : '';
                 const name = e && e.name ? e.name : 'Error';
+                if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+                    Swal.fire({
+                        title: 'Izin Kamera Diperlukan',
+                        html: `<small>${getCameraHelpText(e)}</small>`,
+                        icon: 'warning',
+                        confirmButtonText: 'Aktifkan Kamera'
+                    }).then(() => {
+                        startScanner();
+                    });
+                    return;
+                }
+
                 Swal.fire('Error', `${name}: Kamera QR gagal dibuka.<br><small>${msg}</small><br><small>${getCameraHelpText(e)}</small>`, 'error');
             }
         }
@@ -431,19 +504,38 @@
             await elSelfieVideo.play();
         }
 
-        function captureSelfieDraft() {
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function captureSelfieDraft() {
             if (!state.selfieStream) {
                 Swal.fire('Oops', 'Kamera belum aktif', 'warning');
                 return;
             }
+            elBtnCapture.disabled = true;
+            elBtnStartSelfie.disabled = true;
+
+            elSelfieCountdownLayer.style.display = 'flex';
+            for (let n = 3; n >= 1; n--) {
+                elSelfieCountdownNumber.innerText = String(n);
+                await wait(700);
+            }
+            elSelfieCountdownLayer.style.display = 'none';
+
             const ctx = elSelfieCanvas.getContext('2d');
             elSelfieCanvas.width = elSelfieVideo.videoWidth;
             elSelfieCanvas.height = elSelfieVideo.videoHeight;
             ctx.drawImage(elSelfieVideo, 0, 0, elSelfieCanvas.width, elSelfieCanvas.height);
             state.selfieDraft = elSelfieCanvas.toDataURL('image/png');
-            elSelfieModalPreview.innerHTML =
-                `<img src="${state.selfieDraft}" class="selfie-preview-img" alt="Preview selfie">`;
-            elBtnUseSelfie.classList.remove('d-none');
+            setSelfie(state.selfieDraft);
+            state.selfieDraft = null;
+            elSelfieModalPreview.innerHTML = '';
+            $('#selfieModal').modal('hide');
+            setStep('Step 3/3');
+
+            elBtnCapture.disabled = false;
+            elBtnStartSelfie.disabled = false;
         }
 
         elBtnScanNew.addEventListener('click', () => {
@@ -479,14 +571,22 @@
 
         elBtnCapture.addEventListener('click', captureSelfieDraft);
 
-        elBtnUseSelfie.addEventListener('click', () => {
-            if (!state.selfieDraft) return;
-            setSelfie(state.selfieDraft);
-            state.selfieDraft = null;
-            elSelfieModalPreview.innerHTML = '';
-            elBtnUseSelfie.classList.add('d-none');
-            $('#selfieModal').modal('hide');
-            setStep('Step 3/3');
+        elBtnScanFront.addEventListener('click', () => {
+            state.scanFacingMode = 'user';
+            elBtnScanFront.classList.add('active');
+            elBtnScanBack.classList.remove('active');
+            if (state.scanning && !state.kode_token) {
+                startScanner();
+            }
+        });
+
+        elBtnScanBack.addEventListener('click', () => {
+            state.scanFacingMode = 'environment';
+            elBtnScanBack.classList.add('active');
+            elBtnScanFront.classList.remove('active');
+            if (state.scanning && !state.kode_token) {
+                startScanner();
+            }
         });
 
         $('#selfieModal').on('shown.bs.modal', async function() {
@@ -502,7 +602,9 @@
             await stopSelfieStream();
             state.selfieDraft = null;
             elSelfieModalPreview.innerHTML = '';
-            elBtnUseSelfie.classList.add('d-none');
+            elSelfieCountdownLayer.style.display = 'none';
+            elBtnCapture.disabled = false;
+            elBtnStartSelfie.disabled = false;
         });
 
         document.addEventListener("click", async () => {
