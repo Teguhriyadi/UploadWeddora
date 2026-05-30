@@ -286,45 +286,49 @@
 
         function startScanner() {
 
+            console.log("START SCANNER");
+
             if (scanning) return;
 
             codeReader = new ZXing.BrowserQRCodeReader();
 
-            codeReader.getVideoInputDevices().then(videoInputDevices => {
+            codeReader.getVideoInputDevices()
+                .then(videoInputDevices => {
 
-                console.log(videoInputDevices);
+                    console.log("DEVICES:", videoInputDevices);
 
-                let selectedDeviceId = videoInputDevices[0].deviceId;
-
-                let backCamera = videoInputDevices.find(device =>
-                    device.label.toLowerCase().includes('back')
-                );
-
-                if (backCamera) {
-                    selectedDeviceId = backCamera.deviceId;
-                }
-
-                codeReader.decodeFromVideoDevice(
-                    selectedDeviceId,
-                    'reader',
-                    (result, err) => {
-
-                        if (result && scanning) {
-                            onScanSuccess(result.text);
-                        }
+                    if (videoInputDevices.length === 0) {
+                        alert("Tidak ada kamera ditemukan");
+                        return;
                     }
-                );
 
-                scanning = true;
-            }).catch(error => {
-                console.error(error);
+                    let selectedDeviceId = videoInputDevices[0].deviceId;
 
-                Swal.fire(
-                    'Error',
-                    'Kamera QR tidak dapat dibuka',
-                    'error'
-                );
-            });
+                    console.log("SELECTED:", selectedDeviceId);
+
+                    codeReader.decodeFromVideoDevice(
+                        selectedDeviceId,
+                        'reader',
+                        (result, err) => {
+
+                            if (result) {
+                                console.log("QR:", result.text);
+                            }
+
+                            if (err) {
+                                console.log("ZXING ERROR:", err);
+                            }
+                        }
+                    );
+
+                    scanning = true;
+                })
+                .catch(error => {
+
+                    console.error("SCAN ERROR:", error);
+
+                    alert(error.name + " : " + error.message);
+                });
         }
 
         function stopScanner() {
