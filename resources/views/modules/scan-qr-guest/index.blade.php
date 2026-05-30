@@ -86,12 +86,6 @@
                                     id="scanLoading"></div>
                             </div>
                         </div>
-
-                        <div class="d-flex flex-wrap justify-content-center" style="gap: 8px;">
-                            <button type="button" class="btn btn-primary btn-sm" id="btnStartScan">Mulai Scan</button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="btnRestartScan">Restart
-                                Scan</button>
-                        </div>
                     </div>
 
                     <div id="resultSection" class="d-none">
@@ -198,8 +192,6 @@
         const elResultSection = document.getElementById('resultSection');
         const elGuestInfo = document.getElementById('guestInfo');
         const elStepBadge = document.getElementById('stepBadge');
-        const elBtnStartScan = document.getElementById('btnStartScan');
-        const elBtnRestartScan = document.getElementById('btnRestartScan');
         const elBtnScanNew = document.getElementById('btnScanNew');
         const elBtnSubmit = document.getElementById('btnSubmit');
         const elBtnRemoveSelfie = document.getElementById('btnRemoveSelfie');
@@ -275,15 +267,16 @@
                 state.codeReader = new ZXing.BrowserQRCodeReader();
                 state.scanning = true;
 
-                const devices = await ZXing.BrowserQRCodeReader.listVideoInputDevices();
-                if (!devices || devices.length === 0) {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = (devices || []).filter(d => d.kind === 'videoinput');
+                if (!videoDevices || videoDevices.length === 0) {
                     setLoading(false);
                     Swal.fire('Error', 'Tidak ada kamera ditemukan', 'error');
                     return;
                 }
 
-                let selectedDeviceId = devices[0].deviceId;
-                for (let device of devices) {
+                let selectedDeviceId = videoDevices[0].deviceId;
+                for (let device of videoDevices) {
                     const label = (device.label || '').toLowerCase();
                     if (label.includes('back') || label.includes('environment') || label.includes('rear')) {
                         selectedDeviceId = device.deviceId;
@@ -453,15 +446,6 @@
             elBtnUseSelfie.classList.remove('d-none');
         }
 
-        elBtnRestartScan.addEventListener('click', () => {
-            resetFlow();
-            startScanner();
-        });
-
-        elBtnStartScan.addEventListener('click', () => {
-            startScanner();
-        });
-
         elBtnScanNew.addEventListener('click', () => {
             resetFlow();
             startScanner();
@@ -532,5 +516,6 @@
         });
 
         setStep('Step 1/3');
+        startScanner();
     </script>
 @endpush
