@@ -34,15 +34,11 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
             $keterangan   = $this->mapKeterangan($data[7] ?? null);
             $token        = isset($data[10]) ? strtoupper(trim($data[10])) : null;
 
-            // ✅ RULE BARU:
-            // kalau dua-duanya kosong → skip
             if (!$nama && !$namaUndangan) continue;
 
-            // optional: skip header noise
-            if (stripos($nama, 'nama') !== false) continue;
+            if (stripos($namaUndangan, 'nama_undangan') !== false) continue;
 
             Guest::create([
-                // kalau nama kosong, pakai null (atau bisa fallback ke namaUndangan kalau mau)
                 'nama_tamu'       => $nama ?: null,
                 'nama_undangan'   => $namaUndangan ?: null,
                 'status_undangan' => $status,
