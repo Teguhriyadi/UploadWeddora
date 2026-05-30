@@ -90,7 +90,7 @@
 
 @push('content-modules')
     <div class="row justify-content-center">
-        <div class="col-xl-12 col-lg-9 col-md-10">
+        <div class="col-md-12">
             <div class="card shadow mb-4">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
