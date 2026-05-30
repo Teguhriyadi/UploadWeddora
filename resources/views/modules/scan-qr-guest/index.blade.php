@@ -148,7 +148,8 @@
             <h5 class="mt-3">🔍 Scan QR Code</h5>
             <p class="text-muted">Arahkan kamera ke QR Code tamu</p>
 
-            <video id="reader" style="width:100%; max-width:500px; border-radius:15px;"></video>
+            <div id="reader" style="width:100%; max-width:500px; margin:auto;">
+            </div>
 
             <input type="hidden" id="selfie">
 
@@ -266,9 +267,14 @@
             stopCamera();
 
             document.getElementById("cameraArea").style.display = "none";
+
+            startScanner();
         }
 
         function resetSelfie() {
+
+            stopScanner();
+
             document.getElementById("selfie").value = "";
             document.getElementById("previewSelfie").innerHTML = "";
             document.getElementById("cameraArea").style.display = "block";
@@ -280,21 +286,44 @@
 
         function startScanner() {
 
+            if (scanning) return;
+
             codeReader = new ZXing.BrowserQRCodeReader();
 
             codeReader.getVideoInputDevices().then(videoInputDevices => {
 
-                let selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
+                console.log(videoInputDevices);
 
-                codeReader.decodeFromVideoDevice(selectedDeviceId, 'reader', (result, err) => {
+                let selectedDeviceId = videoInputDevices[0].deviceId;
 
-                    if (result && scanning) {
-                        onScanSuccess(result.text);
+                let backCamera = videoInputDevices.find(device =>
+                    device.label.toLowerCase().includes('back')
+                );
+
+                if (backCamera) {
+                    selectedDeviceId = backCamera.deviceId;
+                }
+
+                codeReader.decodeFromVideoDevice(
+                    selectedDeviceId,
+                    'reader',
+                    (result, err) => {
+
+                        if (result && scanning) {
+                            onScanSuccess(result.text);
+                        }
                     }
-
-                });
+                );
 
                 scanning = true;
+            }).catch(error => {
+                console.error(error);
+
+                Swal.fire(
+                    'Error',
+                    'Kamera QR tidak dapat dibuka',
+                    'error'
+                );
             });
         }
 
@@ -352,6 +381,5 @@
         }
 
         startCamera();
-        startScanner();
     </script>
 @endpush
