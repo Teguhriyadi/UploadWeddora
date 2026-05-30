@@ -60,12 +60,10 @@
         #reader {
             width: 100%;
             max-width: 500px;
-            margin: auto;
-            min-height: 350px;
+            height: 350px;
+            background: black;
+            object-fit: cover;
             border-radius: 15px;
-            overflow: hidden;
-            border: 3px dashed #0d6efd;
-            padding: 10px;
         }
 
         #countdown {
@@ -275,7 +273,9 @@
 
             document.getElementById("cameraArea").style.display = "none";
 
-            startScanner();
+            setTimeout(() => {
+                startScanner();
+            }, 1000);
         }
 
         function resetSelfie() {
@@ -291,57 +291,74 @@
             }, 500);
         }
 
-        function startScanner() {
+        async function startScanner() {
 
-            if (scanning) return;
+            try {
 
-            scanning = true;
+                stopScanner();
 
-            codeReader = new ZXing.BrowserQRCodeReader();
+                const qrVideo = document.getElementById('reader');
 
-            codeReader.decodeFromConstraints({
+                const stream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: {
                             ideal: "environment"
                         }
                     }
-                },
-                'reader',
-                (result, err) => {
+                });
 
-                    if (result) {
+                qrVideo.srcObject = stream;
 
-                        console.log("QR DETECTED:", result.text);
+                await qrVideo.play();
 
-                        onScanSuccess(result.text);
+                codeReader = new ZXing.BrowserQRCodeReader();
+
+                scanning = true;
+
+                codeReader.decodeFromVideoElement(
+                    qrVideo,
+                    (result, err) => {
+
+                        if (result && scanning) {
+
+                            console.log(result.text);
+
+                            onScanSuccess(result.text);
+                        }
                     }
+                );
 
-                    if (err &&
-                        !(err instanceof ZXing.NotFoundException)) {
-
-                        console.log(err);
-                    }
-                }
-            ).catch(error => {
-
-                scanning = false;
+            } catch (error) {
 
                 console.error(error);
 
                 Swal.fire(
                     'Error',
-                    error.message,
+                    'Kamera QR gagal dibuka',
                     'error'
                 );
-            });
+            }
         }
 
         function stopScanner() {
 
             scanning = false;
 
+            const qrVideo = document.getElementById('reader');
+
+            if (qrVideo.srcObject) {
+
+                qrVideo.srcObject
+                    .getTracks()
+                    .forEach(track => track.stop());
+
+                qrVideo.srcObject = null;
+            }
+
             if (codeReader) {
+
                 codeReader.reset();
+
                 codeReader = null;
             }
         }
