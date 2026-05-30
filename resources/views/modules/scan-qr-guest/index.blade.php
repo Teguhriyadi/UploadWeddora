@@ -148,8 +148,8 @@
             <h5 class="mt-3">🔍 Scan QR Code</h5>
             <p class="text-muted">Arahkan kamera ke QR Code tamu</p>
 
-            <div id="reader" style="width:100%; max-width:500px; margin:auto;">
-            </div>
+            <video id="reader" autoplay playsinline muted style="width:100%;max-width:500px;border-radius:15px;">
+            </video>
 
             <input type="hidden" id="selfie">
 
@@ -375,7 +375,7 @@
 
                     setTimeout(() => {
                         resetSelfie();
-                        startScanner();
+                        // startScanner();
                     }, 2000);
                 });
         }
