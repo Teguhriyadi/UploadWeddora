@@ -88,6 +88,7 @@
                         </div>
 
                         <div class="d-flex flex-wrap justify-content-center" style="gap: 8px;">
+                            <button type="button" class="btn btn-primary btn-sm" id="btnStartScan">Mulai Scan</button>
                             <button type="button" class="btn btn-outline-primary btn-sm" id="btnRestartScan">Restart
                                 Scan</button>
                         </div>
@@ -197,6 +198,7 @@
         const elResultSection = document.getElementById('resultSection');
         const elGuestInfo = document.getElementById('guestInfo');
         const elStepBadge = document.getElementById('stepBadge');
+        const elBtnStartScan = document.getElementById('btnStartScan');
         const elBtnRestartScan = document.getElementById('btnRestartScan');
         const elBtnScanNew = document.getElementById('btnScanNew');
         const elBtnSubmit = document.getElementById('btnSubmit');
@@ -222,6 +224,23 @@
             elScanLoading.style.display = isLoading ? 'inline-block' : 'none';
         }
 
+        function getCameraHelpText(error) {
+            if (!window.isSecureContext) {
+                return 'Akses kamera butuh HTTPS. Buka halaman lewat link HTTPS (misalnya ngrok HTTPS) atau localhost.';
+            }
+            const name = (error && error.name) ? error.name : '';
+            if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+                return 'Izin kamera ditolak. Coba allow kamera di browser, lalu refresh halaman.';
+            }
+            if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+                return 'Kamera tidak ditemukan. Pastikan perangkat punya kamera dan tidak sedang dipakai aplikasi lain.';
+            }
+            if (name === 'NotReadableError' || name === 'TrackStartError') {
+                return 'Kamera sedang dipakai aplikasi lain atau gagal dibuka. Tutup aplikasi kamera lain lalu coba lagi.';
+            }
+            return 'Coba tap "Mulai Scan" lagi. Kalau tetap gagal, cek permission kamera di browser.';
+        }
+
         function stopScanner() {
             state.scanning = false;
             if (state.codeReader) {
@@ -239,12 +258,26 @@
         async function startScanner() {
             try {
                 stopScanner();
+                setLoading(true);
+
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    setLoading(false);
+                    Swal.fire('Error', 'Browser tidak mendukung kamera (getUserMedia).', 'error');
+                    return;
+                }
+
+                await navigator.mediaDevices.getUserMedia({
+                    video: true
+                }).then(stream => {
+                    stream.getTracks().forEach(track => track.stop());
+                });
+
                 state.codeReader = new ZXing.BrowserQRCodeReader();
                 state.scanning = true;
-                setLoading(false);
 
                 const devices = await ZXing.BrowserQRCodeReader.listVideoInputDevices();
                 if (!devices || devices.length === 0) {
+                    setLoading(false);
                     Swal.fire('Error', 'Tidak ada kamera ditemukan', 'error');
                     return;
                 }
@@ -264,8 +297,12 @@
                         onScan(result.text);
                     }
                 });
+                setLoading(false);
             } catch (e) {
-                Swal.fire('Error', 'Kamera QR gagal dibuka', 'error');
+                setLoading(false);
+                const msg = e && e.message ? e.message : '';
+                const name = e && e.name ? e.name : 'Error';
+                Swal.fire('Error', `${name}: Kamera QR gagal dibuka.<br><small>${msg}</small><br><small>${getCameraHelpText(e)}</small>`, 'error');
             }
         }
 
@@ -421,6 +458,10 @@
             startScanner();
         });
 
+        elBtnStartScan.addEventListener('click', () => {
+            startScanner();
+        });
+
         elBtnScanNew.addEventListener('click', () => {
             resetFlow();
             startScanner();
@@ -490,6 +531,6 @@
             once: true
         });
 
-        startScanner();
+        setStep('Step 1/3');
     </script>
 @endpush
