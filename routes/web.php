@@ -50,6 +50,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::post("/guest/upload-file", [GuestController::class, 'upload_file']);
         Route::resource("guest", GuestController::class);
 
+        Route::post("scan-qr-guest/validate", [ScanQRGuestController::class, "validateToken"]);
         Route::resource("scan-qr-guest", ScanQRGuestController::class);
 
         Route::prefix("history-guest")->group(function() {

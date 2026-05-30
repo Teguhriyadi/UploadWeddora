@@ -18,6 +18,36 @@ class ScanQRGuestController extends Controller
         return view("modules.scan-qr-guest.index");
     }
 
+    public function validateToken(Request $request)
+    {
+        $guest = Guest::where('kode_token', '=', $request->kode_token, 'and')->first();
+
+        if (!$guest) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'QR Code tidak valid'
+            ]);
+        }
+
+        $sudahCheckin = GuestCheckin::where('guest_id', '=', $guest->id, 'and')->exists();
+
+        if ($sudahCheckin) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kode sudah digunakan'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'guest' => [
+                'id' => $guest->id,
+                'nama_tamu' => $guest->nama_tamu,
+                'kode_token' => $guest->kode_token,
+            ]
+        ]);
+    }
+
     public function poster(string $kode_token)
     {
         $guest = Guest::where('kode_token', '=', $kode_token, 'and')->first();
@@ -62,7 +92,11 @@ class ScanQRGuestController extends Controller
             ]);
         }
 
-        $fileName = ImageHelper::uploadBase64ToS3($request->selfie);
+        if ($request->selfie) {
+            $fileName = ImageHelper::uploadBase64ToS3($request->selfie);
+        } else {
+            $fileName = null;
+        }
 
         GuestCheckin::create([
             'guest_id' => $guest->id,
