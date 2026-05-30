@@ -26,7 +26,7 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
             $data = array_values($row->toArray());
 
             $nama         = trim($data[1] ?? '');
-            $namaUndangan = trim($data[2] ?? null);
+            $namaUndangan = trim($data[2] ?? '');
             $status       = $this->mapStatus($data[3] ?? null);
             $relasi       = $this->mapRelasi($data[4] ?? null);
             $jenis        = $this->mapJenis($data[5] ?? null);
