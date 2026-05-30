@@ -89,6 +89,14 @@
             animation: fadeIn 0.5s ease-in-out;
         }
 
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            height: 350px;
+            background: #000;
+            border-radius: 15px;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -148,8 +156,7 @@
             <h5 class="mt-3">🔍 Scan QR Code</h5>
             <p class="text-muted">Arahkan kamera ke QR Code tamu</p>
 
-            <video id="reader" autoplay playsinline muted style="width:100%;max-width:500px;border-radius:15px;">
-            </video>
+            <video id="reader" autoplay playsinline muted></video>
 
             <input type="hidden" id="selfie">
 
@@ -286,55 +293,56 @@
 
         function startScanner() {
 
-            console.log("START SCANNER");
-
             if (scanning) return;
+
+            scanning = true;
 
             codeReader = new ZXing.BrowserQRCodeReader();
 
-            codeReader.getVideoInputDevices()
-                .then(videoInputDevices => {
+            codeReader.decodeFromConstraints({
+                    video: {
+                        facingMode: {
+                            ideal: "environment"
+                        }
+                    }
+                },
+                'reader',
+                (result, err) => {
 
-                    console.log("DEVICES:", videoInputDevices);
+                    if (result) {
 
-                    if (videoInputDevices.length === 0) {
-                        alert("Tidak ada kamera ditemukan");
-                        return;
+                        console.log("QR DETECTED:", result.text);
+
+                        onScanSuccess(result.text);
                     }
 
-                    let selectedDeviceId = videoInputDevices[0].deviceId;
+                    if (err &&
+                        !(err instanceof ZXing.NotFoundException)) {
 
-                    console.log("SELECTED:", selectedDeviceId);
+                        console.log(err);
+                    }
+                }
+            ).catch(error => {
 
-                    codeReader.decodeFromVideoDevice(
-                        selectedDeviceId,
-                        'reader',
-                        (result, err) => {
+                scanning = false;
 
-                            if (result) {
-                                console.log("QR:", result.text);
-                            }
+                console.error(error);
 
-                            if (err) {
-                                console.log("ZXING ERROR:", err);
-                            }
-                        }
-                    );
-
-                    scanning = true;
-                })
-                .catch(error => {
-
-                    console.error("SCAN ERROR:", error);
-
-                    alert(error.name + " : " + error.message);
-                });
+                Swal.fire(
+                    'Error',
+                    error.message,
+                    'error'
+                );
+            });
         }
 
         function stopScanner() {
-            if (codeReader && scanning) {
+
+            scanning = false;
+
+            if (codeReader) {
                 codeReader.reset();
-                scanning = false;
+                codeReader = null;
             }
         }
 
