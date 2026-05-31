@@ -36,9 +36,9 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                    <h1 class="h3 mb-4 text-gray-800">
-                        @stack("title-modules")
-                    </h1>
+                    {{-- <h1 class="h3 mb-4 text-gray-800">
+                        @stack("title-content-modules")
+                    </h1> --}}
 
                     @stack("content-modules")
                 </div>

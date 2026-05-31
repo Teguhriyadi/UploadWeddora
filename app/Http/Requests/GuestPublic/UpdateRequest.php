@@ -18,6 +18,8 @@ class UpdateRequest extends FormRequest
                 'nullable',
                 'regex:/^[A-Za-z\s]+$/'
             ],
+            'relasi' => 'required',
+            'keterangan' => 'required',
             'alamat' => 'nullable'
         ];
     }
@@ -27,7 +29,9 @@ class UpdateRequest extends FormRequest
         return [
             'nama.required' => 'Nama Tamu Wajib Diisi',
             'nomor_handphone.regex' => 'No. Handphone harus berupa nomor yang valid (contoh: 08123456789 atau +628123456789)',
-            'pekerjaan.regex' => 'Pekerjaan hanya boleh berupa huruf'
+            'pekerjaan.regex' => 'Pekerjaan hanya boleh berupa huruf',
+            'relasi.required' => 'Relasi Wajib Diisi',
+            'keterangan.required' => 'Keterangan Wajib Diisi'
         ];
     }
 }

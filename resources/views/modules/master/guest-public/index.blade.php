@@ -77,13 +77,15 @@
                     <thead>
                         <tr>
                             <th class="text-center">No.</th>
+                            <th class="text-center">Aksi</th>
                             <th>Nama Tamu</th>
                             <th>No. Handphone</th>
                             <th>Pekerjaan</th>
                             <th>Alamat</th>
                             <th class="text-center">Waktu Checkin</th>
                             <th class="text-center">Jumlah Kedatangan</th>
-                            <th class="text-center">Aksi</th>
+                            <th class="text-center">Relasi</th>
+                            <th class="text-center">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -117,6 +119,12 @@
                         className: 'text-center'
                     },
                     {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                    {
                         data: 'nama',
                         name: 'nama'
                     },
@@ -143,9 +151,13 @@
                         className: 'text-center'
                     },
                     {
-                        data: 'action',
-                        orderable: false,
-                        searchable: false,
+                        data: 'relasi',
+                        name: 'relasi',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'keterangan',
+                        name: 'keterangan',
                         className: 'text-center'
                     }
                 ]

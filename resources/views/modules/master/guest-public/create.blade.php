@@ -148,70 +148,122 @@
                     @csrf
                     <input type="hidden" name="selfie" id="selfie">
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label class="form-label">
-                                        Nama Tamu <span class="text-danger">*</span>
-                                    </label>
-                                    <input type="text" class="form-control @error('nama') is-invalid @enderror"
-                                        name="nama" placeholder="Masukkan Nama Tamu" value="{{ old('nama') }}">
-                                    @error('nama')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">
-                                        No. Handphone
-                                    </label>
-                                    <input type="text"
-                                        class="form-control @error('nomor_handphone') is-invalid @enderror"
-                                        name="nomor_handphone" placeholder="Masukkan Nomor Handphone"
-                                        value="{{ old('nomor_handphone') }}">
+                        <div class="mb-3 row">
+                            <label for="nama" class="col-sm-2 form-label">
+                                Nama Tamu <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control @error('nama') is-invalid @enderror"
+                                    name="nama" placeholder="Masukkan Nama Tamu" value="{{ old('nama') }}">
+                                @error('nama')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="nomor_handphone" class="col-sm-2 form-label">
+                                No. Handphone
+                            </label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control @error('nomor_handphone') is-invalid @enderror"
+                                    name="nomor_handphone" placeholder="Masukkan Nomor Handphone"
+                                    value="{{ old('nomor_handphone') }}">
 
-                                    @error('nomor_handphone')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">
-                                        Pekerjaan
-                                    </label>
-                                    <input type="text" class="form-control @error('pekerjaan') is-invalid @enderror"
-                                        name="pekerjaan" placeholder="Masukkan Pekerjaan" value="{{ old('pekerjaan') }}">
+                                @error('nomor_handphone')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="pekerjaan" class="col-sm-2 form-label">
+                                Pekerjaan
+                            </label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control @error('pekerjaan') is-invalid @enderror"
+                                    name="pekerjaan" placeholder="Masukkan Pekerjaan" value="{{ old('pekerjaan') }}">
 
-                                    @error('pekerjaan')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">
-                                        Jumlah Kedatangan
-                                        <small class="text-danger">*</small>
-                                    </label>
-                                    <input type="number" min="0"
-                                        class="form-control @error('jumlah_kedatangan') is-invalid @enderror"
-                                        name="jumlah_kedatangan" placeholder="Masukkan Jumlah Kedatangan"
-                                        value="{{ old('jumlah_kedatangan') }}">
+                                @error('pekerjaan')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="jumlah_kedatangan" class="col-sm-2 form-label">
+                                Jumlah Kedatangan <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-4">
+                                <input type="number" min="0"
+                                    class="form-control @error('jumlah_kedatangan') is-invalid @enderror"
+                                    name="jumlah_kedatangan" placeholder="Masukkan Jumlah Kedatangan"
+                                    value="{{ old('jumlah_kedatangan') }}">
 
-                                    @error('jumlah_kedatangan')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">
-                                        Alamat
-                                    </label>
-                                    <textarea name="alamat" class="form-control" rows="4" placeholder="Masukkan Alamat">{{ old('alamat') }}</textarea>
-                                </div>
+                                @error('jumlah_kedatangan')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="relasi" class="col-sm-2 form-label">
+                                Relasi <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-4">
+                                <select name="relasi" class="form-control @error('relasi') is-invalid @enderror"
+                                    id="relasi">
+                                    <option value="">- Pilih -</option>
+                                    <option {{ old('Saudara') == "Saudara" ? 'selected' : '' }} value="Saudara">Saudara</option>
+                                    <option {{ old('Teman Kerja') == "Teman Kerja" ? 'selected' : '' }} value="Teman Kerja">Teman Kerja</option>
+                                    <option {{ old('Teman SMA') == "Teman SMA" ? 'selected' : '' }} value="Teman SMA">Teman SMA</option>
+                                    <option {{ old('Relasi Ortu') == "Relasi Ortu" ? 'selected' : '' }} value="Relasi Ortu">Relasi Ortu</option>
+                                    <option {{ old('Teman Kuliah') == "Teman Kuliah" ? 'selected' : '' }} value="Teman Kuliah">Teman Kuliah</option>
+                                    <option {{ old('Atasan') == "Atasan" ? 'selected' : '' }} value="Atasan">Atasan</option>
+                                </select>
+
+                                @error('relasi')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="keterangan" class="col-sm-2 form-label">
+                                Keterangan <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-4">
+                                <select name="keterangan" class="form-control @error('keterangan') is-invalid @enderror"
+                                    id="keterangan">
+                                    <option value="">- Pilih -</option>
+                                    <option {{ old('keterangan') == 'CPP' ? 'selected' : '' }} value="CPW">CPW</option>
+                                    <option {{ old('keterangan') == 'CPW' ? 'selected' : '' }} value="CPP">CPP</option>
+                                </select>
+
+                                @error('keterangan')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 form-label">
+                                Alamat
+                            </label>
+                            <div class="col-sm-6">
+                                <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" rows="4"
+                                    placeholder="Masukkan Alamat">{{ old('alamat') }}</textarea>
+                                @error('alamat')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
                         <div class="row">

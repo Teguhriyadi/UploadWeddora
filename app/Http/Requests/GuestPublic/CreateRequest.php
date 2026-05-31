@@ -18,6 +18,8 @@ class CreateRequest extends FormRequest
                 'nullable',
                 'regex:/^[A-Za-z\s]+$/'
             ],
+            'relasi' => 'required',
+            'keterangan' => 'required',
             "jumlah_kedatangan" => "required",
             'alamat' => 'nullable'
         ];
@@ -30,6 +32,8 @@ class CreateRequest extends FormRequest
             'nomor_handphone.regex' => 'No. Handphone harus berupa nomor yang valid (contoh: 08123456789 atau +628123456789)',
             'pekerjaan.regex' => 'Pekerjaan hanya boleh berupa huruf',
             'jumlah_kedatangan.required' => 'Jumlah Kedatangan Wajib Diisi',
+            'relasi.required' => 'Relasi Wajib Diisi',
+            'keterangan.required' => 'Keterangan Wajib Diisi'
         ];
     }
 }

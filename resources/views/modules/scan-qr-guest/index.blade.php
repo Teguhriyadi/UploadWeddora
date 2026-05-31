@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@push("title-modules", "Scan Kehadiran Tamu")
+
 @push('style-css')
     <style>
         .card {

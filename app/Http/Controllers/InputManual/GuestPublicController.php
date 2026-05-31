@@ -92,6 +92,8 @@ class GuestPublicController extends Controller
                 "nama" => $request['nama'],
                 "nomor_handphone" => $request["nomor_handphone"],
                 "pekerjaan" => $request["pekerjaan"],
+                "relasi" => $request["relasi"],
+                "keterangan" => $request["keterangan"],
                 "alamat" => $request["alamat"],
                 "waktu_checkin" => now(),
                 "users_id" => Auth::user()->id,
