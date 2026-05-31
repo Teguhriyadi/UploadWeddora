@@ -61,7 +61,9 @@ class GuestController extends Controller
                         </select>
                     ';
                 })
-
+                ->addColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" class="row-checkbox" value="' . $row->id . '">';
+                })
                 ->addColumn('action', function ($row) {
                     if (Auth::user()->role->nama_role == "Administrator") {
                         return '
@@ -90,7 +92,7 @@ class GuestController extends Controller
                     }
                 })
 
-                ->rawColumns(['status', 'action', 'kehadiran', 'status_undangan'])
+                ->rawColumns(['status', 'action', 'kehadiran', 'status_undangan', 'checkbox'])
                 ->make(true);
         }
 
@@ -355,5 +357,15 @@ class GuestController extends Controller
             'event_name',
             'event_date'
         ));
+    }
+
+    public function delete_selected(Request $request)
+    {
+        Guest::whereIn('id', $request->ids)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil dihapus'
+        ]);
     }
 }

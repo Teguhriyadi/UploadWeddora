@@ -80,6 +80,10 @@
                 <a href="{{ url('/modules/guest/generate-all') }}" class="btn btn-success btn-sm">
                     <i class="fa fa-download"></i> Generate Kategori Cetak
                 </a>
+
+                <button type="button" class="btn btn-danger btn-sm" id="btnDeleteSelected">
+                    <i class="fa fa-trash"></i> Hapus Terpilih
+                </button>
             </div>
         @endif
         <div class="card-body">
@@ -87,6 +91,9 @@
                 <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th class="text-center">
+                                <input type="checkbox" id="checkAll">
+                            </th>
                             <th class="text-center">No.</th>
                             <th class="text-center">Aksi</th>
                             <th class="text-center">Kategori</th>
@@ -168,6 +175,12 @@
                 ],
                 ajax: "{{ url('/modules/guest') }}",
                 columns: [{
+                        data: 'checkbox',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                    {
                         data: 'DT_RowIndex',
                         orderable: false,
                         searchable: false,
@@ -275,6 +288,65 @@
                 } else {
                     select.val(select.data('old'));
                 }
+            });
+
+        });
+
+        $(document).on('change', '#checkAll', function() {
+            $('.row-checkbox').prop('checked', $(this).is(':checked'));
+        });
+
+        $('#btnDeleteSelected').click(function() {
+
+            let ids = [];
+
+            $('.row-checkbox:checked').each(function() {
+                ids.push($(this).val());
+            });
+
+            if (ids.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Pilih minimal 1 data'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Hapus Data?',
+                text: 'Data yang dipilih akan dihapus permanen',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: "{{ url('/modules/guest/delete-selected') }}",
+                        type: "POST",
+                        data: {
+                            ids: ids,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message
+                            });
+
+                            $('#checkAll').prop('checked', false);
+
+                            $('#dataTable').DataTable().ajax.reload();
+                        }
+                    });
+
+                }
+
             });
 
         });

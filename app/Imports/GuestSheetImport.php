@@ -4,10 +4,10 @@ namespace App\Imports;
 
 use App\Models\Event;
 use App\Models\Guest;
+use App\Models\Kategori;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 
 class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStartRow
@@ -32,7 +32,10 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
             $jenis        = $this->mapJenis($data[5] ?? null);
             $kehadiran    = $this->mapKehadiran($data[6] ?? null);
             $keterangan   = $this->mapKeterangan($data[7] ?? null);
-            $token        = isset($data[10]) ? strtoupper(trim($data[11])) : null;
+            $kategori     = isset($data[8]) ? strtoupper(trim($data[8])) : null;
+            $token        = isset($data[11]) ? strtoupper(trim($data[11])) : null;
+
+            $cek_kategori = Kategori::where('nama_kategori', "VIP")->first();
 
             if ($nama === '' && $namaUndangan === '') {
                 continue;
@@ -49,7 +52,8 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
                 'kehadiran'       => $kehadiran,
                 'keterangan'      => $keterangan,
                 'kode_token'      => $token,
-                'event_id'        => $event->id
+                'event_id'        => $event->id,
+                'kategori_id'     => empty($kategori) ? null : $cek_kategori->id
             ]);
         }
     }

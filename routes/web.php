@@ -45,6 +45,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::get("/guest/download", [GuestController::class, "download"]);
         Route::get("/guest/generate-all", [GuestController::class, "generate_all"]);
 
+        Route::post("/guest/delete-selected", [GuestController::class, "delete_selected"]);
         Route::post("/guest/update-status-undangan", [GuestController::class, "update_status_undangan"]);
         Route::post("/guest/update-kehadiran", [GuestController::class, "update_kehadiran"]);
         Route::post("/guest/upload-file", [GuestController::class, 'upload_file']);
