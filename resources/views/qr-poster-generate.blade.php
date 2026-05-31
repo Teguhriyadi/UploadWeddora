@@ -249,7 +249,7 @@
             </header>
 
             <section class="qr">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=1111">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data={{ $guest->kode_token }}">
             </section>
 
             <section class="recipient">

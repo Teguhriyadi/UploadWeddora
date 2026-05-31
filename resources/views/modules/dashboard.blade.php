@@ -196,75 +196,78 @@
                             id="tamu-undangan">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-compact" id="tableInvitation">
-                                <thead>
-                                    <tr>
-                                        <th>Kode Token</th>
-                                        <th>Nama</th>
-                                        <th>Nama di Undangan</th>
-                                        <th>Keterangan</th>
-                                        <th>Kategori</th>
-                                        <th>Waktu Kehadiran</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($guest_invitation as $invitation)
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                <button type="button" class="btn btn-link p-0 font-weight-bold"
-                                                    data-copy-token="{{ $invitation->guest->kode_token }}">
-                                                    {{ $invitation->guest->kode_token }}
-                                                </button>
-                                            </td>
-                                            <td>{{ $invitation->guest->nama_tamu }}</td>
-                                            <td>{{ $invitation->guest->nama_undangan }}</td>
-                                            <td>{{ $invitation->guest->keterangan }}</td>
-                                            <td>{{ $invitation->guest->kategori ? $invitation->guest->kategori->nama_kategori : '' }}</td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($invitation->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i') }}
-                                            </td>
+                                            <th>Kode Token</th>
+                                            <th>Nama</th>
+                                            <th>Nama di Undangan</th>
+                                            <th>Keterangan</th>
+                                            <th>Kategori</th>
+                                            <th>Relasi</th>
+                                            <th>Waktu Kehadiran</th>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5">
-                                                <strong>Riwayat Belum Ada</strong>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($guest_invitation as $invitation)
+                                            <tr>
+                                                <td>
+                                                    <button type="button" class="btn btn-link p-0 font-weight-bold"
+                                                        data-copy-token="{{ $invitation->guest->kode_token }}">
+                                                        {{ $invitation->guest->kode_token }}
+                                                    </button>
+                                                </td>
+                                                <td>{{ $invitation->guest->nama_tamu }}</td>
+                                                <td>{{ $invitation->guest->nama_undangan }}</td>
+                                                <td>{{ $invitation->guest->keterangan }}</td>
+                                                <td>{{ $invitation->guest->kategori ? $invitation->guest->kategori->nama_kategori : '' }}
+                                                </td>
+                                                <td>{{ $invitation->guest->relasi }}</td>
+                                                <td>
+                                                    {{ \Carbon\Carbon::parse($invitation->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i') }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7">
+                                                    <strong>Riwayat Belum Ada</strong>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
                         <div class="tab-pane fade {{ request('tab') == 'tamu-luar' ? 'show active' : '' }}" id="tamu-luar">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-compact" id="tablePublic">
-                                <thead>
-                                    <tr>
-                                        <th>Nama</th>
-                                        <th>No. Handphone</th>
-                                        <th>Alamat</th>
-                                        <th>Pekerjaan</th>
-                                        <th>Waktu Kehadiran</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($guest_public as $public)
+                                    <thead>
                                         <tr>
-                                            <td>{{ $public->nama }}</td>
-                                            <td>{{ $public->nomor_handphone }}</td>
-                                            <td>{{ $public->alamat }}</td>
-                                            <td>{{ $public->pekerjaan ?? '-' }}</td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($public->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i') }}
-                                            </td>
+                                            <th>Nama</th>
+                                            <th>No. Handphone</th>
+                                            <th>Alamat</th>
+                                            <th>Pekerjaan</th>
+                                            <th>Waktu Kehadiran</th>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5">
-                                                <strong>Riwayat Belum Ada</strong>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($guest_public as $public)
+                                            <tr>
+                                                <td>{{ $public->nama }}</td>
+                                                <td>{{ $public->nomor_handphone }}</td>
+                                                <td>{{ $public->alamat }}</td>
+                                                <td>{{ $public->pekerjaan ?? '-' }}</td>
+                                                <td>
+                                                    {{ \Carbon\Carbon::parse($public->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i') }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5">
+                                                    <strong>Riwayat Belum Ada</strong>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
