@@ -200,7 +200,8 @@
                                     <tr>
                                         <th>Kode Token</th>
                                         <th>Nama</th>
-                                        <th>Keluarga</th>
+                                        <th>Nama di Undangan</th>
+                                        <th>Keterangan</th>
                                         <th>Kategori</th>
                                         <th>Waktu Kehadiran</th>
                                     </tr>
@@ -215,12 +216,9 @@
                                                 </button>
                                             </td>
                                             <td>{{ $invitation->guest->nama_tamu }}</td>
-                                            <td>{{ $invitation->guest->keluarga }}</td>
-                                            <td>
-                                                <span class="badge badge-pill badge-light">
-                                                    {{ $invitation->guest->kategori->nama_kategori ?? '-' }}
-                                                </span>
-                                            </td>
+                                            <td>{{ $invitation->guest->nama_undangan }}</td>
+                                            <td>{{ $invitation->guest->keterangan }}</td>
+                                            <td>{{ $invitation->guest->kategori ? $invitation->guest->kategori->nama_kategori : '' }}</td>
                                             <td>
                                                 {{ \Carbon\Carbon::parse($invitation->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i') }}
                                             </td>
