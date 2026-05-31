@@ -130,6 +130,8 @@
                                     <th>No Handphone</th>
                                     <th>Pekerjaan</th>
                                     <th>Alamat</th>
+                                    <th>Relasi</th>
+                                    <th>Keterangan</th>
                                     <th class="text-center">Waktu Checkin</th>
                                 </tr>
                             </thead>
@@ -157,6 +159,8 @@
                                         <td>{{ $item->nomor_handphone ?? '-' }}</td>
                                         <td>{{ $item->pekerjaan ?? '-' }}</td>
                                         <td>{{ $item->alamat ?? '-' }}</td>
+                                        <td>{{ $item->relasi }}</td>
+                                        <td>{{ $item->keterangan }}</td>
                                         <td class="text-center">
                                             {{ \Carbon\Carbon::parse($item->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i:s') }}
                                         </td>

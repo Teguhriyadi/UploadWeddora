@@ -246,6 +246,8 @@
                                             <th>No. Handphone</th>
                                             <th>Alamat</th>
                                             <th>Pekerjaan</th>
+                                            <th>Relasi</th>
+                                            <th>Keterangan</th>
                                             <th>Waktu Kehadiran</th>
                                         </tr>
                                     </thead>
@@ -256,6 +258,8 @@
                                                 <td>{{ $public->nomor_handphone }}</td>
                                                 <td>{{ $public->alamat }}</td>
                                                 <td>{{ $public->pekerjaan ?? '-' }}</td>
+                                                <td>{{ $public->relasi }}</td>
+                                                <td>{{ $public->keterangan }}</td>
                                                 <td>
                                                     {{ \Carbon\Carbon::parse($public->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i') }}
                                                 </td>
