@@ -87,6 +87,24 @@
             </div>
         @endif
         <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <select id="filterKehadiran" class="form-control form-control-sm">
+                        <option value="null" selected>Belum Ditentukan</option>
+                        <option value="1">Pasti Hadir</option>
+                        <option value="0">Kemungkinan Tidak Hadir</option>
+                        <option value="">Semua Kehadiran</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select id="filterKeterangan" class="form-control form-control-sm">
+                        <option value="" selected>Semua Keterangan</option>
+                        <option value="CPP">CPP</option>
+                        <option value="CPW">CPW</option>
+                    </select>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -162,7 +180,7 @@
     <script src="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script>
         $(document).ready(function() {
-            $('#dataTable').DataTable({
+            table = $("#dataTable").DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: false,
@@ -173,7 +191,13 @@
                     [25, 50, 75, 100],
                     [25, 50, 75, 100]
                 ],
-                ajax: "{{ url('/modules/guest') }}",
+                ajax: {
+                    url: "{{ url('/modules/guest') }}",
+                    data: function(d) {
+                        d.kehadiran = $('#filterKehadiran').val();
+                        d.keterangan = $('#filterKeterangan').val();
+                    }
+                },
                 columns: [{
                         data: 'checkbox',
                         orderable: false,
@@ -239,6 +263,10 @@
                     }
                 ]
             });
+        });
+
+        $('#filterKehadiran').change(function() {
+            table.ajax.reload();
         });
     </script>
     <script>

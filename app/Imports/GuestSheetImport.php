@@ -86,12 +86,16 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
 
     private function mapKehadiran($value)
     {
+        if (is_null($value) || trim($value) === '') {
+            return null;
+        }
+
         $value = strtolower(trim($value));
 
         return match ($value) {
             'pasti hadir' => '1',
             'kemungkinan tidak hadir' => '0',
-            default => '0',
+            default => null,
         };
     }
 

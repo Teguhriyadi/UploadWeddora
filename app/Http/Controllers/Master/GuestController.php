@@ -25,6 +25,19 @@ class GuestController extends Controller
             $data = Guest::with('kategori')
                 ->orderBy('created_at', 'DESC');
 
+            if ($request->kehadiran === 'null') {
+
+                $data->whereNull('kehadiran');
+            } elseif ($request->filled('kehadiran')) {
+
+                $data->where('kehadiran', $request->kehadiran);
+            }
+
+            if ($request->filled('keterangan')) {
+
+                $data->where('keterangan', $request->keterangan);
+            }
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('kategori', function ($row) {
@@ -39,15 +52,17 @@ class GuestController extends Controller
                 })
                 ->addColumn('kehadiran', function ($row) {
 
+                    $selectedNull = is_null($row->kehadiran) ? 'selected' : '';
                     $selected0 = $row->kehadiran == '0' ? 'selected' : '';
                     $selected1 = $row->kehadiran == '1' ? 'selected' : '';
 
                     return '
-                        <select class="form-control form-select-sm change-kehadiran" data-id="' . $row->id . '">
-                            <option value="0" ' . $selected0 . '>Kemungkinan Tidak Hadir</option>
-                            <option value="1" ' . $selected1 . '>Pasti Hadir</option>
-                        </select>
-                    ';
+                    <select class="form-control form-select-sm change-kehadiran" data-id="' . $row->id . '">
+                        <option value="" ' . $selectedNull . '>Belum Ditentukan</option>
+                        <option value="0" ' . $selected0 . '>Kemungkinan Tidak Hadir</option>
+                        <option value="1" ' . $selected1 . '>Pasti Hadir</option>
+                    </select>
+                ';
                 })
                 ->addColumn('status_undangan', function ($row) {
 
