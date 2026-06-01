@@ -25,15 +25,17 @@ class GuestController extends Controller
             $data = Guest::with('kategori')
                 ->orderBy('created_at', 'DESC');
 
-            if ($request->kehadiran === 'null') {
+            $kehadiran = $request->kehadiran;
+
+            if ($kehadiran === 'null') {
 
                 $data->whereNull('kehadiran');
-            } elseif ($request->filled('kehadiran')) {
+            } elseif ($kehadiran === '0' || $kehadiran === '1') {
 
-                $data->where('kehadiran', $request->kehadiran);
+                $data->where('kehadiran', $kehadiran);
             }
 
-            if ($request->filled('keterangan')) {
+            if (!empty($request->keterangan)) {
 
                 $data->where('keterangan', $request->keterangan);
             }

@@ -265,7 +265,7 @@
             });
         });
 
-        $('#filterKehadiran').change(function() {
+        $('#filterKehadiran, #filterKeterangan').change(function() {
             table.ajax.reload();
         });
     </script>
