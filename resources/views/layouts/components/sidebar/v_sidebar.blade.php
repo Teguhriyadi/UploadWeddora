@@ -49,6 +49,13 @@
         </a>
     </li>
 
+    <li class="nav-item {{ Request::is('modules/titip-kado') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/modules/titip-kado') }}">
+            <i class="fas fa-edit"></i>
+            <span>Titip Kado</span>
+        </a>
+    </li>
+
     <li class="nav-item {{ Request::is('modules/history-guest') ? 'active' : '' }}">
         <a class="nav-link" href="{{ url('/modules/history-guest') }}">
             <i class="fas fa-history"></i>

@@ -32,4 +32,26 @@ class ImageHelper
 
         return $filename;
     }
+
+    public static function uploadFileToS3Souvenir($file, $folder = 'souvenir', $maxWidth = 800, $quality = 70)
+    {
+        if (!$file) return null;
+
+        $filename = uniqid('img_') . '.jpg';
+
+        $image = Image::make($file)
+            ->resize($maxWidth, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })
+            ->encode('jpg', $quality);
+
+        Storage::disk('s3')->put(
+            $folder . '/' . $filename,
+            (string) $image,
+            'public'
+        );
+
+        return $filename;
+    }
 }
