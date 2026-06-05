@@ -35,7 +35,7 @@
                                 <select name="kategori_id"
                                     class="form-control select2 @error('kategori_id') is-invalid @enderror"
                                     id="kategori_id">
-                                    <option value="">- Pilih -</option>
+                                    <option value=""></option>
                                     @foreach ($kategori as $item)
                                         <option value="{{ $item['id'] }}"
                                             {{ old('kategori_id') == $item['id'] ? 'selected' : '' }}>
@@ -168,7 +168,8 @@
             $('.select2').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
-                placeholder: '- Pilih -'
+                placeholder: '- Pilih -',
+                allowClear: true
             });
         });
     </script>

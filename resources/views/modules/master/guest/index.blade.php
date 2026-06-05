@@ -89,6 +89,7 @@
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-3">
+                    <label for="filterKehadiran" class="form-label"> Status Kehadiran </label>
                     <select id="filterKehadiran" class="form-control form-control-sm">
                         <option value="null" selected>Belum Ditentukan</option>
                         <option value="1">Pasti Hadir</option>
@@ -99,6 +100,7 @@
                 </div>
 
                 <div class="col-md-3">
+                    <label for="filterKeterangan" class="form-label"> Keterangan Keluarga </label>
                     <select id="filterKeterangan" class="form-control form-control-sm">
                         <option value="" selected>Semua Keterangan</option>
                         <option value="CPP">CPP</option>
@@ -301,7 +303,6 @@
 
                             Swal.fire('Berhasil', response.message, 'success');
 
-                            // 🔥 penting: update data-old
                             select.data('old', value);
 
                         },
