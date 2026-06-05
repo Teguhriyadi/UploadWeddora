@@ -30,7 +30,7 @@ class GuestController extends Controller
             if ($kehadiran === 'null') {
 
                 $data->whereNull('kehadiran');
-            } elseif ($kehadiran === '0' || $kehadiran === '1') {
+            } elseif ($kehadiran === '0' || $kehadiran === '1' || $kehadiran === '2') {
 
                 $data->where('kehadiran', $kehadiran);
             }

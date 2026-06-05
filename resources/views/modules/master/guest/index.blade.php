@@ -93,6 +93,7 @@
                         <option value="null" selected>Belum Ditentukan</option>
                         <option value="1">Pasti Hadir</option>
                         <option value="0">Kemungkinan Tidak Hadir</option>
+                        <option value="2">Tidak Hadir</option>
                         <option value="">Semua Kehadiran</option>
                     </select>
                 </div>
