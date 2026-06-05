@@ -57,12 +57,14 @@ class GuestController extends Controller
                     $selectedNull = is_null($row->kehadiran) ? 'selected' : '';
                     $selected0 = $row->kehadiran == '0' ? 'selected' : '';
                     $selected1 = $row->kehadiran == '1' ? 'selected' : '';
+                    $selected2 = $row->kehadiran == '2' ? 'selected' : '';
 
                     return '
                     <select class="form-control form-select-sm change-kehadiran" data-id="' . $row->id . '">
                         <option value="" ' . $selectedNull . '>Belum Ditentukan</option>
                         <option value="0" ' . $selected0 . '>Kemungkinan Tidak Hadir</option>
                         <option value="1" ' . $selected1 . '>Pasti Hadir</option>
+                        <option value="2" ' . $selected2 . '>Tidak Hadir</option>
                     </select>
                 ';
                 })

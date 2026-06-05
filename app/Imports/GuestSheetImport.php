@@ -95,6 +95,7 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
         return match ($value) {
             'pasti hadir' => '1',
             'kemungkinan tidak hadir' => '0',
+            'tidak hadir' => '2',
             default => null,
         };
     }

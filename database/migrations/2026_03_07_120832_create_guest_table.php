@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum("status_undangan", ["1", "0"])->default("0");
             $table->enum("relasi", ["Saudara", "Teman Kerja", "Teman SMA", "Relasi Ortu", "Teman Kuliah", "Atasan"]);
             $table->enum("jenis_undangan", ["Digital", "Cetak"]);
-            $table->enum("kehadiran", ["1", "0"])->nullable();
+            $table->enum("kehadiran", ["1", "0", "2"])->nullable();
             $table->enum("keterangan", ["CPP", "CPW"]);
             $table->integer("jumlah_undangan")->default(0);
             $table->enum("status_kehadiran", [1,0])->default(0);
