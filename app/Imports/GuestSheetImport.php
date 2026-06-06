@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\Kategori;
+use App\Support\ActivityLogger;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
@@ -19,43 +20,59 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
 
     public function collection(Collection $rows)
     {
-        $event = Event::first();
+        $event = Event::first(['*']);
 
-        foreach ($rows as $row) {
+        $created = 0;
+        $skipped = 0;
 
-            $data = array_values($row->toArray());
+        $cek_kategori = Kategori::where('nama_kategori', '=', "VIP", 'and')->first();
 
-            $nama         = trim($data[1] ?? '');
-            $namaUndangan = trim($data[2] ?? '');
-            $status       = $this->mapStatus($data[3] ?? null);
-            $relasi       = $this->mapRelasi($data[4] ?? null);
-            $jenis        = $this->mapJenis($data[5] ?? null);
-            $kehadiran    = $this->mapKehadiran($data[6] ?? null);
-            $keterangan   = $this->mapKeterangan($data[7] ?? null);
-            $kategori     = isset($data[8]) ? strtoupper(trim($data[8])) : null;
-            $token        = isset($data[11]) ? strtoupper(trim($data[11])) : null;
+        Guest::withoutEvents(function () use ($rows, $event, $cek_kategori, &$created, &$skipped) {
+            foreach ($rows as $row) {
+                $data = array_values($row->toArray());
 
-            $cek_kategori = Kategori::where('nama_kategori', "VIP")->first();
+                $nama         = trim($data[1] ?? '');
+                $namaUndangan = trim($data[2] ?? '');
+                $status       = $this->mapStatus($data[3] ?? null);
+                $relasi       = $this->mapRelasi($data[4] ?? null);
+                $jenis        = $this->mapJenis($data[5] ?? null);
+                $kehadiran    = $this->mapKehadiran($data[6] ?? null);
+                $keterangan   = $this->mapKeterangan($data[7] ?? null);
+                $kategori     = isset($data[8]) ? strtoupper(trim($data[8])) : null;
+                $token        = isset($data[11]) ? strtoupper(trim($data[11])) : null;
 
-            if ($nama === '' && $namaUndangan === '') {
-                continue;
+                if ($nama === '' && $namaUndangan === '') {
+                    $skipped++;
+                    continue;
+                }
+
+                if ($nama !== '' && stripos($nama, 'nama_di_undangan') !== false) {
+                    $skipped++;
+                    continue;
+                }
+
+                Guest::create([
+                    'nama_tamu'       => $nama ?: null,
+                    'nama_undangan'   => $namaUndangan ?: null,
+                    'status_undangan' => $status,
+                    'relasi'          => $relasi,
+                    'jenis_undangan'  => $jenis,
+                    'kehadiran'       => $kehadiran,
+                    'keterangan'      => $keterangan,
+                    'kode_token'      => $token,
+                    'event_id'        => $event->id,
+                    'kategori_id'     => empty($kategori) ? null : ($cek_kategori?->id)
+                ]);
+
+                $created++;
             }
+        });
 
-            if (stripos($nama, 'nama_di_undangan') !== false) continue;
-
-            Guest::create([
-                'nama_tamu'       => $nama ?: null,
-                'nama_undangan'   => $namaUndangan ?: null,
-                'status_undangan' => $status,
-                'relasi'          => $relasi,
-                'jenis_undangan'  => $jenis,
-                'kehadiran'       => $kehadiran,
-                'keterangan'      => $keterangan,
-                'kode_token'      => $token,
-                'event_id'        => $event->id,
-                'kategori_id'     => empty($kategori) ? null : $cek_kategori->id
-            ]);
-        }
+        ActivityLogger::log('Tamu Undangan', 'import_excel', null, null, null, [
+            'sheet' => 'Daftar Tamu',
+            'created' => $created,
+            'skipped' => $skipped,
+        ]);
     }
 
     private function mapRelasi($value)

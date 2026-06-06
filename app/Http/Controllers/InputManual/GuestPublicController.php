@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GuestPublic\CreateRequest;
 use App\Http\Requests\GuestPublic\UpdateRequest;
 use App\Models\GuestPublic;
+use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -88,6 +89,11 @@ class GuestPublicController extends Controller
                 $fileName = NULL;
             }
 
+            ActivityLogger::setContext('Guest Public', 'create', [
+                'nama' => $request['nama'],
+                'nomor_handphone' => $request["nomor_handphone"],
+                'selfie_used' => (bool) $request->selfie,
+            ]);
             GuestPublic::create([
                 "nama" => $request['nama'],
                 "nomor_handphone" => $request["nomor_handphone"],
@@ -118,7 +124,7 @@ class GuestPublicController extends Controller
 
             DB::beginTransaction();
 
-            $data["edit"] = GuestPublic::where("id", $id)->first();
+            $data["edit"] = GuestPublic::where("id", "=", $id, "and")->first(['*']);
 
             DB::commit();
 
@@ -135,9 +141,12 @@ class GuestPublicController extends Controller
     {
         try {
 
+            DB::beginTransaction();
+
             $guest = GuestPublic::findOrFail($id);
 
             $selfiePath = $guest->selfie_path;
+            $selfieChanged = false;
 
             if ($request->selfie) {
                 if ($guest->selfie_path) {
@@ -145,8 +154,13 @@ class GuestPublicController extends Controller
                 }
 
                 $selfiePath = ImageHelper::uploadBase64ToS3($request->selfie, 'selfie', 800, 70);
+                $selfieChanged = true;
             }
 
+            ActivityLogger::setContext('Guest Public', 'update', [
+                'guest_public_id' => $guest->id,
+                'selfie_changed' => $selfieChanged,
+            ]);
             $guest->update([
                 'nama' => $request->nama,
                 'nomor_handphone' => $request->nomor_handphone,
@@ -172,12 +186,15 @@ class GuestPublicController extends Controller
 
             DB::beginTransaction();
 
-            $cek = GuestPublic::where("id", $id)->first();
+            $cek = GuestPublic::where("id", "=", $id, "and")->first(['*']);
 
             if ($cek->selfie_path) {
                 Storage::disk('s3')->delete('selfie/' . $cek->selfie_path);
             }
 
+            ActivityLogger::setContext('Guest Public', 'delete', [
+                'guest_public_id' => $cek->id,
+            ]);
             $cek->delete();
 
             DB::commit();

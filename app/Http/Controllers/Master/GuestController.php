@@ -10,6 +10,7 @@ use App\Imports\GuestImport;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\Kategori;
+use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -124,7 +125,7 @@ class GuestController extends Controller
 
             DB::beginTransaction();
 
-            $data["kategori"] = Kategori::get();
+            $data["kategori"] = Kategori::get(['*']);
 
             DB::commit();
 
@@ -143,10 +144,14 @@ class GuestController extends Controller
 
             DB::beginTransaction();
 
-            $event = Event::first();
+            $event = Event::first(['*']);
 
             $token = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, rand(6, 8));
 
+            ActivityLogger::setContext('Tamu Undangan', 'create', [
+                'kode_token' => $token,
+                'nama_tamu' => $request["nama_tamu"],
+            ]);
             Guest::create([
                 "event_id" => $event["id"],
                 "kategori_id" => $request["kategori_id"],
@@ -175,8 +180,8 @@ class GuestController extends Controller
 
             DB::beginTransaction();
 
-            $data["kategori"] = Kategori::get();
-            $data["edit"] = Guest::where("id", $id)->first();
+            $data["kategori"] = Kategori::get(['*']);
+            $data["edit"] = Guest::where("id", "=", $id, "and")->first(['*']);
 
             DB::commit();
 
@@ -195,7 +200,11 @@ class GuestController extends Controller
 
             DB::beginTransaction();
 
-            Guest::where("id", $id)->update([
+            $guest = Guest::where("id", "=", $id, "and")->first(['*']);
+            ActivityLogger::setContext('Tamu Undangan', 'update', [
+                'guest_id' => $guest?->id,
+            ]);
+            $guest->update([
                 "kategori_id" => $request["kategori_id"],
                 "nama_tamu" => $request["nama_tamu"],
                 "nama_undangan" => $request["nama_undangan"],
@@ -221,7 +230,13 @@ class GuestController extends Controller
 
             DB::beginTransaction();
 
-            Guest::where("id", $id)->delete();
+            $guest = Guest::where("id", "=", $id, "and")->first(['*']);
+            if ($guest) {
+                ActivityLogger::setContext('Tamu Undangan', 'delete', [
+                    'guest_id' => $guest->id,
+                ]);
+                $guest->delete();
+            }
 
             DB::commit();
 
@@ -240,7 +255,7 @@ class GuestController extends Controller
 
             DB::beginTransaction();
 
-            $kategori = Kategori::where("id", $id)->first();
+            $kategori = Kategori::where("id", "=", $id, "and")->first(['*']);
 
             if ($kategori['is_active'] == "1") {
                 $kategori->update([
@@ -280,6 +295,13 @@ class GuestController extends Controller
 
             Excel::import(new GuestImport, $request->file('file_upload'));
 
+            $file = $request->file('file_upload');
+            ActivityLogger::log('Tamu Undangan', 'upload_excel', null, null, null, [
+                'original_name' => $file?->getClientOriginalName(),
+                'mime' => $file?->getClientMimeType(),
+                'size' => $file?->getSize(),
+            ]);
+
             DB::commit();
 
             return back()->with("success", "Upload Data Berhasil di Lakukan");
@@ -302,6 +324,9 @@ class GuestController extends Controller
 
             $guest = Guest::findOrFail($request->id);
 
+            ActivityLogger::setContext('Tamu Undangan', 'ubah_kehadiran', [
+                'guest_id' => $guest->id,
+            ]);
             $guest->update([
                 'kehadiran' => $request->kehadiran
             ]);
@@ -330,6 +355,9 @@ class GuestController extends Controller
 
             $guest = Guest::findOrFail($request->id);
 
+            ActivityLogger::setContext('Tamu Undangan', 'ubah_status_undangan', [
+                'guest_id' => $guest->id,
+            ]);
             $guest->update([
                 'status_undangan' => $request->status_undangan
             ]);
@@ -349,9 +377,9 @@ class GuestController extends Controller
 
     public function show_generate($token)
     {
-        $guest = Guest::where('kode_token', $token)->firstOrFail();
+        $guest = Guest::where('kode_token', '=', $token, 'and')->firstOrFail(['*']);
 
-        $event_name = Event::first();
+        $event_name = Event::first(['*']);
         $event_date = "13 Juni 2026";
 
         $html = view('qr-poster-generate', compact(
@@ -366,9 +394,9 @@ class GuestController extends Controller
 
     public function generate_all()
     {
-        $guests = Guest::where('jenis_undangan', 'Cetak')->get();
+        $guests = Guest::where('jenis_undangan', '=', 'Cetak', 'and')->get(['*']);
 
-        $event_name = Event::first();
+        $event_name = Event::first(['*']);
         $event_date = "13 Juni 2026";
 
         return view('qr-generate-all', compact(
@@ -380,7 +408,14 @@ class GuestController extends Controller
 
     public function delete_selected(Request $request)
     {
-        Guest::whereIn('id', $request->ids)->delete();
+        $ids = $request->ids ?: [];
+        $before = Guest::whereIn('id', $ids, 'and', false)->get(['id', 'nama_tamu', 'kode_token'])->toArray();
+        Guest::whereIn('id', $ids, 'and', false)->delete();
+
+        ActivityLogger::log('Tamu Undangan', 'bulk_delete', null, $before, null, [
+            'ids' => $ids,
+            'count' => is_array($ids) ? count($ids) : 0,
+        ]);
 
         return response()->json([
             'success' => true,

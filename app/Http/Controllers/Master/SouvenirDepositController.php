@@ -8,6 +8,7 @@ use App\Http\Requests\TitipKado\CreateRequest;
 use App\Http\Requests\TitipKado\UpdateRequest;
 use App\Models\Guest;
 use App\Models\SouvenirDeposit;
+use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -93,7 +94,7 @@ class SouvenirDepositController extends Controller
 
     public function create()
     {
-        $data["guest"] = Guest::get();
+        $data["guest"] = Guest::get(['*']);
 
         return view("modules.master.souvenir-guest.create", $data);
     }
@@ -110,6 +111,10 @@ class SouvenirDepositController extends Controller
                 $foto = NULL;
             }
 
+            ActivityLogger::setContext('Titip Kado', 'create', [
+                'guest_id' => $request->guest_id,
+                'foto_uploaded' => (bool) $request->foto,
+            ]);
             SouvenirDeposit::create([
                 'guest_id' => $request->guest_id,
                 'nama_tamu' => $request->nama_tamu,
@@ -138,8 +143,8 @@ class SouvenirDepositController extends Controller
 
             DB::beginTransaction();
 
-            $data["guest"] = Guest::get();
-            $data["edit"] = SouvenirDeposit::where("id", $id)->first();
+            $data["guest"] = Guest::get(['*']);
+            $data["edit"] = SouvenirDeposit::where("id", "=", $id, "and")->first(['*']);
 
             DB::commit();
 
@@ -158,20 +163,28 @@ class SouvenirDepositController extends Controller
 
             DB::beginTransaction();
 
-            if ($request->foto) {
-                $cek = SouvenirDeposit::where("id", $id)->first();
+            $deposit = SouvenirDeposit::where("id", "=", $id, "and")->first(['*']);
+            if (!$deposit) {
+                DB::rollBack();
+                return back()->with("error", "Data tidak ditemukan");
+            }
 
-                if ($cek->foto) {
-                    Storage::disk('s3')->delete('souvenir/' . $cek->foto);
+            $foto = $deposit->foto;
+            $fotoChanged = false;
+            if ($request->foto) {
+                if ($deposit->foto) {
+                    Storage::disk('s3')->delete('souvenir/' . $deposit->foto);
                 }
 
                 $foto = ImageHelper::uploadFileToS3Souvenir($request->foto);
-
-            } else {
-                $foto = NULL;
+                $fotoChanged = true;
             }
 
-            SouvenirDeposit::create([
+            ActivityLogger::setContext('Titip Kado', 'update', [
+                'souvenir_deposit_id' => $deposit->id,
+                'foto_changed' => $fotoChanged,
+            ]);
+            $deposit->update([
                 'guest_id' => $request->guest_id,
                 'nama_tamu' => $request->nama_tamu,
                 "nama_kado" => $request->nama_kado,
@@ -198,12 +211,19 @@ class SouvenirDepositController extends Controller
 
             DB::beginTransaction();
 
-            $cek = SouvenirDeposit::where("id", $id)->first();
+            $cek = SouvenirDeposit::where("id", "=", $id, "and")->first(['*']);
+            if (!$cek) {
+                DB::rollBack();
+                return back()->with("error", "Data tidak ditemukan");
+            }
 
             if ($cek->foto) {
                 Storage::disk('s3')->delete('souvenir/' . $cek->foto);
             }
 
+            ActivityLogger::setContext('Titip Kado', 'delete', [
+                'souvenir_deposit_id' => $cek->id,
+            ]);
             $cek->delete();
 
             DB::commit();
@@ -217,44 +237,4 @@ class SouvenirDepositController extends Controller
         }
     }
 
-    public function change_status($id)
-    {
-        try {
-
-            DB::beginTransaction();
-
-            $kategori = Kategori::where("id", $id)->first();
-
-            if ($kategori['is_active'] == "1") {
-                $kategori->update([
-                    "is_active" => "0"
-                ]);
-            } else if ($kategori['is_active'] == "0") {
-                $kategori->update([
-                    "is_active" => "1"
-                ]);
-            }
-
-            DB::commit();
-
-            return back()->with("success", "Data Berhasil di Simpan");
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            return back()->with("error", $e->getMessage());
-        }
-    }
-
-    public function toggleStatus($id)
-    {
-        $user = Kategori::findOrFail($id);
-
-        $user->is_active = request('status');
-        $user->save();
-
-        return response()->json([
-            'message' => 'OK'
-        ]);
-    }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\User\CreateRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Models\Role;
 use App\Models\User;
+use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -73,7 +74,7 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
-            $data["role"] = Role::get();
+            $data["role"] = Role::get(['*']);
 
             DB::commit();
 
@@ -92,6 +93,10 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
+            ActivityLogger::setContext('Master Users', 'create', [
+                'username' => $request["username"],
+                'email' => $request["email"],
+            ]);
             User::create([
                 "nama" => $request['nama'],
                 "username" => $request["username"],
@@ -117,8 +122,8 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
-            $data["role"] = Role::get();
-            $data["edit"] = User::where("id", $id)->first();
+            $data["role"] = Role::get(['*']);
+            $data["edit"] = User::where("id", "=", $id, "and")->first(['*']);
 
             DB::commit();
 
@@ -137,7 +142,11 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
-            User::where("id", $id)->update([
+            $user = User::where("id", "=", $id, "and")->first(['*']);
+            ActivityLogger::setContext('Master Users', 'update', [
+                'user_id' => $user?->id,
+            ]);
+            $user->update([
                 "nama" => $request['nama'],
                 "username" => $request["username"],
                 "email" => $request["email"],
@@ -161,7 +170,13 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
-            User::where("id", $id)->delete();
+            $user = User::where("id", "=", $id, "and")->first(['*']);
+            if ($user) {
+                ActivityLogger::setContext('Master Users', 'delete', [
+                    'user_id' => $user->id,
+                ]);
+                $user->delete();
+            }
 
             DB::commit();
 
@@ -178,6 +193,9 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        ActivityLogger::setContext('Master Users', 'ubah_status', [
+            'user_id' => $user->id,
+        ]);
         $user->is_active = request('status');
         $user->save();
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\CreateRequest;
 use App\Http\Requests\Role\UpdateRequest;
 use App\Models\Role;
+use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -50,6 +51,9 @@ class RoleController extends Controller
 
             DB::beginTransaction();
 
+            ActivityLogger::setContext('Master Role', 'create', [
+                'nama_role' => $request->nama_role,
+            ]);
             Role::create([
                 "nama_role" => $request->nama_role
             ]);
@@ -71,7 +75,7 @@ class RoleController extends Controller
 
             DB::beginTransaction();
 
-            $data["edit"] = Role::where("id", $id)->first();
+            $data["edit"] = Role::where("id", "=", $id, "and")->first(['*']);
 
             DB::commit();
 
@@ -88,7 +92,7 @@ class RoleController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = Role::where("id", "!=", $id)
+            $data = Role::where("id", "!=", $id, "and")
                 ->orderBy('created_at', 'DESC');
 
             return DataTables::of($data)
@@ -121,7 +125,11 @@ class RoleController extends Controller
 
             DB::beginTransaction();
 
-            Role::where("id", $id)->update([
+            $role = Role::where("id", "=", $id, "and")->first(['*']);
+            ActivityLogger::setContext('Master Role', 'update', [
+                'role_id' => $role?->id,
+            ]);
+            $role->update([
                 "nama_role" => $request["nama_role"]
             ]);
 
@@ -142,7 +150,13 @@ class RoleController extends Controller
 
             DB::beginTransaction();
 
-            Role::where("id", $id)->delete();
+            $role = Role::where("id", "=", $id, "and")->first(['*']);
+            if ($role) {
+                ActivityLogger::setContext('Master Role', 'delete', [
+                    'role_id' => $role->id,
+                ]);
+                $role->delete();
+            }
 
             DB::commit();
 

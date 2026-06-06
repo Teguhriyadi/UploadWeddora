@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\GuestCheckin;
+use App\Support\ActivityLogger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +42,7 @@ class ScanQRGuestController extends Controller
             ], 422);
         }
 
-        $guest = Guest::where('kode_token', '=', $kodeToken, 'and')->first();
+        $guest = Guest::where('kode_token', '=', $kodeToken, 'and')->first(['*']);
 
         if (!$guest) {
             return response()->json([
@@ -71,7 +72,7 @@ class ScanQRGuestController extends Controller
 
     public function poster(string $kode_token)
     {
-        $guest = Guest::where('kode_token', '=', $kode_token, 'and')->first();
+        $guest = Guest::where('kode_token', '=', $kode_token, 'and')->first(['*']);
 
         if (!$guest) {
             return redirect()->to("/modules/error-page");
@@ -116,7 +117,7 @@ class ScanQRGuestController extends Controller
             ], 422);
         }
 
-        $guest = Guest::where('kode_token', '=', $kodeToken, 'and')->first();
+        $guest = Guest::where('kode_token', '=', $kodeToken, 'and')->first(['*']);
 
         if (!$guest) {
             return response()->json([
@@ -140,6 +141,11 @@ class ScanQRGuestController extends Controller
             $fileName = null;
         }
 
+        ActivityLogger::setContext('Scan QR Guest', 'checkin_qr', [
+            'guest_id' => $guest->id,
+            'kode_token' => $guest->kode_token,
+            'selfie_used' => (bool) $request->selfie,
+        ]);
         GuestCheckin::create([
             'guest_id' => $guest->id,
             'metode' => 'qr',
@@ -148,6 +154,10 @@ class ScanQRGuestController extends Controller
             "selfie_path" => $fileName,
         ]);
 
+        ActivityLogger::setContext('Tamu Undangan', 'ubah_kehadiran', [
+            'guest_id' => $guest->id,
+            'metode' => 'qr',
+        ]);
         $guest->update([
             "status_kehadiran" => 1
         ]);

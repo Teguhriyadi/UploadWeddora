@@ -8,6 +8,7 @@ use App\Http\Controllers\Master\GuestController;
 use App\Http\Controllers\Master\KategoriController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\SouvenirDepositController;
+use App\Http\Controllers\Master\TitipKehadiranController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\QRCode\ScanQRGuestController;
 use App\Http\Controllers\Report\HistoryGuestController;
@@ -69,6 +70,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
 
         Route::resource("guest-public", GuestPublicController::class);
 
+        Route::resource("titip-kehadiran", TitipKehadiranController::class);
         Route::resource("titip-kado", SouvenirDepositController::class);
 
         Route::get("/error-page", [AppController::class, "error_page"]);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Authentication;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,7 @@ class LoginController extends Controller
 
         $credentials = $request->only('username', 'password');
 
-        $cek = User::where("username", $request->username)->first();
+        $cek = User::where("username", "=", $request->username, "and")->first();
 
         if (!$cek) {
             return back()->with("error", "Akun Tidak Ditemukan")->withInput();
@@ -38,6 +39,10 @@ class LoginController extends Controller
 
             $request->session()->regenerate();
 
+            ActivityLogger::log('Auth', 'login', Auth::user(), null, [
+                'username' => $request->username,
+            ]);
+
             return redirect()
                 ->intended('/modules/dashboard')
                 ->with('success', 'Anda Berhasil Login');
@@ -49,6 +54,11 @@ class LoginController extends Controller
         try {
 
             DB::beginTransaction();
+
+            $user = Auth::user();
+            if ($user) {
+                ActivityLogger::log('Auth', 'logout', $user);
+            }
 
             Auth::logout();
 

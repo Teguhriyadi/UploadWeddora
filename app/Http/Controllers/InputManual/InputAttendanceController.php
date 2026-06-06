@@ -6,6 +6,7 @@ use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Guest;
 use App\Models\GuestCheckin;
+use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class InputAttendanceController extends Controller
 
             DB::beginTransaction();
 
-            $data["guest"] = Guest::get();
+            $data["guest"] = Guest::get(['*']);
 
             DB::commit();
 
@@ -41,11 +42,16 @@ class InputAttendanceController extends Controller
 
             DB::beginTransaction();
 
-            $guest = Guest::where("id", $request["guest_id"])->first();
+            $guest = Guest::where("id", "=", $request["guest_id"], "and")->first(['*']);
+            if (!$guest) {
+                DB::rollBack();
+                return back()->with("error", "Tamu tidak ditemukan");
+            }
 
-            $sudahCheckin = GuestCheckin::where('guest_id', $guest->id)->exists();
+            $sudahCheckin = GuestCheckin::where('guest_id', '=', $guest->id, 'and')->exists();
 
             if ($sudahCheckin) {
+                DB::rollBack();
                 return back()->with("error", "Nama Tamu " . $guest['nama_tamu'] . ' Sudah Masuk ke Dalam Acara');
             }
 
@@ -55,6 +61,10 @@ class InputAttendanceController extends Controller
                 $fileName = NULL;
             }
 
+            ActivityLogger::setContext('Input Attendance', 'checkin_manual', [
+                'guest_id' => $guest->id,
+                'selfie_used' => (bool) $request->selfie,
+            ]);
             GuestCheckin::create([
                 "guest_id" => $guest["id"],
                 "metode" => "manual",
@@ -63,7 +73,11 @@ class InputAttendanceController extends Controller
                 "selfie_path" => $fileName,
             ]);
 
-            Guest::where("id", $request["guest_id"])->update([
+            ActivityLogger::setContext('Tamu Undangan', 'ubah_kehadiran', [
+                'guest_id' => $guest->id,
+                'metode' => 'manual',
+            ]);
+            $guest->update([
                 "status_kehadiran" => 1
             ]);
 
@@ -95,10 +109,10 @@ class InputAttendanceController extends Controller
         $q = $request->q;
 
         $data = Guest::with('kategori')
-            ->where('nama_tamu', 'like', '%' . $q . '%')
-            ->where("status_kehadiran", "0")
+            ->where('nama_tamu', 'like', '%' . $q . '%', 'and')
+            ->where("status_kehadiran", "=", "0", "and")
             ->limit(20)
-            ->get();
+            ->get(['*']);
 
         $result = $data->map(function ($item) {
 

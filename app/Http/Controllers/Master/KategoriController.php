@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Kategori\CreateRequest;
 use App\Http\Requests\Kategori\EditRequest;
 use App\Models\Kategori;
+use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -74,6 +75,9 @@ class KategoriController extends Controller
 
             DB::beginTransaction();
 
+            ActivityLogger::setContext('Master Kategori', 'create', [
+                'nama_kategori' => $request->nama_kategori,
+            ]);
             Kategori::create([
                 "nama_kategori" => $request->nama_kategori
             ]);
@@ -95,7 +99,7 @@ class KategoriController extends Controller
 
             DB::beginTransaction();
 
-            $data["edit"] = Kategori::where("id", $id)->first();
+            $data["edit"] = Kategori::where("id", "=", $id, "and")->first(['*']);
 
             DB::commit();
 
@@ -112,7 +116,7 @@ class KategoriController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = Kategori::where("id", "!=", $id)
+            $data = Kategori::where("id", "!=", $id, "and")
                 ->orderBy('created_at', 'DESC');
 
             return DataTables::of($data)
@@ -165,7 +169,11 @@ class KategoriController extends Controller
 
             DB::beginTransaction();
 
-            Kategori::where("id", $id)->update([
+            $kategori = Kategori::where("id", "=", $id, "and")->first(['*']);
+            ActivityLogger::setContext('Master Kategori', 'update', [
+                'kategori_id' => $kategori?->id,
+            ]);
+            $kategori->update([
                 "nama_kategori" => $request["nama_kategori"]
             ]);
 
@@ -186,7 +194,13 @@ class KategoriController extends Controller
 
             DB::beginTransaction();
 
-            Kategori::where("id", $id)->delete();
+            $kategori = Kategori::where("id", "=", $id, "and")->first(['*']);
+            if ($kategori) {
+                ActivityLogger::setContext('Master Kategori', 'delete', [
+                    'kategori_id' => $kategori->id,
+                ]);
+                $kategori->delete();
+            }
 
             DB::commit();
 
@@ -205,17 +219,15 @@ class KategoriController extends Controller
 
             DB::beginTransaction();
 
-            $kategori = Kategori::where("id", $id)->first();
-
-            if ($kategori['is_active'] == "1") {
-                $kategori->update([
-                    "is_active" => "0"
-                ]);
-            } else if ($kategori['is_active'] == "0") {
-                $kategori->update([
-                    "is_active" => "1"
-                ]);
-            }
+            $kategori = Kategori::where("id", "=", $id, "and")->first(['*']);
+            $newStatus = ((string) $kategori->is_active === "1") ? "0" : "1";
+            ActivityLogger::setContext('Master Kategori', 'ubah_status', [
+                'kategori_id' => $kategori->id,
+                'status' => $newStatus,
+            ]);
+            $kategori->update([
+                "is_active" => $newStatus
+            ]);
 
             DB::commit();
 
@@ -230,10 +242,14 @@ class KategoriController extends Controller
 
     public function toggleStatus($id)
     {
-        $user = Kategori::findOrFail($id);
+        $kategori = Kategori::findOrFail($id);
 
-        $user->is_active = request('status');
-        $user->save();
+        ActivityLogger::setContext('Master Kategori', 'ubah_status', [
+            'kategori_id' => $kategori->id,
+            'status' => request('status'),
+        ]);
+        $kategori->is_active = request('status');
+        $kategori->save();
 
         return response()->json([
             'message' => 'OK'
