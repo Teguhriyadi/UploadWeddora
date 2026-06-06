@@ -8,9 +8,9 @@
         const applyTabletLandscapeSidebar = () => {
             const w = window.innerWidth || 0;
             const h = window.innerHeight || 0;
-            const isLandscape = window.matchMedia && window.matchMedia('(orientation: landscape)').matches;
+            const isLandscape = (window.matchMedia && window.matchMedia('(orientation: landscape)').matches) || (w > h);
             const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
-            const isTabletLandscape = isTouch && isLandscape && w >= 768 && w <= 1366 && h >= 600;
+            const isTabletLandscape = isTouch && isLandscape && w >= 768 && w <= 1366;
 
             if (isTabletLandscape) {
                 $("body").addClass("sidebar-toggled");
@@ -20,9 +20,11 @@
         };
 
         applyTabletLandscapeSidebar();
+        setTimeout(applyTabletLandscapeSidebar, 200);
 
         window.addEventListener('orientationchange', applyTabletLandscapeSidebar);
         window.addEventListener('resize', applyTabletLandscapeSidebar);
+        window.addEventListener('load', applyTabletLandscapeSidebar);
 
     });
 </script>
