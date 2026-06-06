@@ -14,12 +14,6 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .step-badge {
-            font-size: 12px;
-            padding: 8px 12px;
-            border-radius: 999px;
-        }
-
         .info-box {
             background: #f8f9ff;
             border-radius: 14px;
@@ -29,8 +23,9 @@
 
         .selfie-preview-img {
             width: 100%;
-            max-width: 180px;
+            max-width: 320px;
             border-radius: 12px;
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
         }
 
         .selfie-shell {
@@ -46,6 +41,21 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hint-box {
+            border: 1px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 14px;
+            padding: 12px;
+            background: #fff;
         }
 
         .countdown-layer {
@@ -80,12 +90,16 @@
         <div class="col-md-12">
             <div class="card shadow mb-4">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
+                    <div class="panel-title mb-3">
                         <div>
-                            <h4 class="mb-1 font-weight-bold text-primary">Input Kehadiran</h4>
-                            <div class="text-muted small">Pilih tamu, selfie opsional, lalu submit check-in.</div>
+                            <h4 class="mb-1 font-weight-bold text-primary">Input Kehadiran Tamu</h4>
+                            <div class="text-muted small">Cari tamu → (opsional) ambil selfie → check-in.</div>
                         </div>
-                        <span class="badge badge-pill badge-info step-badge" id="stepBadge">Step 1/2</span>
+                        <div class="d-flex flex-wrap" style="gap: 8px;">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="btnClearGuest" disabled>
+                                Ganti Tamu
+                            </button>
+                        </div>
                     </div>
 
                     <form action="{{ url('/modules/input-attendance') }}" method="POST" id="attendanceForm">
@@ -93,86 +107,84 @@
 
                         <input type="hidden" name="selfie" id="selfie">
 
-                        <div id="step1">
-                            <div class="mb-2 font-weight-bold text-dark">1) Pilih Tamu</div>
+                        <div class="row">
+                            <div class="col-lg-7">
+                                <div class="mb-2 font-weight-bold text-dark">Pilih Tamu</div>
 
-                            <div class="form-group mb-3">
-                                <label>Nama Tamu</label>
-                                <select name="guest_id" id="guest_id"
-                                    class="form-control select2 @error('guest_id') is-invalid @enderror">
-                                </select>
-                            </div>
-
-                            <div class="info-box d-none" id="infoGuest">
-                                <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 10px;">
-                                    <h6 class="mb-0 text-primary font-weight-bold">Informasi Tamu</h6>
+                                <div class="form-group mb-3">
+                                    <label>Nama Tamu</label>
+                                    <select name="guest_id" id="guest_id"
+                                        class="form-control select2 @error('guest_id') is-invalid @enderror">
+                                    </select>
+                                    <div class="text-muted small mt-2">Ketik nama tamu. Data hanya menampilkan tamu yang belum check-in.</div>
                                 </div>
-                                <div class="mt-3 row">
-                                    <div class="col-sm-6">
-                                        <div class="text-muted small">Nama</div>
-                                        <div class="font-weight-bold" id="guestNama"></div>
-                                    </div>
-                                    <div class="col-sm-6 mt-3 mt-sm-0">
-                                        <div class="text-muted small">Relasi</div>
-                                        <div class="font-weight-bold" id="guestRelasi"></div>
-                                    </div>
-                                    <div class="col-sm-6 mt-3">
-                                        <div class="text-muted small">Nama di Undangan</div>
-                                        <div class="font-weight-bold" id="guestNamaUndangan"></div>
-                                    </div>
-                                    <div class="col-sm-6 mt-3">
-                                        <div class="text-muted small">Jenis Undangan</div>
-                                        <div class="font-weight-bold" id="guestJenisUndangan"></div>
-                                    </div>
-                                    <div class="col-sm-6 mt-3">
-                                        <div class="text-muted small">Keterangan</div>
-                                        <div class="font-weight-bold" id="guestKeterangan"></div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="mt-3 d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary" id="btnNext" disabled>
-                                    Next
-                                </button>
-                            </div>
-                        </div>
-
-                        <div id="step2" class="d-none">
-                            <hr>
-                            <div class="mb-2 font-weight-bold text-dark">2) Selfie (Opsional) &amp; Submit</div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="border rounded p-3 h-100">
-                                        <div class="d-flex align-items-center justify-content-between mb-2">
-                                            <div class="font-weight-bold">Selfie Tamu</div>
-                                            <span class="badge badge-pill badge-secondary" id="selfieStatus">Belum Ada</span>
+                                <div class="info-box d-none" id="infoGuest">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 10px;">
+                                        <h6 class="mb-0 text-primary font-weight-bold">Informasi Tamu</h6>
+                                        <span class="badge badge-pill badge-success">Siap Check-in</span>
+                                    </div>
+                                    <div class="mt-3 row">
+                                        <div class="col-sm-6">
+                                            <div class="text-muted small">Nama</div>
+                                            <div class="font-weight-bold" id="guestNama"></div>
                                         </div>
-
-                                        <div id="selfiePreview" class="text-center text-muted small">Tidak ada selfie.</div>
-
-                                        <div class="mt-3 d-flex flex-wrap" style="gap: 8px;">
-                                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
-                                                data-target="#selfieModal" id="btnOpenSelfie">
-                                                Ambil Selfie
-                                            </button>
-                                            <button type="button" class="btn btn-outline-danger btn-sm d-none"
-                                                id="btnRemoveSelfie">
-                                                Hapus Selfie
-                                            </button>
+                                        <div class="col-sm-6 mt-3 mt-sm-0">
+                                            <div class="text-muted small">Relasi</div>
+                                            <div class="font-weight-bold" id="guestRelasi"></div>
+                                        </div>
+                                        <div class="col-sm-6 mt-3">
+                                            <div class="text-muted small">Nama di Undangan</div>
+                                            <div class="font-weight-bold" id="guestNamaUndangan"></div>
+                                        </div>
+                                        <div class="col-sm-6 mt-3">
+                                            <div class="text-muted small">Jenis Undangan</div>
+                                            <div class="font-weight-bold" id="guestJenisUndangan"></div>
+                                        </div>
+                                        <div class="col-sm-6 mt-3">
+                                            <div class="text-muted small">Keterangan</div>
+                                            <div class="font-weight-bold" id="guestKeterangan"></div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 mt-3 mt-md-0">
-                                    <div class="border rounded p-3 h-100">
-                                        <div class="font-weight-bold mb-2">Submit Check-in</div>
-                                        <button type="submit" class="btn btn-success btn-block" id="btnSubmit">
-                                            <i class="fa fa-check"></i> CHECKIN TAMU
+                                <div class="hint-box mt-3">
+                                    <div class="font-weight-bold mb-1">Tips Cepat</div>
+                                    <div class="text-muted small">Kalau kondisi ramai, check-in bisa dilakukan tanpa selfie. Selfie bersifat opsional dan bisa diulang.</div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-5 mt-3 mt-lg-0">
+                                <div class="mb-2 font-weight-bold text-dark">Selfie (Opsional) &amp; Submit</div>
+                                <div class="border rounded p-3">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 10px;">
+                                        <div class="font-weight-bold">Selfie Tamu</div>
+                                        <span class="badge badge-pill badge-secondary" id="selfieStatus">Belum Ada</span>
+                                    </div>
+
+                                    <div class="mt-3 text-center">
+                                        <div id="selfiePreview" class="text-muted small">Tidak ada selfie.</div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <button type="button" class="btn btn-primary btn-lg btn-block" data-toggle="modal"
+                                            data-target="#selfieModal" id="btnOpenSelfie" disabled>
+                                            Ambil Selfie
                                         </button>
-                                        <button type="button" class="btn btn-link btn-sm btn-block mt-2" id="btnBack">
-                                            Kembali
+
+                                        <div class="d-flex flex-wrap mt-2" style="gap: 10px;">
+                                            <button type="button" class="btn btn-outline-warning btn-lg flex-fill d-none"
+                                                id="btnRetakeSelfie" data-toggle="modal" data-target="#selfieModal">
+                                                Ulang
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-lg flex-fill d-none"
+                                                id="btnRemoveSelfie">
+                                                Hapus
+                                            </button>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-success btn-lg btn-block mt-2" id="btnSubmit" disabled>
+                                            <i class="fa fa-check"></i> CHECKIN TAMU
                                         </button>
                                     </div>
                                 </div>
@@ -251,7 +263,10 @@
 
         $('#guest_id').on('change', function() {
             let id = $(this).val();
-            if (!id) return;
+            if (!id) {
+                resetGuest();
+                return;
+            }
 
             $.get(`{{ url('/modules/guest/info') }}/` + id, function(data) {
                 $('#infoGuest').removeClass('d-none');
@@ -260,7 +275,10 @@
                 $('#guestRelasi').text(data.relasi || '-');
                 $('#guestJenisUndangan').text(data.jenis_undangan || '-');
                 $('#guestKeterangan').text(data.keterangan || '-');
-                $('#btnNext').prop('disabled', false);
+
+                document.getElementById('btnSubmit').disabled = false;
+                document.getElementById('btnOpenSelfie').disabled = false;
+                document.getElementById('btnClearGuest').disabled = false;
             });
         });
 
@@ -269,16 +287,15 @@
             selfieFacingMode: 'user',
         };
 
-        const elStepBadge = document.getElementById('stepBadge');
-        const elStep1 = document.getElementById('step1');
-        const elStep2 = document.getElementById('step2');
-        const elBtnNext = document.getElementById('btnNext');
-        const elBtnBack = document.getElementById('btnBack');
         const elAttendanceForm = document.getElementById('attendanceForm');
         const elSelfieInput = document.getElementById('selfie');
         const elSelfieStatus = document.getElementById('selfieStatus');
         const elSelfiePreview = document.getElementById('selfiePreview');
+        const elBtnOpenSelfie = document.getElementById('btnOpenSelfie');
+        const elBtnRetakeSelfie = document.getElementById('btnRetakeSelfie');
         const elBtnRemoveSelfie = document.getElementById('btnRemoveSelfie');
+        const elBtnClearGuest = document.getElementById('btnClearGuest');
+        const elBtnSubmit = document.getElementById('btnSubmit');
 
         const elSelfieVideo = document.getElementById('selfieVideo');
         const elSelfieCanvas = document.getElementById('selfieCanvas');
@@ -289,27 +306,40 @@
         const elCountdownLayer = document.getElementById('selfieCountdownLayer');
         const elCountdownNumber = document.getElementById('selfieCountdownNumber');
 
-        function setStep(stepText) {
-            elStepBadge.innerText = stepText;
-        }
-
         function setSelfie(base64) {
             elSelfieInput.value = base64 || '';
 
             if (!base64) {
                 elSelfieStatus.className = 'badge badge-pill badge-secondary';
                 elSelfieStatus.innerText = 'Belum Ada';
-                elSelfiePreview.className = 'text-center text-muted small';
+                elSelfiePreview.className = 'text-muted small';
                 elSelfiePreview.innerText = 'Tidak ada selfie.';
                 elBtnRemoveSelfie.classList.add('d-none');
+                elBtnRetakeSelfie.classList.add('d-none');
+                elBtnOpenSelfie.classList.remove('d-none');
                 return;
             }
 
             elSelfieStatus.className = 'badge badge-pill badge-success';
             elSelfieStatus.innerText = 'Ada';
-            elSelfiePreview.className = 'text-center';
+            elSelfiePreview.className = '';
             elSelfiePreview.innerHTML = `<img src="${base64}" class="selfie-preview-img" alt="Selfie">`;
             elBtnRemoveSelfie.classList.remove('d-none');
+            elBtnRetakeSelfie.classList.remove('d-none');
+            elBtnOpenSelfie.classList.add('d-none');
+        }
+
+        function resetGuest() {
+            $('#infoGuest').addClass('d-none');
+            $('#guestNama').text('');
+            $('#guestNamaUndangan').text('');
+            $('#guestRelasi').text('');
+            $('#guestJenisUndangan').text('');
+            $('#guestKeterangan').text('');
+            setSelfie(null);
+            elBtnSubmit.disabled = true;
+            elBtnOpenSelfie.disabled = true;
+            elBtnClearGuest.disabled = true;
         }
 
         async function stopSelfieStream() {
@@ -369,20 +399,13 @@
             elBtnStartSelfie.disabled = false;
         }
 
-        elBtnNext.addEventListener('click', () => {
-            elStep1.classList.add('d-none');
-            elStep2.classList.remove('d-none');
-            setStep('Step 2/2');
-        });
-
-        elBtnBack.addEventListener('click', () => {
-            elStep2.classList.add('d-none');
-            elStep1.classList.remove('d-none');
-            setStep('Step 1/2');
-        });
-
         elBtnRemoveSelfie.addEventListener('click', () => {
             setSelfie(null);
+        });
+
+        elBtnClearGuest.addEventListener('click', () => {
+            $('#guest_id').val(null).trigger('change');
+            resetGuest();
         });
 
         elBtnCamFront.addEventListener('click', () => {
@@ -421,6 +444,9 @@
                 elBtnCamFront.classList.add('active');
                 elBtnCamBack.classList.remove('active');
             }
+            try {
+                await startSelfieStream();
+            } catch (e) {}
         });
 
         $('#selfieModal').on('hidden.bs.modal', async function() {
@@ -437,6 +463,8 @@
                 Swal.fire('Oops', 'Pilih tamu dulu ya', 'warning');
             }
         });
+
+        resetGuest();
     </script>
     <script>
         @if (session('success'))

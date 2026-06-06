@@ -10,6 +10,7 @@ use App\Models\GuestCheckin;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ScanQRGuestController extends Controller
 {
@@ -20,7 +21,27 @@ class ScanQRGuestController extends Controller
 
     public function validateToken(Request $request)
     {
-        $guest = Guest::where('kode_token', '=', $request->kode_token, 'and')->first();
+        $validator = Validator::make($request->all(), [
+            'kode_token' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'QR Code tidak valid',
+            ], 422);
+        }
+
+        $kodeToken = trim((string) $request->kode_token);
+
+        if ($kodeToken === '') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'QR Code tidak valid',
+            ], 422);
+        }
+
+        $guest = Guest::where('kode_token', '=', $kodeToken, 'and')->first();
 
         if (!$guest) {
             return response()->json([
@@ -74,7 +95,28 @@ class ScanQRGuestController extends Controller
 
     public function store(Request $request)
     {
-        $guest = Guest::where('kode_token', '=', $request->kode_token, 'and')->first();
+        $validator = Validator::make($request->all(), [
+            'kode_token' => ['required', 'string'],
+            'selfie' => ['nullable', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'QR Code tidak valid',
+            ], 422);
+        }
+
+        $kodeToken = trim((string) $request->kode_token);
+
+        if ($kodeToken === '') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'QR Code tidak valid',
+            ], 422);
+        }
+
+        $guest = Guest::where('kode_token', '=', $kodeToken, 'and')->first();
 
         if (!$guest) {
             return response()->json([

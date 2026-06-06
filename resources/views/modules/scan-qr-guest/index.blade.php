@@ -15,6 +15,29 @@
             padding: 30px;
         }
 
+        .top-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mode-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fc;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 999px;
+            padding: 8px 12px;
+        }
+
+        .mode-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
         #reader {
             width: 100%;
             height: 360px;
@@ -43,6 +66,58 @@
             pointer-events: none;
         }
 
+        .scan-hint {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: min(78%, 340px);
+            aspect-ratio: 1 / 1;
+            border-radius: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.65);
+            box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 12px;
+            color: rgba(255, 255, 255, 0.92);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.01em;
+            pointer-events: none;
+        }
+
+        .scan-status {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .quick-log {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .quick-log-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .quick-log-name {
+            font-weight: 700;
+            color: #1f2d3d;
+        }
+
+        .quick-log-meta {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
         .selfie-shell {
             width: 100%;
             height: 360px;
@@ -60,8 +135,9 @@
 
         .selfie-preview-img {
             width: 100%;
-            max-width: 180px;
+            max-width: 320px;
             border-radius: 12px;
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
         }
 
         .countdown-layer {
@@ -95,69 +171,128 @@
         <div class="col-md-12">
             <div class="card shadow mb-4">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
+                    <div class="top-controls mb-3">
                         <div>
                             <h4 class="mb-1 font-weight-bold text-primary">Scan Kehadiran Tamu</h4>
-                            <div class="text-muted small">Scan QR terlebih dahulu, selfie opsional, lalu submit.</div>
+                            <div class="text-muted small">Mode cepat (auto) untuk kondisi ramai. Selfie tetap opsional.</div>
                         </div>
-                        <span class="badge badge-pill badge-info" id="stepBadge">Step 1/3</span>
-                    </div>
 
-                    <div id="scanSection">
-                        <div class="mb-2 font-weight-bold text-dark">1) Scan QR Code</div>
-                        <div class="d-flex flex-wrap align-items-center justify-content-center mb-2" style="gap: 8px;">
+                        <div class="d-flex flex-wrap align-items-center" style="gap: 10px;">
                             <div class="btn-group btn-group-sm" role="group" aria-label="Pilih Kamera Scan">
                                 <button type="button" class="btn btn-outline-secondary active" id="btnScanFront">Kamera Depan</button>
                                 <button type="button" class="btn btn-outline-secondary" id="btnScanBack">Kamera Belakang</button>
                             </div>
-                        </div>
-                        <div class="video-shell mb-3">
-                            <video id="reader" autoplay playsinline muted></video>
-                            <div class="video-overlay">
-                                <div class="spinner-border text-light" role="status" style="display:none;"
-                                    id="scanLoading"></div>
+
+                            <div class="mode-pill">
+                                <div>
+                                    <div class="mode-label">Alur</div>
+                                    <div class="font-weight-bold small">Scan → Selfie (opsional) → Simpan</div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div id="resultSection" class="d-none">
-                        <hr>
-                        <div class="mb-2 font-weight-bold text-dark">2) Data Tamu</div>
-                        <div class="alert alert-success py-2 mb-3" id="guestInfo"></div>
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <div id="scanSection">
+                                <div class="mb-2 font-weight-bold text-dark">Scan QR Code</div>
+                                <div class="video-shell mb-3">
+                                    <video id="reader" autoplay playsinline muted></video>
+                                    <div class="scan-hint" aria-hidden="true">Arahkan QR ke kotak</div>
+                                    <div class="video-overlay">
+                                        <div class="spinner-border text-light" role="status" style="display:none;"
+                                            id="scanLoading"></div>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="font-weight-bold">Selfie (Opsional)</div>
-                                        <span class="badge badge-pill badge-secondary" id="selfieStatus">Belum Ada</span>
+                            <div class="scan-status">
+                                <div class="alert alert-info py-2 mb-0" id="scanStatus">
+                                    <b>Status:</b> <span id="scanStatusText">Menunggu QR...</span>
+                                </div>
+                            </div>
+
+                            <div class="border rounded p-3 mt-3 d-none" id="leftActionGuide">
+                                <div class="d-flex align-items-center" style="gap: 10px;">
+                                    <div class="text-success" style="font-size: 22px;">
+                                        <i class="fa fa-check-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-weight-bold">QR Valid</div>
+                                        <div class="text-muted small">Lanjutkan proses kehadiran.</div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="text-muted small">Langkah cepat</div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <div class="d-flex align-items-center" style="gap: 10px;">
+                                            <span class="badge badge-pill badge-primary">1</span>
+                                            <div class="small"><b>Ambil Selfie</b> (opsional)</div>
+                                        </div>
+                                        <div class="d-flex align-items-center mt-2" style="gap: 10px;">
+                                            <span class="badge badge-pill badge-success">2</span>
+                                            <div class="small"><b>Simpan Check-in</b> untuk menyelesaikan</div>
+                                        </div>
+                                        <div class="d-flex align-items-center mt-2" style="gap: 10px;">
+                                            <span class="badge badge-pill badge-secondary">3</span>
+                                            <div class="small"><b>Scan Baru</b> untuk tamu berikutnya</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5 mt-3 mt-lg-0">
+                            <div id="resultSection" class="d-none">
+                                <div class="mb-2 font-weight-bold text-dark">Tamu Terdeteksi</div>
+                                <div class="border rounded p-3">
+                                    <div class="text-muted small">Nama</div>
+                                    <div class="h4 mb-0 font-weight-bold" id="guestName">-</div>
+                                    <div class="text-muted small mt-1">Token: <span id="guestToken">-</span></div>
+
+                                    <div class="mt-3">
+                                        <div class="text-muted small mb-2">Preview Selfie</div>
+                                        <div id="selfiePreview" class="text-muted small text-center">Tidak ada selfie.</div>
                                     </div>
 
-                                    <div id="selfiePreview" class="text-center text-muted small">Tidak ada selfie.</div>
+                                    <div class="mt-3 d-flex flex-wrap align-items-center" style="gap: 8px;">
+                                        <span class="badge badge-pill badge-secondary" id="selfieStatus">Selfie: Belum Ada</span>
+                                    </div>
 
-                                    <div class="mt-3 d-flex flex-wrap" style="gap: 8px;">
-                                        <button type="button" class="btn btn-primary btn-sm" id="btnOpenSelfie"
+                                    <div class="mt-3">
+                                        <button type="button" class="btn btn-primary btn-lg btn-block" id="btnOpenSelfie"
                                             data-toggle="modal" data-target="#selfieModal">
-                                            Ambil Selfie
+                                            Ambil Selfie (Opsional)
                                         </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm d-none"
-                                            id="btnRemoveSelfie">
-                                            Hapus Selfie
+
+                                        <div class="d-flex flex-wrap mt-2" style="gap: 10px;">
+                                            <button type="button" class="btn btn-outline-warning btn-lg flex-fill d-none"
+                                                id="btnRetakeSelfie" data-toggle="modal" data-target="#selfieModal">
+                                                Ulang
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-lg flex-fill d-none"
+                                                id="btnRemoveSelfie">
+                                                Hapus
+                                            </button>
+                                        </div>
+
+                                        <button type="button" class="btn btn-success btn-lg btn-block mt-2" id="btnSubmit">
+                                            Simpan Check-in
+                                        </button>
+
+                                        <button type="button" class="btn btn-link btn-sm btn-block mt-2" id="btnScanNew">
+                                            Scan Baru
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-md-6 mt-3 mt-md-0">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="font-weight-bold mb-2">3) Submit Kehadiran</div>
-                                    <button type="button" class="btn btn-success btn-block" id="btnSubmit" disabled>
-                                        Submit Check-in
-                                    </button>
-                                    <button type="button" class="btn btn-link btn-sm btn-block mt-2" id="btnScanNew">
-                                        Scan QR Lain
-                                    </button>
-                                </div>
+                            <div class="quick-log mt-3">
+                                <div class="text-muted small mb-2">Terakhir diproses</div>
+                                <div id="quickLogList" class="d-grid" style="gap: 8px;"></div>
                             </div>
                         </div>
                     </div>
@@ -194,7 +329,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-3 text-center" id="selfieModalPreview"></div>
+                    <div class="mt-3 text-center text-muted small" id="selfieModalPreview">Preview akan tampil di halaman setelah foto diambil.</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Tutup</button>
@@ -213,6 +348,8 @@
             kode_token: null,
             guest: null,
             selfie: null,
+            scanCooldown: false,
+            quickLog: [],
             scanning: false,
             codeReader: null,
             selfieStream: null,
@@ -225,14 +362,20 @@
         const elScanLoading = document.getElementById('scanLoading');
         const elScanSection = document.getElementById('scanSection');
         const elResultSection = document.getElementById('resultSection');
-        const elGuestInfo = document.getElementById('guestInfo');
-        const elStepBadge = document.getElementById('stepBadge');
+        const elScanStatus = document.getElementById('scanStatus');
+        const elScanStatusText = document.getElementById('scanStatusText');
+        const elLeftActionGuide = document.getElementById('leftActionGuide');
+        const elGuestName = document.getElementById('guestName');
+        const elGuestToken = document.getElementById('guestToken');
         const elBtnScanNew = document.getElementById('btnScanNew');
         const elBtnSubmit = document.getElementById('btnSubmit');
+        const elBtnOpenSelfie = document.getElementById('btnOpenSelfie');
         const elBtnRemoveSelfie = document.getElementById('btnRemoveSelfie');
+        const elBtnRetakeSelfie = document.getElementById('btnRetakeSelfie');
         const elSelfieStatus = document.getElementById('selfieStatus');
         const elSelfiePreview = document.getElementById('selfiePreview');
         const elSelfieInput = document.getElementById('selfie');
+        const elQuickLogList = document.getElementById('quickLogList');
 
         const elSelfieVideo = document.getElementById('selfieVideo');
         const elSelfieCanvas = document.getElementById('selfieCanvas');
@@ -247,12 +390,48 @@
         const elBtnScanFront = document.getElementById('btnScanFront');
         const elBtnScanBack = document.getElementById('btnScanBack');
 
-        function setStep(stepText) {
-            elStepBadge.innerText = stepText;
-        }
-
         function setLoading(isLoading) {
             elScanLoading.style.display = isLoading ? 'inline-block' : 'none';
+        }
+
+        function setScanStatus(type, text) {
+            const map = {
+                info: 'alert alert-info py-2 mb-3',
+                success: 'alert alert-success py-2 mb-3',
+                warning: 'alert alert-warning py-2 mb-3',
+                danger: 'alert alert-danger py-2 mb-3',
+            };
+            if (elScanStatus) {
+                elScanStatus.className = map[type] || map.info;
+            }
+            if (elScanStatusText) {
+                elScanStatusText.innerText = text;
+            }
+        }
+
+        function renderQuickLog() {
+            if (!elQuickLogList) return;
+            if (!state.quickLog || state.quickLog.length === 0) {
+                elQuickLogList.innerHTML = `<div class="text-muted small">Belum ada.</div>`;
+                return;
+            }
+            elQuickLogList.innerHTML = state.quickLog.map(i => {
+                return `
+                    <div class="quick-log-item">
+                        <div>
+                            <div class="quick-log-name">${i.nama}</div>
+                            <div class="quick-log-meta">${i.token} • ${i.time}</div>
+                        </div>
+                        <span class="badge badge-pill ${i.typeClass}">${i.label}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function pushQuickLog(item) {
+            state.quickLog.unshift(item);
+            state.quickLog = state.quickLog.slice(0, 5);
+            renderQuickLog();
         }
 
         function getCameraHelpText(error) {
@@ -324,6 +503,7 @@
 
                 const callback = (result, err) => {
                     if (!state.scanning) return;
+                    if (state.scanCooldown) return;
                     if (result && result.text) {
                         onScan(result.text);
                     }
@@ -422,52 +602,86 @@
 
             if (!state.selfie) {
                 elSelfieStatus.className = 'badge badge-pill badge-secondary';
-                elSelfieStatus.innerText = 'Belum Ada';
-                elSelfiePreview.className = 'text-center text-muted small';
+                elSelfieStatus.innerText = 'Selfie: Belum Ada';
+                elSelfiePreview.className = 'text-muted small';
                 elSelfiePreview.innerText = 'Tidak ada selfie.';
                 elBtnRemoveSelfie.classList.add('d-none');
+                elBtnRetakeSelfie.classList.add('d-none');
+                elBtnOpenSelfie.classList.remove('d-none');
                 return;
             }
 
             elSelfieStatus.className = 'badge badge-pill badge-success';
-            elSelfieStatus.innerText = 'Ada';
-            elSelfiePreview.className = 'text-center';
+            elSelfieStatus.innerText = 'Selfie: Ada';
+            elSelfiePreview.className = '';
             elSelfiePreview.innerHTML = `<img src="${state.selfie}" class="selfie-preview-img" alt="Selfie">`;
             elBtnRemoveSelfie.classList.remove('d-none');
+            elBtnRetakeSelfie.classList.remove('d-none');
+            elBtnOpenSelfie.classList.add('d-none');
         }
 
         function resetFlow() {
             state.kode_token = null;
             state.guest = null;
+            state.scanCooldown = false;
             setSelfie(null);
             elResultSection.classList.add('d-none');
             elScanSection.classList.remove('d-none');
-            elBtnSubmit.disabled = true;
-            setStep('Step 1/3');
+            elLeftActionGuide.classList.add('d-none');
+            elBtnSubmit.disabled = false;
+            elBtnScanNew.disabled = false;
+            if (elBtnOpenSelfie) elBtnOpenSelfie.disabled = false;
+            elBtnRetakeSelfie.disabled = false;
+            elBtnRemoveSelfie.disabled = false;
+            setScanStatus('info', 'Menunggu QR...');
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
         async function onScan(decodedText) {
             if (state.kode_token) return;
+
+            const token = String(decodedText || '').trim();
+            if (!token) return;
+            if (token.length < 3) return;
+
+            state.scanCooldown = true;
             stopScanner();
 
-            const data = await validateToken(decodedText);
+            const data = await validateToken(token);
             if (data.status !== 'success') {
-                Swal.fire('Error', data.message || 'QR Code tidak valid', 'error');
+                const msg = (data.message || 'QR Code tidak valid');
+                if (String(msg).toLowerCase().includes('tidak valid')) {
+                    state.scanCooldown = false;
+                    setScanStatus('warning', 'QR tidak dikenali. Coba lagi.');
+                    setTimeout(() => startScanner(), 250);
+                    return;
+                }
+
+                Swal.fire('Error', `${escapeHtml(msg)}<br><small>Token: ${escapeHtml(token)}</small>`, 'error');
                 resetFlow();
-                setTimeout(() => startScanner(), 500);
+                setTimeout(() => startScanner(), 600);
                 return;
             }
 
-            state.kode_token = decodedText;
+            state.kode_token = token;
             state.guest = data.guest;
 
-            elGuestInfo.innerHTML =
-                `<b>Nama:</b> ${state.guest.nama_tamu}<br><span class="text-muted small">Kode: ${state.guest.kode_token}</span>`;
+            elGuestName.innerText = state.guest.nama_tamu;
+            elGuestToken.innerText = state.guest.kode_token;
 
+            setScanStatus('success', 'QR valid. Pilih: Ambil Selfie (opsional) atau Simpan Check-in.');
             elScanSection.classList.add('d-none');
             elResultSection.classList.remove('d-none');
-            elBtnSubmit.disabled = false;
-            setStep('Step 2/3');
+            elLeftActionGuide.classList.remove('d-none');
+            setSelfie(null);
         }
 
         async function submitCheckin() {
@@ -477,6 +691,11 @@
             }
 
             elBtnSubmit.disabled = true;
+            elBtnScanNew.disabled = true;
+            if (elBtnOpenSelfie) elBtnOpenSelfie.disabled = true;
+            elBtnRetakeSelfie.disabled = true;
+            elBtnRemoveSelfie.disabled = true;
+
             const res = await fetch("{{ url('/modules/scan-qr-guest') }}", {
                 method: "POST",
                 headers: {
@@ -498,13 +717,21 @@
                     timer: 1800,
                     showConfirmButton: false
                 });
+                pushQuickLog({
+                    nama: data.nama,
+                    token: state.kode_token,
+                    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                    label: 'OK',
+                    typeClass: 'badge-success'
+                });
                 resetFlow();
                 setTimeout(() => startScanner(), 500);
                 return;
             }
 
             Swal.fire('Error', data.message || 'Gagal menyimpan data', 'error');
-            elBtnSubmit.disabled = false;
+            resetFlow();
+            setTimeout(() => startScanner(), 700);
         }
 
         async function stopSelfieStream() {
@@ -560,7 +787,7 @@
             state.selfieDraft = null;
             elSelfieModalPreview.innerHTML = '';
             $('#selfieModal').modal('hide');
-            setStep('Step 3/3');
+            setScanStatus('success', 'Selfie tersimpan. Klik "Simpan Check-in" untuk menyelesaikan.');
 
             elBtnCapture.disabled = false;
             elBtnStartSelfie.disabled = false;
@@ -575,6 +802,7 @@
 
         elBtnRemoveSelfie.addEventListener('click', () => {
             setSelfie(null);
+            if (state.kode_token) setScanStatus('success', 'Selfie dihapus. Klik "Simpan Check-in" untuk menyelesaikan.');
         });
 
         elBtnCamFront.addEventListener('click', () => {
@@ -656,7 +884,8 @@
             once: true
         });
 
-        setStep('Step 1/3');
+        renderQuickLog();
+        setScanStatus('info', 'Menunggu QR...');
         startScanner();
     </script>
 @endpush

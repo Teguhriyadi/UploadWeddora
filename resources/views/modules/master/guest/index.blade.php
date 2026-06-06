@@ -91,11 +91,11 @@
                 <div class="col-md-3">
                     <label for="filterKehadiran" class="form-label"> Status Kehadiran </label>
                     <select id="filterKehadiran" class="form-control form-control-sm">
-                        <option value="null" selected>Belum Ditentukan</option>
+                        <option value="null">Belum Ditentukan</option>
                         <option value="1">Pasti Hadir</option>
                         <option value="0">Kemungkinan Tidak Hadir</option>
                         <option value="2">Tidak Hadir</option>
-                        <option value="">Semua Kehadiran</option>
+                        <option value="" selected>Semua Kehadiran</option>
                     </select>
                 </div>
 
