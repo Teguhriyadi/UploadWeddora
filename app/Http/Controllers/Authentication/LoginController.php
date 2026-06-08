@@ -48,7 +48,7 @@ class LoginController extends Controller
                 ->with('success', 'Anda Berhasil Login');
         }
 
-        return back()->with("error", "Data Anda Salah")->withInput();
+        return back()->with("error", "Username / Password Salah")->withInput();
     }
 
     public function logout()
