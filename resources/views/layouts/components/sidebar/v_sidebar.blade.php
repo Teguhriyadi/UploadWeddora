@@ -70,6 +70,15 @@
         </a>
     </li>
 
+    @if (Auth::user()->username == "teguh123")
+    <li class="nav-item {{ Request::is('modules/riwayat-aktifitas') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/modules/riwayat-aktifitas') }}">
+            <i class="fas fa-book"></i>
+            <span>Aktivitas Login</span>
+        </a>
+    </li>
+    @endif
+
     @if (Auth::user()->role->nama_role == 'Administrator')
         <li class="nav-item {{ Request::is('modules/role*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ url('/modules/role') }}">

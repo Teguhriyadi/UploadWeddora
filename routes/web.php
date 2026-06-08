@@ -11,6 +11,7 @@ use App\Http\Controllers\Master\SouvenirDepositController;
 use App\Http\Controllers\Master\TitipKehadiranController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\QRCode\ScanQRGuestController;
+use App\Http\Controllers\Report\ActivityLogController;
 use App\Http\Controllers\Report\HistoryGuestController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,6 +74,9 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::resource("titip-kehadiran", TitipKehadiranController::class);
         Route::resource("titip-kado", SouvenirDepositController::class);
 
+        Route::get("/riwayat-aktifitas", [ActivityLogController::class, "index"]);
+
+        Route::get("/activity-log", [ActivityLogController::class, "index"]);
         Route::get("/error-page", [AppController::class, "error_page"]);
     });
 
