@@ -47,6 +47,8 @@ class LoginController extends Controller
                 ->intended('/modules/dashboard')
                 ->with('success', 'Anda Berhasil Login');
         }
+
+        return back()->with("error", "Data Anda Salah")->withInput();
     }
 
     public function logout()
