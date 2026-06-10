@@ -14,7 +14,6 @@
 
         #dataTable {
             width: 100% !important;
-            min-width: 1100px;
         }
 
         #dataTable th,
@@ -154,17 +153,20 @@
                         data: 'DT_RowIndex',
                         orderable: false,
                         searchable: false,
-                        className: 'text-center'
+                        className: 'text-center',
+                        width: '50px'
                     },
                     {
                         data: 'nama_role',
-                        name: 'nama_role'
+                        name: 'nama_role',
+                        width: '100px'
                     },
                     {
                         data: 'action',
                         orderable: false,
                         searchable: false,
-                        className: 'text-center'
+                        className: 'text-center',
+                        width: '50px'
                     }
                 ]
             });

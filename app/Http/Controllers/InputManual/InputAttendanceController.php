@@ -108,10 +108,11 @@ class InputAttendanceController extends Controller
     {
         $q = $request->q;
 
-        $data = Guest::with('kategori')
-            ->where('nama_tamu', 'like', '%' . $q . '%', 'and')
-            ->where("status_kehadiran", "=", "0", "and")
-            ->limit(20)
+        $data = Guest::where(function ($query) use ($q) {
+                $query->where('nama_tamu', 'like', '%' . $q . '%')
+                    ->orWhere('nama_undangan', 'like', '%' . $q . '%');
+            })
+            ->where('status_kehadiran', '0')
             ->get(['*']);
 
         $result = $data->map(function ($item) {
@@ -119,8 +120,8 @@ class InputAttendanceController extends Controller
             return [
                 'id' => $item->id,
                 'nama_tamu' => $item->nama_tamu,
-                'keluarga' => $item->keluarga,
-                'kategori' => $item->kategori->nama_kategori ?? '',
+                'relasi' => $item->relasi,
+                'keterangan' => $item->keterangan,
                 'nama_undangan' => $item->nama_undangan
             ];
         });

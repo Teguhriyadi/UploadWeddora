@@ -30,8 +30,11 @@
                     @csrf
                     <div class="card-body">
                         <div class="mb-3 row">
-                            <label for="wakil_id" class="col-sm-2 col-form-label">
-                                Wakil Tamu
+                            <label for="wakil_id" class="col-sm-3 col-form-label">
+                                Wakil Tamu <br>
+                                <small>
+                                    (Wakil harus checkin dahulu)
+                                </small>
                                 <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
@@ -57,7 +60,7 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="guest_id" class="col-sm-2 col-form-label">
+                            <label for="guest_id" class="col-sm-3 col-form-label">
                                 Nama Tamu Berhalangan
                                 <span class="text-danger">*</span>
                             </label>
@@ -78,8 +81,8 @@
                                             @endforeach
                                         </select>
 
-                                        <button type="button" class="btn btn-primary btn-sm mt-2" id="btnTamuLain">
-                                            Tidak Ada Daftar Tamu?
+                                        <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="btnTamuLain">
+                                            <i class="fa fa-user"></i> Tidak Ada Daftar Tamu?
                                         </button>
                                     </div>
 
@@ -96,8 +99,8 @@
                                         <input type="text" class="form-control @error('nama_tamu') is-invalid @enderror"
                                             name="nama_tamu" id="nama_tamu" placeholder="Masukkan Nama Tamu">
 
-                                        <button type="button" class="btn btn-secondary" id="btnPilihTamu">
-                                            Pilih dari Daftar
+                                        <button type="button" class="btn btn-outline-primary" id="btnPilihTamu">
+                                            <i class="fa fa-search"></i> Pilih dari Daftar
                                         </button>
                                     </div>
 
@@ -111,7 +114,7 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="alasan_tidak_hadir" class="col-sm-2 col-form-label">
+                            <label for="alasan_tidak_hadir" class="col-sm-3 col-form-label">
                                 Alasan Tidak Hadir
                             </label>
                             <div class="col-sm-8">
@@ -132,7 +135,7 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="catatan" class="col-sm-2 col-form-label">
+                            <label for="catatan" class="col-sm-3 col-form-label">
                                 Catatan
                             </label>
                             <div class="col-sm-6">

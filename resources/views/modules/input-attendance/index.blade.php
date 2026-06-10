@@ -96,8 +96,8 @@
                             <div class="text-muted small">Cari tamu → (opsional) ambil selfie → check-in.</div>
                         </div>
                         <div class="d-flex flex-wrap" style="gap: 8px;">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" id="btnClearGuest" disabled>
-                                Ganti Tamu
+                            <button type="button" class="btn btn-outline-danger btn-sm" id="btnClearGuest" disabled>
+                                <i class="fa fa-sign-out-alt"></i> Ganti Tamu
                             </button>
                         </div>
                     </div>
@@ -254,7 +254,7 @@
                     processResults: data => ({
                         results: data.map(item => ({
                             id: item.id,
-                            text: `(${item.nama_tamu}) - ${item.nama_undangan}`
+                            text: `(${item.nama_tamu}) - ${item.nama_undangan} - ${item.relasi} - ${item.keterangan}`
                         }))
                     })
                 }
