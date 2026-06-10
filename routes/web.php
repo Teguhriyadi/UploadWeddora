@@ -61,7 +61,12 @@ Route::middleware(["web", "autentikasi"])->group(function () {
             Route::get("/", [HistoryGuestController::class, "index"]);
             Route::get("/download", [HistoryGuestController::class, "download"]);
             Route::get("/{id}", [HistoryGuestController::class, "show"]);
-            Route::get("/{id}/guest-public", [HistoryGuestController::class, "show_guest_public"]);
+            Route::get("/{id}/guest-public/show-image", [HistoryGuestController::class, "show_guest_public"]);
+
+            Route::prefix("data")->group(function() {
+                Route::get("/invitation", [HistoryGuestController::class, "dataInvitation"]);
+                Route::get("/public", [HistoryGuestController::class, "dataPublic"]);
+            });
         });
 
         Route::get("/guest/info/{id}", [InputAttendanceController::class, "info_guest"]);

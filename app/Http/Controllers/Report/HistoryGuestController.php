@@ -8,35 +8,28 @@ use App\Models\GuestCheckin;
 use App\Models\GuestPublic;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Yajra\DataTables\Facades\DataTables;
 
 class HistoryGuestController extends Controller
 {
     public function index(Request $request)
     {
-        $dari = $request->get('dari', Carbon::now()->startOfMonth()->format('Y-m-d'));
-        $sampai = $request->get('sampai', Carbon::now()->endOfMonth()->format('Y-m-d'));
-
-        $guest_invitation = GuestCheckin::whereBetween('waktu_checkin', [
-            $dari . ' 00:00:00',
-            $sampai . ' 23:59:59'
-        ])
-            ->orderBy('waktu_checkin', 'DESC')
-            ->get();
-
-        $guest_public = GuestPublic::whereBetween('waktu_checkin', [
-            $dari . ' 00:00:00',
-            $sampai . ' 23:59:59'
-        ])
-            ->orderBy('waktu_checkin', 'DESC')
-            ->get();
-
-        return view("modules.report.history-guest.index", compact(
-            'guest_invitation',
-            'guest_public',
+        $dari = $request->get(
             'dari',
-            'sampai'
-        ));
+            Carbon::now()->startOfMonth()->format('Y-m-d')
+        );
+
+        $sampai = $request->get(
+            'sampai',
+            Carbon::now()->endOfMonth()->format('Y-m-d')
+        );
+
+        return view(
+            "modules.report.history-guest.index",
+            compact('dari', 'sampai')
+        );
     }
 
     public function download(Request $request)
@@ -63,5 +56,117 @@ class HistoryGuestController extends Controller
         $data["show"] = GuestPublic::where("id", $id)->first();
 
         return view("modules.report.history-guest.show", $data);
+    }
+
+    public function dataPublic(Request $request)
+    {
+        $data = GuestPublic::whereBetween('waktu_checkin', [
+            $request->dari . ' 00:00:00',
+            $request->sampai . ' 23:59:59'
+        ])
+            ->latest();
+
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('foto', function ($row) {
+
+                if (empty($row->selfie_path)) {
+                    return '
+                    <span class="badge badge-danger">
+                        Foto Tidak Ada
+                    </span>
+                ';
+                }
+
+                $url = Storage::disk('s3')
+                    ->url('selfie/' . $row->selfie_path);
+
+                return '
+                <img src="' . $url . '" width="70" class="rounded">
+                <br>
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm mt-2"
+                    data-toggle="modal"
+                    data-target="#exampleModal"
+                    onclick="showImageGuestPublic(\'' . $row->id . '\')">
+                    <i class="fa fa-eye"></i> Lihat Gambar
+                </button>
+            ';
+            })
+            ->editColumn('waktu_checkin', function ($row) {
+                return Carbon::parse($row->waktu_checkin)
+                    ->locale('id')
+                    ->translatedFormat('d F Y H:i:s');
+            })
+            ->rawColumns(['foto'])
+            ->make(true);
+    }
+
+    public function dataInvitation(Request $request)
+    {
+        $data = GuestCheckin::with([
+            "guest.kategori"
+        ])
+            ->whereBetween('waktu_checkin', [
+                $request->dari . ' 00:00:00',
+                $request->sampai . ' 23:59:59'
+            ])
+            ->latest();
+
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('foto', function ($row) {
+
+                if (empty($row->selfie_path)) {
+                    return '
+                    <span class="badge badge-danger">
+                        Foto Tidak Ada
+                    </span>
+                ';
+                }
+
+                $url = Storage::disk('s3')
+                    ->url('selfie/' . $row->selfie_path);
+
+                return '
+                <img src="' . $url . '" width="70" class="rounded">
+                <br>
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm mt-2"
+                    data-toggle="modal"
+                    data-target="#exampleModal"
+                    onclick="showImage(\'' . $row->id . '\')">
+                    <i class="fa fa-eye"></i> Lihat Gambar
+                </button>
+            ';
+            })
+            ->addColumn('nama_tamu', function ($row) {
+                return $row->guest->nama_tamu ?? '-';
+            })
+            ->addColumn('nama_undangan', function ($row) {
+                return $row->guest->nama_undangan ?? '-';
+            })
+            ->addColumn('relasi', function ($row) {
+                return $row->guest->relasi ?? '-';
+            })
+            ->addColumn('keterangan', function ($row) {
+                return $row->guest->keterangan ?? '-';
+            })
+            ->editColumn("metode", function ($row) {
+                if ($row->metode == "manual") {
+                    return "<span class='badge bg-primary text-white fw-bold text-uppercase'>Input Manual</span>";
+                } else if ($row->metode == "qr") {
+                    return "<span class='badge bg-success text-white fw-bold text-uppercase'>Scan QR</span>";
+                }
+            })
+            ->editColumn('waktu_checkin', function ($row) {
+                return Carbon::parse($row->waktu_checkin)
+                    ->locale('id')
+                    ->translatedFormat('d F Y H:i:s');
+            })
+            ->rawColumns(['foto', 'metode'])
+            ->make(true);
     }
 }

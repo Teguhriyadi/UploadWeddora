@@ -4,6 +4,25 @@
 
 @push('style-css')
     <link href="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <style>
+        .table-responsive {
+            width: 100%;
+        }
+
+        #dataTableInvitation,
+        #dataTablePublic {
+            width: 100% !important;
+        }
+
+        .dataTables_wrapper {
+            width: 100%;
+        }
+
+        .dataTables_wrapper .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
+    </style>
 @endpush
 
 @push('content-modules')
@@ -26,7 +45,7 @@
         </div>
 
         <div class="card-body">
-            <form method="GET" action="{{ url('/modules/history-guest') }}">
+            <form method="GET" id="filterForm">
                 <input type="hidden" name="tab" id="tab_input" value="{{ request('tab', 'tamu-undangan') }}">
                 <div class="row mb-3">
                     <div class="col-md-3">
@@ -81,40 +100,11 @@
                                     <th>Nama Tamu</th>
                                     <th>Relasi</th>
                                     <th class="text-center">Metode</th>
+                                    <th>Keterangan</th>
                                     <th class="text-center">Tanggal Waktu</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($guest_invitation as $index => $item)
-                                    <tr>
-                                        <td style="width: 5%" class="text-center">{{ $index + 1 }}</td>
-                                        <td style="width: 10%" class="text-center">
-                                            @if (empty($item['selfie_path']))
-                                                <span class="badge bg-danger text-white">
-                                                    Foto Kehadiran Tidak Ada
-                                                </span>
-                                            @else
-                                                <img src="{{ Storage::disk('s3')->url('selfie/' . $item->selfie_path) }}"
-                                                    width="70" class="rounded">
-                                                <br>
-                                                <button type="button" class="btn btn-primary btn-sm mt-2"
-                                                    data-toggle="modal" data-target="#exampleModal" onclick="showImage(`{{ $item['id'] }}`)">
-                                                    <i class="fa fa-eye"></i> Lihat Gambar
-                                                </button>
-                                            @endif
-                                        </td>
-                                        <td>{{ $item->guest->nama_undangan }}</td>
-                                        <td>{{ $item->guest->nama_tamu }}</td>
-                                        <td>{{ $item->guest->relasi }}</td>
-                                        <td class="text-center text-uppercase">
-                                            {{ $item->metode }}
-                                        </td>
-                                        <td class="text-center">
-                                            {{ \Carbon\Carbon::parse($item->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i:s') }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
@@ -135,38 +125,7 @@
                                     <th class="text-center">Waktu Checkin</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($guest_public as $index => $item)
-                                    <tr>
-                                        <td style="width: 5%" class="text-center">{{ $index + 1 }}</td>
-                                        <td style="width: 10%" class="text-center">
-                                            @if (empty($item['selfie_path']))
-                                                <span class="badge bg-danger text-white">
-                                                    Foto Kehadiran Tidak Ada
-                                                </span>
-                                            @else
-                                                <img src="{{ Storage::disk('s3')->url('selfie/' . $item->selfie_path) }}"
-                                                    width="70" class="rounded">
-                                                    <br>
-
-                                                <button type="button" class="btn btn-primary btn-sm mt-2"
-                                                    data-toggle="modal" data-target="#exampleModal" onclick="showImageGuestPublic(`{{ $item['id'] }}`)">
-                                                    <i class="fa fa-eye"></i> Lihat Gambar
-                                                </button>
-                                            @endif
-                                        </td>
-                                        <td>{{ $item->nama }}</td>
-                                        <td>{{ $item->nomor_handphone ?? '-' }}</td>
-                                        <td>{{ $item->pekerjaan ?? '-' }}</td>
-                                        <td>{{ $item->alamat ?? '-' }}</td>
-                                        <td>{{ $item->relasi }}</td>
-                                        <td>{{ $item->keterangan }}</td>
-                                        <td class="text-center">
-                                            {{ \Carbon\Carbon::parse($item->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i:s') }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
@@ -199,19 +158,14 @@
     <script src="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
     <script>
+        $('#filterForm').submit(function(e) {
+            e.preventDefault();
+
+            tableInvitation.ajax.reload();
+            tablePublic.ajax.reload();
+        });
+
         $(document).ready(function() {
-            $('#dataTableInvitation').DataTable({
-                order: [
-                    [6, 'desc']
-                ]
-            });
-
-            $('#dataTablePublic').DataTable({
-                order: [
-                    [6, 'desc']
-                ]
-            });
-
             $('.nav-tabs a').on('shown.bs.tab', function(e) {
                 var tab = $(e.target).attr('href').replace('#', '');
                 $('#tab_input').val(tab);
@@ -233,7 +187,7 @@
 
         function showImageGuestPublic(id) {
             $.ajax({
-                url: "{{ url('/modules/history-guest') }}" + "/" + id + "/guest-public",
+                url: "{{ url('/modules/history-guest') }}" + "/" + id + "/guest-public/show-image",
                 type: "GET",
                 success: function(response) {
                     $("#modal-content-foto-kehadiran").html(response)
@@ -244,7 +198,97 @@
             });
         }
 
-        showImageGuestPublic
+        const tableInvitation = $('#dataTableInvitation').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ url('/modules/history-guest/data/invitation') }}",
+                data: function(d) {
+                    d.dari = $('input[name="dari"]').val();
+                    d.sampai = $('input[name="sampai"]').val();
+                }
+            },
+            columns: [{
+                    data: 'DT_RowIndex',
+                    searchable: false,
+                    orderable: false,
+                    className: 'text-center'
+                },
+                {
+                    data: 'foto',
+                    searchable: false,
+                    orderable: false,
+                    className: 'text-center'
+                },
+                {
+                    data: 'nama_undangan'
+                },
+                {
+                    data: 'nama_tamu'
+                },
+                {
+                    data: 'relasi'
+                },
+                {
+                    data: 'metode',
+                    className: 'text-center'
+                },
+                {
+                    data: 'keterangan'
+                },
+                {
+                    data: 'waktu_checkin',
+                    className: 'text-center'
+                }
+            ]
+        });
+
+        const tablePublic = $('#dataTablePublic').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ url('/modules/history-guest/data/public') }}",
+                data: function(d) {
+                    d.dari = $('input[name="dari"]').val();
+                    d.sampai = $('input[name="sampai"]').val();
+                }
+            },
+            columns: [{
+                    data: 'DT_RowIndex',
+                    searchable: false,
+                    orderable: false,
+                    className: 'text-center'
+                },
+                {
+                    data: 'foto',
+                    searchable: false,
+                    orderable: false,
+                    className: 'text-center'
+                },
+                {
+                    data: 'nama'
+                },
+                {
+                    data: 'nomor_handphone'
+                },
+                {
+                    data: 'pekerjaan'
+                },
+                {
+                    data: 'alamat'
+                },
+                {
+                    data: 'relasi'
+                },
+                {
+                    data: 'keterangan'
+                },
+                {
+                    data: 'waktu_checkin',
+                    className: 'text-center'
+                }
+            ]
+        });
     </script>
 
 @endpush
