@@ -44,7 +44,7 @@
                                         <option value="">- Pilih Tamu -</option>
 
                                         @foreach ($wakil as $tamu)
-                                            <option {{ old('wakil_id') == $guest['id'] ? 'selected' : '' }} value="{{ $tamu->id }}">
+                                            <option {{ old('wakil_id') == $tamu['id'] ? 'selected' : '' }} value="{{ $tamu->id }}">
                                                 {{ $tamu->nama_tamu }} - {{ $tamu->nama_undangan }} - Relasi :
                                                 {{ $tamu->relasi }}
                                             </option>

@@ -55,80 +55,117 @@
         .search-input {
             max-width: 260px;
         }
+
+        .dashboard-cards {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 10px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .dashboard-cards::-webkit-scrollbar {
+            height: 8px;
+            display: none;
+        }
+
+        .card-wrapper {
+            flex: 0 0 280px;
+            /* lebar card */
+            margin-right: 15px;
+        }
+
+        .stat-card {
+            height: 100%;
+        }
     </style>
 @endpush
 
 @push('content-modules')
 
-    <div class="row">
-        <div class="col-md-3 mb-4">
-            <div class="card border-left-primary shadow h-100 stat-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <small class="text-primary font-weight-bold">Total Tamu</small>
-                            <h4 class="font-weight-bold mb-0">{{ $totalTamu }}</h4>
-                            <div class="text-muted small mt-1">Data tamu terdaftar</div>
+    <div class="dashboard-cards">
+        <div class="d-flex flex-nowrap">
+            <div class="card-wrapper">
+                <div class="card border-left-primary shadow h-100 stat-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-primary font-weight-bold">Total Tamu Terdaftar</small>
+                                <h4 class="font-weight-bold mb-0">{{ $totalTamu }}</h4>
+                                <div class="text-muted small mt-1">Data tamu terdaftar</div>
+                            </div>
+                            <div class="stat-icon" aria-hidden="true">
+                                <i class="fa fa-users"></i>
+                            </div>
                         </div>
-                        <div class="stat-icon" aria-hidden="true">
-                            <i class="fa fa-users"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-wrapper">
+                <div class="card border-left-success shadow h-100 stat-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-success font-weight-bold">Tamu Hadir</small>
+                                <h4 class="font-weight-bold mb-0">{{ $tamuHadir }}</h4>
+                                <div class="text-muted small mt-1">Check-in berhasil</div>
+                            </div>
+                            <div class="stat-icon success" aria-hidden="true">
+                                <i class="fa fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-wrapper">
+                <div class="card border-left-warning shadow h-100 stat-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-warning font-weight-bold">Belum Hadir</small>
+                                <h4 class="font-weight-bold mb-0">{{ $belumHadir }}</h4>
+                                <div class="text-muted small mt-1">Belum check-in</div>
+                            </div>
+                            <div class="stat-icon warning" aria-hidden="true">
+                                <i class="fa fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-wrapper">
+                <div class="card border-left-info shadow h-100 stat-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-info font-weight-bold">Total Orang Hadir</small>
+                                <h4 class="font-weight-bold mb-0">{{ $totalHadir }}</h4>
+                                <div class="text-muted small mt-1">Status hadir</div>
+                            </div>
+                            <div class="stat-icon info" aria-hidden="true">
+                                <i class="fa fa-user-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-wrapper">
+                <div class="card border-left-secondary shadow h-100 stat-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-secondary font-weight-bold">Total Orang Luar Hadir</small>
+                                <h4 class="font-weight-bold mb-0">{{ $totalTamuLuarHadir }}</h4>
+                                <div class="text-muted small mt-1">Status orang luar hadir</div>
+                            </div>
+                            <div class="stat-icon secondary" aria-hidden="true">
+                                <i class="fa fa-user-check"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-3 mb-4">
-            <div class="card border-left-success shadow h-100 stat-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <small class="text-success font-weight-bold">Tamu Hadir</small>
-                            <h4 class="font-weight-bold mb-0">{{ $tamuHadir }}</h4>
-                            <div class="text-muted small mt-1">Check-in berhasil</div>
-                        </div>
-                        <div class="stat-icon success" aria-hidden="true">
-                            <i class="fa fa-check"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-4">
-            <div class="card border-left-warning shadow h-100 stat-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <small class="text-warning font-weight-bold">Belum Hadir</small>
-                            <h4 class="font-weight-bold mb-0">{{ $belumHadir }}</h4>
-                            <div class="text-muted small mt-1">Belum check-in</div>
-                        </div>
-                        <div class="stat-icon warning" aria-hidden="true">
-                            <i class="fa fa-clock"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-4">
-            <div class="card border-left-info shadow h-100 stat-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <small class="text-info font-weight-bold">Total Orang Hadir</small>
-                            <h4 class="font-weight-bold mb-0">{{ $totalHadir }}</h4>
-                            <div class="text-muted small mt-1">Status hadir</div>
-                        </div>
-                        <div class="stat-icon info" aria-hidden="true">
-                            <i class="fa fa-user-check"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     <div class="row">
@@ -237,7 +274,8 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="tab-pane fade {{ request('tab') == 'tamu-luar' ? 'show active' : '' }}" id="tamu-luar">
+                        <div class="tab-pane fade {{ request('tab') == 'tamu-luar' ? 'show active' : '' }}"
+                            id="tamu-luar">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-compact" id="tablePublic">
                                     <thead>

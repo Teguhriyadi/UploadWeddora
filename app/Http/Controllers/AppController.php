@@ -18,6 +18,8 @@ class AppController extends Controller
 
         $totalHadir = Guest::where("status_kehadiran", 1)->count();
 
+        $totalTamuLuarHadir = GuestPublic::count();
+
         $persen = $totalTamu > 0
             ? round(($tamuHadir / $totalTamu) * 100)
             : 0;
@@ -53,7 +55,8 @@ class AppController extends Controller
             'guest_invitation',
             'guest_public',
             'chartJam',
-            'chartTotal'
+            'chartTotal',
+            'totalTamuLuarHadir'
         ));
     }
 

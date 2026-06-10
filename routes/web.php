@@ -76,6 +76,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
 
         Route::resource("guest-public", GuestPublicController::class);
 
+        Route::get("/titip-kehadiran/delete-selected", [TitipKehadiranController::class, "delete_selected"]);
         Route::resource("titip-kehadiran", TitipKehadiranController::class);
         Route::resource("titip-kado", SouvenirDepositController::class);
 

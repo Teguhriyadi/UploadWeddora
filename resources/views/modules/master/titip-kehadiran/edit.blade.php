@@ -44,7 +44,9 @@
                                         <option value="">- Pilih Tamu -</option>
 
                                         @foreach ($wakil as $tamu)
-                                            <option {{ old('wakil_id', $edit['wakil_id']) == $tamu['id'] ? 'selected' : '' }} value="{{ $tamu->id }}">
+                                            <option
+                                                {{ old('wakil_id', $edit['wakil_id']) == $tamu['id'] ? 'selected' : '' }}
+                                                value="{{ $tamu->id }}">
                                                 {{ $tamu->nama_tamu }} - {{ $tamu->nama_undangan }} - Relasi :
                                                 {{ $tamu->relasi }}
                                             </option>
@@ -66,17 +68,16 @@
                             </label>
                             <div class="col-sm-8">
 
-                                {{-- Select Tamu --}}
                                 <div id="selectTamuWrapper">
                                     <div class="input-group">
                                         <select name="guest_id" id="guest_id"
                                             class="form-select select2 @error('guest_id') is-invalid @enderror">
                                             <option value="">- Pilih Tamu -</option>
 
-                                            @foreach ($guest as $guest)
-                                                <option {{ old('guest_id', $edit['guest_id']) == $guest['id'] ? 'selected'  : ''}} value="{{ $guest->id }}">
-                                                    {{ $guest->nama_tamu }} - {{ $guest->nama_undangan }} - Relasi :
-                                                    {{ $guest->relasi }}
+                                            @foreach ($guest as $data)
+                                                <option {{ old('guest_id', $edit['guest_id']) == $data['id'] ? 'selected' : '' }} value="{{ $data->id }}">
+                                                    {{ $data->nama_tamu }} - {{ $data->nama_undangan }} - Relasi :
+                                                    {{ $data->relasi }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -93,11 +94,10 @@
                                     @enderror
                                 </div>
 
-                                {{-- Input Manual --}}
                                 <div id="inputTamuWrapper" style="display: none;">
                                     <div class="input-group">
                                         <input type="text" class="form-control @error('nama_tamu') is-invalid @enderror"
-                                            name="nama_tamu" id="nama_tamu" placeholder="Masukkan Nama Tamu">
+                                            name="nama_tamu" id="nama_tamu" placeholder="Masukkan Nama Tamu" value="{{ old('nama_tamu', $edit['nama_tamu'] ?? '') }}">
 
                                         <button type="button" class="btn btn-outline-primary" id="btnPilihTamu">
                                             <i class="fa fa-search"></i> Pilih dari Daftar
@@ -118,13 +118,25 @@
                                 Alasan Tidak Hadir
                             </label>
                             <div class="col-sm-8">
-                                <select name="alasan_tidak_hadir" class="form-control select2 @error('alasan_tidak_hadir') is-invalid @enderror" id="alasan_tidak_hadir">
+                                <select name="alasan_tidak_hadir"
+                                    class="form-control select2 @error('alasan_tidak_hadir') is-invalid @enderror"
+                                    id="alasan_tidak_hadir">
                                     <option value=""></option>
-                                    <option {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == "Jarak Jauh" ? 'selected' : '' }} value="Jarak Jauh">Jarak Jauh</option>
-                                    <option {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == "Ada Keperluan" ? 'selected' : '' }} value="Ada Keperluan">Ada Keperluan</option>
-                                    <option {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == "Jadwal Padat" ? 'selected' : '' }} value="Jadwal Padat">Jadwal Padat</option>
-                                    <option {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == "Sedang Sakit" ? 'selected' : '' }} value="Sedang Sakit">Sedang Sakit</option>
-                                    <option {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == "Lainnya" ? 'selected' : '' }} value="Lainnya">Lainnya</option>
+                                    <option
+                                        {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == 'Jarak Jauh' ? 'selected' : '' }}
+                                        value="Jarak Jauh">Jarak Jauh</option>
+                                    <option
+                                        {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == 'Ada Keperluan' ? 'selected' : '' }}
+                                        value="Ada Keperluan">Ada Keperluan</option>
+                                    <option
+                                        {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == 'Jadwal Padat' ? 'selected' : '' }}
+                                        value="Jadwal Padat">Jadwal Padat</option>
+                                    <option
+                                        {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == 'Sedang Sakit' ? 'selected' : '' }}
+                                        value="Sedang Sakit">Sedang Sakit</option>
+                                    <option
+                                        {{ old('alasan_tidak_hadir', $edit['alasan_tidak_hadir']) == 'Lainnya' ? 'selected' : '' }}
+                                        value="Lainnya">Lainnya</option>
                                 </select>
 
                                 @error('alasan_tidak_hadir')
@@ -174,6 +186,17 @@
                 placeholder: '- Pilih -'
             });
 
+            let guestId = "{{ old('guest_id', $edit['guest_id'] ?? '') }}";
+            let namaTamu = "{{ old('nama_tamu', $edit['nama_tamu'] ?? '') }}";
+
+            if (namaTamu !== '') {
+                $('#selectTamuWrapper').hide();
+                $('#inputTamuWrapper').show();
+            } else {
+                $('#inputTamuWrapper').hide();
+                $('#selectTamuWrapper').show();
+            }
+
             $('#btnTamuLain').click(function() {
                 $('#selectTamuWrapper').hide();
                 $('#inputTamuWrapper').show();
@@ -187,7 +210,6 @@
 
                 $('#nama_tamu').val('');
             });
-
         });
     </script>
 @endpush

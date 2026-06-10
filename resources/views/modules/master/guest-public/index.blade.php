@@ -78,14 +78,14 @@
                         <tr>
                             <th class="text-center">No.</th>
                             <th class="text-center">Aksi</th>
-                            <th>Nama Tamu</th>
-                            <th>No. Handphone</th>
-                            <th>Pekerjaan</th>
-                            <th>Alamat</th>
                             <th class="text-center">Waktu Checkin</th>
+                            <th>Nama Tamu</th>
                             <th class="text-center">Jumlah Kedatangan</th>
                             <th class="text-center">Relasi</th>
                             <th class="text-center">Keterangan</th>
+                            <th>No. Handphone</th>
+                            <th>Pekerjaan</th>
+                            <th>Alamat</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -125,25 +125,13 @@
                         className: 'text-center'
                     },
                     {
-                        data: 'nama',
-                        name: 'nama'
-                    },
-                    {
-                        data: 'nomor_handphone',
-                        name: 'nomor_handphone'
-                    },
-                    {
-                        data: 'pekerjaan',
-                        name: 'pekerjaan'
-                    },
-                    {
-                        data: 'alamat',
-                        name: 'alamat'
-                    },
-                    {
                         data: 'waktu_checkin',
                         name: 'waktu_checkin',
                         className: 'text-center'
+                    },
+                    {
+                        data: 'nama',
+                        name: 'nama'
                     },
                     {
                         data: 'jumlah_kedatangan',
@@ -159,7 +147,19 @@
                         data: 'keterangan',
                         name: 'keterangan',
                         className: 'text-center'
-                    }
+                    },
+                    {
+                        data: 'nomor_handphone',
+                        name: 'nomor_handphone'
+                    },
+                    {
+                        data: 'pekerjaan',
+                        name: 'pekerjaan'
+                    },
+                    {
+                        data: 'alamat',
+                        name: 'alamat'
+                    },
                 ]
             });
         });

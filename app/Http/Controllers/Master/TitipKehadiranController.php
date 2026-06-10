@@ -70,7 +70,8 @@ class TitipKehadiranController extends Controller
     public function create()
     {
         $data["wakil"] = Guest::where("status_kehadiran", "=", "1", "and")->get(['*']);
-        $data["guest"] = Guest::get(['*']);
+        $data["guest"] = Guest::where("status_kehadiran", "!=", "1")
+                        ->get(['*']);
 
         return view("modules.master.titip-kehadiran.create", $data);
     }
@@ -126,7 +127,8 @@ class TitipKehadiranController extends Controller
 
             $data["wakil"] = Guest::where("status_kehadiran", "=", "1", "and")->get(['*']);
             $data["guest"] = Guest::get(['*']);
-            $data["edit"] = TitipKehadiran::where("id", "=", $id, "and")->first(['*']);
+
+            $data["edit"] = TitipKehadiran::where("id", $id)->first();
 
             DB::commit();
 
@@ -203,5 +205,22 @@ class TitipKehadiranController extends Controller
 
             return back()->with("error", $e->getMessage());
         }
+    }
+
+    public function delete_selected(Request $request)
+    {
+        $ids = $request->ids ?: [];
+        $before = Guest::whereIn('id', $ids, 'and', false)->get(['id', 'nama_tamu', 'kode_token'])->toArray();
+        Guest::whereIn('id', $ids, 'and', false)->delete();
+
+        ActivityLogger::log('Titip Kehadiran', 'bulk_delete', null, $before, null, [
+            'ids' => $ids,
+            'count' => is_array($ids) ? count($ids) : 0,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil dihapus'
+        ]);
     }
 }
