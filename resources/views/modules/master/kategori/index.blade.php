@@ -15,7 +15,6 @@
 
         #dataTable {
             width: 100% !important;
-            min-width: 1100px;
         }
 
         #dataTable th,
@@ -162,25 +161,29 @@
                         name: 'DT_RowIndex',
                         orderable: false,
                         searchable: false,
-                        className: 'text-center'
+                        className: 'text-center',
+                        width: '50px'
                     },
                     {
                         data: 'nama_kategori',
-                        name: 'nama_kategori'
+                        name: 'nama_kategori',
+                        width: '100px'
                     },
                     {
                         data: 'status',
                         name: 'status',
                         orderable: false,
                         searchable: false,
-                        className: 'text-center'
+                        className: 'text-center',
+                        width: '100px'
                     },
                     {
                         data: 'action',
                         name: 'action',
                         orderable: false,
                         searchable: false,
-                        className: 'text-center'
+                        className: 'text-center',
+                        width: '100px'
                     }
                 ]
             });

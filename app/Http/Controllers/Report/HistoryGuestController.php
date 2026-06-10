@@ -82,17 +82,16 @@ class HistoryGuestController extends Controller
                     ->url('selfie/' . $row->selfie_path);
 
                 return '
-                <img src="' . $url . '" width="70" class="rounded">
-                <br>
-                <button
-                    type="button"
-                    class="btn btn-primary btn-sm mt-2"
-                    data-toggle="modal"
-                    data-target="#exampleModal"
-                    onclick="showImageGuestPublic(\'' . $row->id . '\')">
-                    <i class="fa fa-eye"></i> Lihat Gambar
-                </button>
-            ';
+                    <img
+                        src="' . $url . '"
+                        width="70"
+                        class="rounded"
+                        style="cursor:pointer"
+                        data-toggle="modal"
+                        data-target="#exampleModal"
+                        onclick="showImageGuestPublic(\'' . $row->id . '\')"
+                    >
+                ';
             })
             ->editColumn('waktu_checkin', function ($row) {
                 return Carbon::parse($row->waktu_checkin)
@@ -130,17 +129,16 @@ class HistoryGuestController extends Controller
                     ->url('selfie/' . $row->selfie_path);
 
                 return '
-                <img src="' . $url . '" width="70" class="rounded">
-                <br>
-                <button
-                    type="button"
-                    class="btn btn-primary btn-sm mt-2"
-                    data-toggle="modal"
-                    data-target="#exampleModal"
-                    onclick="showImage(\'' . $row->id . '\')">
-                    <i class="fa fa-eye"></i> Lihat Gambar
-                </button>
-            ';
+                    <img
+                        src="' . $url . '"
+                        width="70"
+                        class="rounded"
+                        style="cursor:pointer"
+                        data-toggle="modal"
+                        data-target="#exampleModal"
+                        onclick="showImage(\'' . $row->id . '\')"
+                    >
+                ';
             })
             ->addColumn('nama_tamu', function ($row) {
                 return $row->guest->nama_tamu ?? '-';

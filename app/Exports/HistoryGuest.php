@@ -57,7 +57,7 @@ class HistoryGuest implements FromCollection, WithHeadings
 
                     return [
                         'no' => $index + 1,
-                        'kategori' => $item->guest->kategori->nama_kategori,
+                        'kategori' => empty($item->guest->kategori) ? null : $item->guest->kategori->nama_kategori,
                         'nama' => $item->guest->nama_tamu,
                         'keluarga' => $item->guest->keluarga,
                         'metode' => strtoupper($item->metode),
