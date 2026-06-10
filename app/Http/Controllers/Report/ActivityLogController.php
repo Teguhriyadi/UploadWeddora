@@ -32,7 +32,16 @@ class ActivityLogController extends Controller
                         ->locale('id')
                         ->translatedFormat('d F Y H:i:s');
                 })
-                ->rawColumns(['logged_at', 'created_at', 'updated_at'])
+                ->editColumn("method", function ($row) {
+                    return "<span class='badge bg-success text-white'>" . $row->method . "</span>";
+                })
+                ->editColumn("subject_type", function ($row) {
+                    return "<span class='badge bg-primary text-white'>" . $row->subject_type . "</span>";
+                })
+                ->editColumn("ip", function ($row) {
+                    return "<span class='badge bg-warning text-white'>" . $row->ip . "</span>";
+                })
+                ->rawColumns(['logged_at', 'created_at', 'updated_at', 'method', 'subject_type', 'ip'])
                 ->make(true);
         }
 
