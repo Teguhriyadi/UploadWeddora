@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
         User::create([
             "nama" => "Hanif",
             "email" => "hanif@test.com",
-            "username" => "hanif123",
+            "username" => "hanif",
             "password" => bcrypt("password"),
             "role_id" => $role_petugas->id
         ]);
@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
         User::create([
             "nama" => "Nurul",
             "email" => "nurul@gmail.com",
-            "username" => "nurul123",
+            "username" => "nurul",
             "password" => bcrypt("password"),
             "role_id" => $role_petugas->id
         ]);
@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
         User::create([
             "nama" => "Lisa",
             "email" => "lisa@gmail.com",
-            "username" => "lisa123",
+            "username" => "lisa",
             "password" => bcrypt("password"),
             "role_id" => $role_petugas->id
         ]);
