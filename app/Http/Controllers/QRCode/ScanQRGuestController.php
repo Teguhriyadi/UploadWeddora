@@ -66,6 +66,7 @@ class ScanQRGuestController extends Controller
                 'id' => $guest->id,
                 'nama_tamu' => $guest->nama_tamu,
                 'kode_token' => $guest->kode_token,
+                'kategori' => empty($guest->kategori) ? null : $guest->kategori->nama_kategori
             ]
         ]);
     }

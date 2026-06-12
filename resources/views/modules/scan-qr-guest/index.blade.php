@@ -356,6 +356,7 @@
             selfieFacingMode: 'user',
             selfieDraft: null,
             scanFacingMode: 'user',
+            kategori: null
         };
 
         const elReader = document.getElementById('reader');
@@ -674,7 +675,16 @@
             state.kode_token = token;
             state.guest = data.guest;
 
-            elGuestName.innerText = state.guest.nama_tamu;
+            if (state.guest.kategori) {
+                elGuestName.innerHTML = `
+                    ${state.guest.nama_tamu}
+                    <span class="badge bg-success text-white text-uppercase fw-bold">
+                        ${state.guest.kategori}
+                    </span>
+                `;
+            } else {
+                elGuestName.innerText = state.guest.nama_tamu;
+            }
             elGuestToken.innerText = state.guest.kode_token;
 
             setScanStatus('success', 'QR valid. Pilih: Ambil Selfie (opsional) atau Simpan Check-in.');

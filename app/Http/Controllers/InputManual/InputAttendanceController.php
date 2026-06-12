@@ -100,7 +100,8 @@ class InputAttendanceController extends Controller
             'nama_undangan' => $guest->nama_undangan,
             'relasi' => $guest->relasi,
             'jenis_undangan' => $guest->jenis_undangan,
-            'keterangan' => $guest->keterangan
+            'keterangan' => $guest->keterangan,
+            'kategori' => empty($guest->kategori) ? "-" : $guest->kategori->nama_kategori
         ]);
     }
 

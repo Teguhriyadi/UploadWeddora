@@ -145,6 +145,10 @@
                                             <div class="text-muted small">Keterangan</div>
                                             <div class="font-weight-bold" id="guestKeterangan"></div>
                                         </div>
+                                        <div class="col-sm-6 mt-3">
+                                            <div class="text-muted small">Kategori</div>
+                                            <div class="font-weight-bold" id="guestKategori"></div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -275,6 +279,7 @@
                 $('#guestRelasi').text(data.relasi || '-');
                 $('#guestJenisUndangan').text(data.jenis_undangan || '-');
                 $('#guestKeterangan').text(data.keterangan || '-');
+                $('#guestKategori').text(data.kategori || '-');
 
                 document.getElementById('btnSubmit').disabled = false;
                 document.getElementById('btnOpenSelfie').disabled = false;
@@ -336,6 +341,7 @@
             $('#guestRelasi').text('');
             $('#guestJenisUndangan').text('');
             $('#guestKeterangan').text('');
+            $('#guestKategori').text('');
             setSelfie(null);
             elBtnSubmit.disabled = true;
             elBtnOpenSelfie.disabled = true;
