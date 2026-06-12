@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TitipKehadiran\CreateRequest;
 use App\Http\Requests\TitipKehadiran\UpdateRequest;
 use App\Models\Guest;
+use App\Models\GuestCheckin;
 use App\Models\TitipKehadiran;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
@@ -82,18 +83,29 @@ class TitipKehadiranController extends Controller
 
             DB::beginTransaction();
 
+            $waktu_datang = date("Y-m-d H:i:s");
+            $users = Auth::user()->id;
+
             ActivityLogger::setContext('Titip Kehadiran', 'create', [
                 'wakil_id' => $request->wakil_id,
                 'guest_id' => $request->guest_id,
             ]);
+
             TitipKehadiran::create([
                 'wakil_id' => $request->wakil_id,
                 'guest_id' => $request->guest_id,
                 'nama_tamu' => $request->nama_tamu,
                 "alasan_tidak_hadir" => empty($request->alasan_tidak_hadir) ? "Ada Keperluan" : $request->alasan_tidak_hadir,
                 "catatan" => empty($request->catatan) ? null : $request->catatan,
-                "waktu_kehadiran" => date("Y-m-d H:i:s"),
-                "petugas_id" => Auth::user()->id
+                "waktu_kehadiran" => $waktu_datang,
+                "petugas_id" => $users
+            ]);
+
+            GuestCheckin::create([
+                "guest_id" => $request->guest_id,
+                "metode" => "manual",
+                "waktu_checkin" => $waktu_datang,
+                "users_id" => $users
             ]);
 
             if ($request->guest_id) {
