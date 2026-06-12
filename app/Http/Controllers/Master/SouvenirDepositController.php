@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TitipKado\CreateRequest;
 use App\Http\Requests\TitipKado\UpdateRequest;
 use App\Models\Guest;
+use App\Models\GuestPublic;
 use App\Models\SouvenirDeposit;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
@@ -21,13 +22,19 @@ class SouvenirDepositController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = SouvenirDeposit::with(["guest:id,nama_tamu,nama_undangan", "petugas:id,nama"]);
+            $data = SouvenirDeposit::with([
+                "guest:id,nama_tamu,nama_undangan",
+                "guest_public:id,nama",
+                "petugas:id,nama"
+            ]);
 
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('nama_tamu', function ($row) {
                     if ($row->guest_id != NULL) {
                         return $row->guest->nama_tamu . " - " . $row->guest->nama_undangan;
+                    } else if ($row->guest_public_id != NULL && $row->guest_public) {
+                        return $row->guest_public->nama . " - Tamu Luar";
                     } else if ($row->guest_id == NULL) {
                         return $row->nama_tamu;
                     }
@@ -95,6 +102,7 @@ class SouvenirDepositController extends Controller
     public function create()
     {
         $data["guest"] = Guest::get(['*']);
+        $data["guest_public"] = GuestPublic::orderBy('waktu_checkin', 'DESC')->get(['*']);
 
         return view("modules.master.souvenir-guest.create", $data);
     }
@@ -113,11 +121,13 @@ class SouvenirDepositController extends Controller
 
             ActivityLogger::setContext('Titip Kado', 'create', [
                 'guest_id' => $request->guest_id,
+                'guest_public_id' => $request->guest_public_id,
                 'foto_uploaded' => (bool) $request->foto,
             ]);
             SouvenirDeposit::create([
                 'guest_id' => $request->guest_id,
-                'nama_tamu' => $request->nama_tamu,
+                'guest_public_id' => $request->guest_public_id,
+                'nama_tamu' => $request->guest_public_id ? GuestPublic::where("id", "=", $request->guest_public_id, "and")->first(['*'])?->nama : null,
                 "nama_kado" => $request->nama_kado,
                 "qty" => $request->qty,
                 "keterangan" => $request->keterangan,
@@ -144,6 +154,7 @@ class SouvenirDepositController extends Controller
             DB::beginTransaction();
 
             $data["guest"] = Guest::get(['*']);
+            $data["guest_public"] = GuestPublic::orderBy('waktu_checkin', 'DESC')->get(['*']);
             $data["edit"] = SouvenirDeposit::where("id", "=", $id, "and")->first(['*']);
 
             DB::commit();
@@ -184,9 +195,16 @@ class SouvenirDepositController extends Controller
                 'souvenir_deposit_id' => $deposit->id,
                 'foto_changed' => $fotoChanged,
             ]);
+
+            $guestPublicName = null;
+            if ($request->guest_public_id) {
+                $guestPublicName = GuestPublic::where("id", "=", $request->guest_public_id, "and")->first(['*'])?->nama;
+            }
+
             $deposit->update([
                 'guest_id' => $request->guest_id,
-                'nama_tamu' => $request->nama_tamu,
+                'guest_public_id' => $request->guest_public_id,
+                'nama_tamu' => $guestPublicName,
                 "nama_kado" => $request->nama_kado,
                 "qty" => $request->qty,
                 "keterangan" => $request->keterangan,

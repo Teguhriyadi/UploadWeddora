@@ -24,6 +24,11 @@ class TitipKehadiran extends Model
         return $this->belongsTo(Guest::class, "wakil_id", "id");
     }
 
+    public function wakil_tamu_luar()
+    {
+        return $this->belongsTo(GuestPublic::class, "wakil_guest_public_id", "id");
+    }
+
     public function tamu_berhalangan()
     {
         return $this->belongsTo(Guest::class, "guest_id", "id");

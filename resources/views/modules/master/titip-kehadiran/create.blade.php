@@ -38,25 +38,59 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <div class="input-group">
-                                    <select name="wakil_id" id="wakil_id"
-                                        class="form-select select2 @error('wakil_id') is-invalid @enderror">
-                                        <option value="">- Pilih Tamu -</option>
+                                <div id="selectWakilWrapper">
+                                    <div class="input-group">
+                                        <select name="wakil_id" id="wakil_id"
+                                            class="form-select select2 @error('wakil_id') is-invalid @enderror">
+                                            <option value="">- Pilih Tamu -</option>
 
-                                        @foreach ($wakil as $tamu)
-                                            <option {{ old('wakil_id') == $tamu['id'] ? 'selected' : '' }} value="{{ $tamu->id }}">
-                                                {{ $tamu->nama_tamu }} - {{ $tamu->nama_undangan }} - Relasi :
-                                                {{ $tamu->relasi }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                            @foreach ($wakil as $tamu)
+                                                <option {{ old('wakil_id') == $tamu['id'] ? 'selected' : '' }} value="{{ $tamu->id }}">
+                                                    {{ $tamu->nama_tamu }} - {{ $tamu->nama_undangan }} - Relasi :
+                                                    {{ $tamu->relasi }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="btnWakilTamuLuar">
+                                            <i class="fa fa-users"></i> Dari Daftar Tamu Luar?
+                                        </button>
+                                    </div>
+
+                                    @error('wakil_id')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
-                                @error('wakil_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
+                                <div id="selectWakilPublicWrapper" style="display: none;">
+                                    <div class="input-group">
+                                        <select name="wakil_guest_public_id" id="wakil_guest_public_id"
+                                            class="form-select select2 @error('wakil_guest_public_id') is-invalid @enderror">
+                                            <option value="">- Pilih Tamu Luar -</option>
+
+                                            @foreach ($wakil_public as $tamuLuar)
+                                                <option {{ old('wakil_guest_public_id') == $tamuLuar['id'] ? 'selected' : '' }} value="{{ $tamuLuar->id }}">
+                                                    {{ $tamuLuar->nama }}
+                                                    @if (!empty($tamuLuar->nomor_handphone))
+                                                        - {{ $tamuLuar->nomor_handphone }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="btnPilihWakilUndangan">
+                                            <i class="fa fa-search"></i> Pilih dari Tamu Undangan
+                                        </button>
                                     </div>
-                                @enderror
+
+                                    @error('wakil_guest_public_id')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                         <div class="mb-3 row">
@@ -174,6 +208,16 @@
                 placeholder: '- Pilih -'
             });
 
+            let wakilGuestPublicId = "{{ old('wakil_guest_public_id', '') }}";
+
+            if (wakilGuestPublicId !== '') {
+                $('#selectWakilWrapper').hide();
+                $('#selectWakilPublicWrapper').show();
+            } else {
+                $('#selectWakilPublicWrapper').hide();
+                $('#selectWakilWrapper').show();
+            }
+
             $('#btnTamuLain').click(function() {
                 $('#selectTamuWrapper').hide();
                 $('#inputTamuWrapper').show();
@@ -186,6 +230,20 @@
                 $('#selectTamuWrapper').show();
 
                 $('#nama_tamu').val('');
+            });
+
+            $('#btnWakilTamuLuar').click(function() {
+                $('#selectWakilWrapper').hide();
+                $('#selectWakilPublicWrapper').show();
+
+                $('#wakil_id').val(null).trigger('change');
+            });
+
+            $('#btnPilihWakilUndangan').click(function() {
+                $('#selectWakilPublicWrapper').hide();
+                $('#selectWakilWrapper').show();
+
+                $('#wakil_guest_public_id').val(null).trigger('change');
             });
 
         });

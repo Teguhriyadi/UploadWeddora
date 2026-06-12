@@ -7,6 +7,7 @@ use App\Http\Requests\TitipKehadiran\CreateRequest;
 use App\Http\Requests\TitipKehadiran\UpdateRequest;
 use App\Models\Guest;
 use App\Models\GuestCheckin;
+use App\Models\GuestPublic;
 use App\Models\TitipKehadiran;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
@@ -20,16 +21,29 @@ class TitipKehadiranController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = TitipKehadiran::with(["wakil_tamu:id,nama_tamu,nama_undangan", "tamu_berhalangan:id,nama_undangan", "petugas:id,nama"]);
+            $data = TitipKehadiran::with([
+                "wakil_tamu:id,nama_tamu,nama_undangan",
+                "wakil_tamu_luar:id,nama",
+                "tamu_berhalangan:id,nama_tamu,nama_undangan",
+                "petugas:id,nama"
+            ]);
 
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('wakil_tamu', function ($row) {
-                    return $row->wakil_tamu->nama_undangan;
+                    if ($row->wakil_tamu) {
+                        return $row->wakil_tamu->nama_tamu . " - " . $row->wakil_tamu->nama_undangan;
+                    }
+
+                    if ($row->wakil_tamu_luar) {
+                        return $row->wakil_tamu_luar->nama . " - Tamu Luar";
+                    }
+
+                    return "-";
                 })
                 ->addColumn("nama_tamu_berhalangan", function ($row) {
                     if ($row->guest_id) {
-                        return $row->tamu_berhalangan->nama_undangan;
+                        return $row->tamu_berhalangan->nama_tamu . " - " . $row->tamu_berhalangan->nama_undangan;
                     } else if ($row->nama_tamu) {
                         return $row->nama_tamu;
                     }
@@ -71,8 +85,8 @@ class TitipKehadiranController extends Controller
     public function create()
     {
         $data["wakil"] = Guest::where("status_kehadiran", "=", "1", "and")->get(['*']);
-        $data["guest"] = Guest::where("status_kehadiran", "!=", "1")
-                        ->get(['*']);
+        $data["wakil_public"] = GuestPublic::orderBy('waktu_checkin', 'DESC')->get(['*']);
+        $data["guest"] = Guest::where("status_kehadiran", "!=", "1", "and")->get(['*']);
 
         return view("modules.master.titip-kehadiran.create", $data);
     }
@@ -88,11 +102,13 @@ class TitipKehadiranController extends Controller
 
             ActivityLogger::setContext('Titip Kehadiran', 'create', [
                 'wakil_id' => $request->wakil_id,
+                'wakil_guest_public_id' => $request->wakil_guest_public_id,
                 'guest_id' => $request->guest_id,
             ]);
 
             TitipKehadiran::create([
                 'wakil_id' => $request->wakil_id,
+                'wakil_guest_public_id' => $request->wakil_guest_public_id,
                 'guest_id' => $request->guest_id,
                 'nama_tamu' => $request->nama_tamu,
                 "alasan_tidak_hadir" => empty($request->alasan_tidak_hadir) ? "Ada Keperluan" : $request->alasan_tidak_hadir,
@@ -101,14 +117,14 @@ class TitipKehadiranController extends Controller
                 "petugas_id" => $users
             ]);
 
-            GuestCheckin::create([
-                "guest_id" => $request->guest_id,
-                "metode" => "manual",
-                "waktu_checkin" => $waktu_datang,
-                "users_id" => $users
-            ]);
-
             if ($request->guest_id) {
+                GuestCheckin::create([
+                    "guest_id" => $request->guest_id,
+                    "metode" => "manual",
+                    "waktu_checkin" => $waktu_datang,
+                    "users_id" => $users
+                ]);
+
                 $cek = Guest::where("id", "=", $request->guest_id, "and")->first(['*']);
                 if ($cek) {
                     ActivityLogger::setContext('Tamu Undangan', 'ubah_kehadiran', [
@@ -138,9 +154,10 @@ class TitipKehadiranController extends Controller
             DB::beginTransaction();
 
             $data["wakil"] = Guest::where("status_kehadiran", "=", "1", "and")->get(['*']);
+            $data["wakil_public"] = GuestPublic::orderBy('waktu_checkin', 'DESC')->get(['*']);
             $data["guest"] = Guest::get(['*']);
 
-            $data["edit"] = TitipKehadiran::where("id", $id)->first();
+            $data["edit"] = TitipKehadiran::where("id", "=", $id, "and")->first(['*']);
 
             DB::commit();
 
@@ -160,20 +177,57 @@ class TitipKehadiranController extends Controller
             DB::beginTransaction();
 
             $titip = TitipKehadiran::where("id", "=", $id, "and")->first(['*']);
+
             ActivityLogger::setContext('Titip Kehadiran', 'update', [
                 'titip_kehadiran_id' => $titip?->id,
             ]);
+
+            if ($titip->guest_id) {
+                $cek = Guest::where("id", "=", $titip->guest_id, "and")->first(['*']);
+
+                if ($cek) {
+                    ActivityLogger::setContext('Tamu Undangan', 'ubah_kehadiran', [
+                        'guest_id' => $cek->id,
+                        'sumber' => 'titip_kehadiran',
+                    ]);
+                    $cek->update([
+                        "status_kehadiran" => "0"
+                    ]);
+                }
+            }
+
             $titip->update([
                 'wakil_id' => $request->wakil_id,
+                'wakil_guest_public_id' => $request->wakil_guest_public_id,
                 'guest_id' => $request->guest_id,
                 'nama_tamu' => $request->nama_tamu,
                 "alasan_tidak_hadir" => empty($request->alasan_tidak_hadir) ? "Ada Keperluan" : $request->alasan_tidak_hadir,
                 "catatan" => empty($request->catatan) ? null : $request->catatan
             ]);
 
+            if ($request->guest_id) {
+                $guest = Guest::where("id", "=", $request->guest_id, "and")->first(['*']);
+                if ($guest) {
+                    ActivityLogger::setContext('Tamu Undangan', 'ubah_kehadiran', [
+                        'guest_id' => $guest->id,
+                        'sumber' => 'titip_kehadiran',
+                    ]);
+                    $guest->update([
+                        "status_kehadiran" => "1"
+                    ]);
+                }
+
+                $guestCheckin = GuestCheckin::where("guest_id", "=", $request->guest_id, "and")->first(['*']);
+                if ($guestCheckin) {
+                    $guestCheckin->update([
+                        "guest_id" => $request->guest_id
+                    ]);
+                }
+            }
+
             DB::commit();
 
-            return back()->with("success", "Data Berhasil di Simpan");
+            return redirect()->to("/modules/titip-kehadiran")->with("success", "Data Berhasil di Simpan");
         } catch (\Exception $e) {
 
             DB::rollBack();

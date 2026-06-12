@@ -26,12 +26,12 @@
                         <i class="fa fa-sign-out-alt"></i> Kembali
                     </a>
                 </div>
-                <form action="{{ url('/modules/titip-kado') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ url('/modules/titip-kado/' . $edit->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    @method('PUT')
                     <div class="card-body">
                         @php
-                            $manualMode =
-                                !empty(old('nama_tamu', $edit->nama_tamu)) && empty(old('guest_id', $edit->guest_id));
+                            $guestPublicMode = !empty(old('guest_public_id', $edit->guest_public_id));
                         @endphp
                         <div class="mb-3 row">
                             <label for="guest_id" class="col-sm-2 col-form-label">
@@ -42,7 +42,7 @@
                             <div class="col-sm-8">
 
                                 {{-- Select Tamu --}}
-                                <div id="selectTamuWrapper" {{ $manualMode ? 'style=display:none' : '' }}>
+                                <div id="selectTamuWrapper" {{ $guestPublicMode ? 'style=display:none' : '' }}>
                                     <div class="input-group">
                                         <select name="guest_id" id="guest_id"
                                             class="form-select select2 @error('guest_id') is-invalid @enderror">
@@ -60,9 +60,8 @@
 
                                         </select>
 
-                                        <button type="button" class="btn btn-primary btn-sm mt-1" id="btnTamuLain"
-                                            {{ $manualMode ? 'style=display:none' : '' }}>
-                                            Tidak Ada Daftar Tamu?
+                                        <button type="button" class="btn btn-primary btn-sm mt-1" id="btnTamuLuar">
+                                            Dari Daftar Tamu Luar?
                                         </button>
                                     </div>
 
@@ -73,20 +72,29 @@
                                     @enderror
                                 </div>
 
-                                {{-- Input Manual --}}
-                                <div id="inputTamuWrapper" {{ $manualMode ? '' : 'style=display:none' }}>
+                                <div id="selectTamuLuarWrapper" {{ $guestPublicMode ? '' : 'style=display:none' }}>
                                     <div class="input-group">
-                                        <input type="text" class="form-control @error('nama_tamu') is-invalid @enderror"
-                                            name="nama_tamu" id="nama_tamu" placeholder="Masukkan Nama Tamu"
-                                            value="{{ old('nama_tamu', $edit->nama_tamu) }}">
+                                        <select name="guest_public_id" id="guest_public_id"
+                                            class="form-select select2 @error('guest_public_id') is-invalid @enderror">
+                                            <option value="">- Pilih Tamu Luar -</option>
 
-                                        <button type="button" class="btn btn-secondary" id="btnPilihTamu"
-                                            {{ $manualMode ? '' : 'style=display:none' }}>
-                                            Pilih dari Daftar
+                                            @foreach ($guest_public as $tamuLuar)
+                                                <option value="{{ $tamuLuar->id }}"
+                                                    {{ old('guest_public_id', $edit->guest_public_id) == $tamuLuar->id ? 'selected' : '' }}>
+                                                    {{ $tamuLuar->nama }}
+                                                    @if (!empty($tamuLuar->nomor_handphone))
+                                                        - {{ $tamuLuar->nomor_handphone }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        <button type="button" class="btn btn-secondary" id="btnPilihTamuUndangan">
+                                            Pilih dari Tamu Undangan
                                         </button>
                                     </div>
 
-                                    @error('nama_tamu')
+                                    @error('guest_public_id')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
                                         </div>
@@ -184,26 +192,27 @@
                 placeholder: '- Pilih -'
             });
 
-            $('#btnTamuLain').on('click', function() {
+            let guestPublicId = "{{ old('guest_public_id', $edit->guest_public_id ?? '') }}";
+
+            if (guestPublicId !== '') {
+                $('#selectTamuWrapper').hide();
+                $('#selectTamuLuarWrapper').show();
+            }
+
+            $('#btnTamuLuar').on('click', function() {
 
                 $('#selectTamuWrapper').hide();
-                $('#inputTamuWrapper').show();
-
-                $('#btnTamuLain').hide();
-                $('#btnPilihTamu').show();
+                $('#selectTamuLuarWrapper').show();
 
                 $('#guest_id').val('').trigger('change');
             });
 
-            $('#btnPilihTamu').on('click', function() {
+            $('#btnPilihTamuUndangan').on('click', function() {
 
-                $('#inputTamuWrapper').hide();
+                $('#selectTamuLuarWrapper').hide();
                 $('#selectTamuWrapper').show();
 
-                $('#btnPilihTamu').hide();
-                $('#btnTamuLain').show();
-
-                $('#nama_tamu').val('');
+                $('#guest_public_id').val('').trigger('change');
             });
 
         });

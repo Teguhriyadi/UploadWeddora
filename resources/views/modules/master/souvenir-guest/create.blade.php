@@ -35,8 +35,6 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-
-                                {{-- Select Tamu --}}
                                 <div id="selectTamuWrapper">
                                     <div class="input-group">
                                         <select name="guest_id" id="guest_id"
@@ -44,14 +42,14 @@
                                             <option value="">- Pilih Tamu -</option>
 
                                             @foreach ($guest as $guest)
-                                                <option value="{{ $guest->id }}">
+                                                <option {{ old('guest_id') == $guest->id ? 'selected' : '' }} value="{{ $guest->id }}">
                                                     {{ $guest->nama_tamu }} - {{ $guest->nama_undangan }} - Relasi : {{ $guest->relasi }}
                                                 </option>
                                             @endforeach
                                         </select>
 
-                                        <button type="button" class="btn btn-primary btn-sm mt-2" id="btnTamuLain">
-                                            Tidak Ada Daftar Tamu?
+                                        <button type="button" class="btn btn-primary btn-sm mt-2" id="btnTamuLuar">
+                                            Dari Daftar Tamu Luar?
                                         </button>
                                     </div>
 
@@ -62,18 +60,28 @@
                                     @enderror
                                 </div>
 
-                                {{-- Input Manual --}}
-                                <div id="inputTamuWrapper" style="display: none;">
+                                <div id="selectTamuLuarWrapper" style="display: none;">
                                     <div class="input-group">
-                                        <input type="text" class="form-control @error('nama_tamu') is-invalid @enderror"
-                                            name="nama_tamu" id="nama_tamu" placeholder="Masukkan Nama Tamu">
+                                        <select name="guest_public_id" id="guest_public_id"
+                                            class="form-select select2 @error('guest_public_id') is-invalid @enderror">
+                                            <option value="">- Pilih Tamu Luar -</option>
 
-                                        <button type="button" class="btn btn-secondary" id="btnPilihTamu">
-                                            Pilih dari Daftar
+                                            @foreach ($guest_public as $tamuLuar)
+                                                <option {{ old('guest_public_id') == $tamuLuar->id ? 'selected' : '' }} value="{{ $tamuLuar->id }}">
+                                                    {{ $tamuLuar->nama }}
+                                                    @if (!empty($tamuLuar->nomor_handphone))
+                                                        - {{ $tamuLuar->nomor_handphone }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        <button type="button" class="btn btn-secondary" id="btnPilihTamuUndangan">
+                                            Pilih dari Tamu Undangan
                                         </button>
                                     </div>
 
-                                    @error('nama_tamu')
+                                    @error('guest_public_id')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
                                         </div>
@@ -170,18 +178,25 @@
                 placeholder: '- Pilih -'
             });
 
-            $('#btnTamuLain').click(function() {
+            let guestPublicId = "{{ old('guest_public_id', '') }}";
+
+            if (guestPublicId !== '') {
                 $('#selectTamuWrapper').hide();
-                $('#inputTamuWrapper').show();
+                $('#selectTamuLuarWrapper').show();
+            }
+
+            $('#btnTamuLuar').click(function() {
+                $('#selectTamuWrapper').hide();
+                $('#selectTamuLuarWrapper').show();
 
                 $('#guest_id').val(null).trigger('change');
             });
 
-            $('#btnPilihTamu').click(function() {
-                $('#inputTamuWrapper').hide();
+            $('#btnPilihTamuUndangan').click(function() {
+                $('#selectTamuLuarWrapper').hide();
                 $('#selectTamuWrapper').show();
 
-                $('#nama_tamu').val('');
+                $('#guest_public_id').val(null).trigger('change');
             });
 
         });
