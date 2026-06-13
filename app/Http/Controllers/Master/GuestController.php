@@ -43,10 +43,8 @@ class GuestController extends Controller
 
             $statusKehadiran = $request->status;
 
-            if ($statusKehadiran === 'null') {
-                $data->whereNull('status_kehadiran');
-            } else if ($statusKehadiran === "0" || $statusKehadiran === "1") {
-                $data->where('status_kehadiran', $request->status);
+            if (in_array($statusKehadiran, ['0', '1'])) {
+                $data->where('status_kehadiran', $statusKehadiran);
             }
 
             return DataTables::of($data)
