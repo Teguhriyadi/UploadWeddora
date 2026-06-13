@@ -41,7 +41,11 @@ class GuestController extends Controller
                 $data->where('keterangan', $request->keterangan);
             }
 
-            if (!empty($request->status)) {
+            $statusKehadiran = $request->status;
+
+            if ($statusKehadiran === 'null') {
+                $data->whereNull('status_kehadiran');
+            } else if ($statusKehadiran === "0" || $statusKehadiran === "1") {
                 $data->where('status_kehadiran', $request->status);
             }
 
