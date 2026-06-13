@@ -41,6 +41,10 @@ class GuestController extends Controller
                 $data->where('keterangan', $request->keterangan);
             }
 
+            if (!empty($request->status)) {
+                $data->where('status_kehadiran', $request->status);
+            }
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('kategori', function ($row) {

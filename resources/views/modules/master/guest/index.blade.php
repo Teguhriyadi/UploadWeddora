@@ -89,6 +89,15 @@
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-3">
+                    <label for="filterKehadiranNikah" class="form-label"> Status Kehadiran Nikah </label>
+                    <select id="filterKehadiranNikah" class="form-control form-control-sm">
+                        <option value="null">Semua Kehadiran</option>
+                        <option value="1">Sudah Hadir</option>
+                        <option value="0">Tidak Hadir</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
                     <label for="filterKehadiran" class="form-label"> Status Kehadiran </label>
                     <select id="filterKehadiran" class="form-control form-control-sm">
                         <option value="null">Belum Ditentukan</option>
@@ -199,6 +208,7 @@
                     data: function(d) {
                         d.kehadiran = $('#filterKehadiran').val();
                         d.keterangan = $('#filterKeterangan').val();
+                        d.status = $('#filterKehadiranNikah').val()
                     }
                 },
                 columns: [{
@@ -268,7 +278,7 @@
             });
         });
 
-        $('#filterKehadiran, #filterKeterangan').change(function() {
+        $('#filterKehadiran, #filterKeterangan, #filterKehadiranNikah').change(function() {
             table.ajax.reload();
         });
     </script>
