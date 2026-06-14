@@ -12,11 +12,9 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class HistoryGuest implements FromCollection, WithHeadings, WithTitle, WithColumnWidths, WithEvents
+class HistoryGuest implements FromCollection, WithHeadings, WithTitle, WithColumnWidths
 {
-    protected $dari;
-    protected $sampai;
-    protected $tab;
+    protected $dari, $sampai, $tab;
 
     public function __construct($dari, $sampai, $tab)
     {
@@ -50,6 +48,8 @@ class HistoryGuest implements FromCollection, WithHeadings, WithTitle, WithColum
                         'pekerjaan' => $item->pekerjaan ?? '-',
                         'no_hp' => $item->nomor_handphone ?? '-',
                         'alamat' => $item->alamat ?? '-',
+                        'relasi' => $item->relasi,
+                        'keterangan' => $item->keterangan,
                         'waktu' => Carbon::parse($item->waktu_checkin)
                             ->locale('id')
                             ->translatedFormat('d F Y H:i:s')
@@ -95,6 +95,8 @@ class HistoryGuest implements FromCollection, WithHeadings, WithTitle, WithColum
                 'D' => 20,
                 'E' => 40,
                 'F' => 25,
+                'G' => 20,
+                'H' => 15
             ];
         }
 
@@ -112,50 +114,6 @@ class HistoryGuest implements FromCollection, WithHeadings, WithTitle, WithColum
         ];
     }
 
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function (AfterSheet $event) {
-
-                $lastColumn = $this->tab == 'tamu-luar'
-                    ? 'F'
-                    : 'J';
-
-                $highestRow = $event->sheet->getHighestRow();
-
-                $event->sheet->getStyle("A1:{$lastColumn}{$highestRow}")
-                    ->getFont()
-                    ->setName('Arial');
-
-                $event->sheet->getStyle("A1:{$lastColumn}1")
-                    ->getFont()
-                    ->setBold(true);
-
-                $event->sheet->getStyle("A1:{$lastColumn}1")
-                    ->getAlignment()
-                    ->setHorizontal(
-                        \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
-                    );
-
-                $event->sheet->getStyle("A1:{$lastColumn}{$highestRow}")
-                    ->getAlignment()
-                    ->setVertical(
-                        \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER
-                    );
-
-                $event->sheet->getStyle("A1:{$lastColumn}{$highestRow}")
-                    ->getAlignment()
-                    ->setWrapText(true);
-
-                $event->sheet->freezePane('A2');
-
-                $event->sheet->setAutoFilter(
-                    "A1:{$lastColumn}{$highestRow}"
-                );
-            },
-        ];
-    }
-
     public function headings(): array
     {
         if ($this->tab == 'tamu-luar') {
@@ -166,6 +124,8 @@ class HistoryGuest implements FromCollection, WithHeadings, WithTitle, WithColum
                 'Pekerjaan',
                 'No. Handphone',
                 'Alamat',
+                'Relasi',
+                'Keterangan',
                 'Waktu Checkin'
             ];
         } else {
