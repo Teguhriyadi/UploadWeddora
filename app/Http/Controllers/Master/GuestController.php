@@ -58,8 +58,8 @@ class GuestController extends Controller
                 ->addColumn('status', function ($row) {
 
                     $badgeClass = $row->status_kehadiran == 1
-                        ? 'bg-success'
-                        : 'bg-danger';
+                        ? 'btn-success'
+                        : 'btn-danger';
 
                     $badgeText = $row->status_kehadiran == 1
                         ? 'Sudah Hadir'
@@ -67,26 +67,30 @@ class GuestController extends Controller
 
                     return '
                         <div class="dropdown">
-                            <button class="btn btn-sm dropdown-toggle text-white ' . $badgeClass . '"
+                            <button
+                                class="btn ' . $badgeClass . ' btn-sm dropdown-toggle"
                                 type="button"
-                                data-bs-toggle="dropdown">
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
                                 ' . $badgeText . '
                             </button>
 
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a href="#" class="dropdown-item change-status-kehadiran"
-                                    data-id="' . $row->id . '"
-                                    data-value="1">
-                                    Sudah Hadir
+                                    <a class="dropdown-item change-status-kehadiran"
+                                        href="javascript:void(0)"
+                                        data-id="' . $row->id . '"
+                                        data-value="1">
+                                        Sudah Hadir
                                     </a>
                                 </li>
 
                                 <li>
-                                    <a href="#" class="dropdown-item change-status-kehadiran"
-                                    data-id="' . $row->id . '"
-                                    data-value="0">
-                                    Belum Hadir
+                                    <a class="dropdown-item change-status-kehadiran"
+                                        href="javascript:void(0)"
+                                        data-id="' . $row->id . '"
+                                        data-value="0">
+                                        Belum Hadir
                                     </a>
                                 </li>
                             </ul>
@@ -488,7 +492,6 @@ class GuestController extends Controller
                 'success' => true,
                 'message' => 'Status berhasil diperbarui'
             ]);
-
         } catch (\Exception $e) {
 
             return response()->json([
@@ -496,7 +499,6 @@ class GuestController extends Controller
                 'message' => 'Terjadi kesalahan saat memperbarui status',
                 'error' => $e->getMessage()
             ], 500);
-
         }
     }
 }
