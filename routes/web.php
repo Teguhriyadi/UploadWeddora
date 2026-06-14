@@ -75,6 +75,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::get("/input-attendance/search/", [InputAttendanceController::class, "search_guest"]);
         Route::resource("input-attendance", InputAttendanceController::class);
 
+        Route::get("/guest-public/download", [GuestPublicController::class, "download"]);
         Route::resource("guest-public", GuestPublicController::class);
 
         Route::get("/titip-kehadiran/delete-selected", [TitipKehadiranController::class, "delete_selected"]);

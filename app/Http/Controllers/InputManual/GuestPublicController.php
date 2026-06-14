@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\InputManual;
 
+use App\Exports\GuestPublicExport;
 use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GuestPublic\CreateRequest;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
 
 class GuestPublicController extends Controller
 {
@@ -206,5 +208,13 @@ class GuestPublicController extends Controller
 
             return back()->with("error", $e->getMessage());
         }
+    }
+
+    public function download()
+    {
+        return Excel::download(
+            new GuestPublicExport(),
+            'Daftar_Tamu_Luar.xlsx'
+        );
     }
 }

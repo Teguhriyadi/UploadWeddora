@@ -70,6 +70,9 @@
             <a href="{{ url('/modules/guest-public/create') }}" class="btn btn-primary btn-sm">
                 <i class="fa fa-plus"></i> Tambah Data
             </a>
+            <a href="{{ url('/modules/guest-public/download') }}" class="btn btn-success btn-sm">
+                <i class="fa fa-download"></i> Download Data
+            </a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
