@@ -45,7 +45,7 @@
         </div>
 
         <div class="card-body">
-            <form method="GET" id="filterForm">
+            <form id="filterForm">
                 <input type="hidden" name="tab" id="tab_input" value="{{ request('tab', 'tamu-undangan') }}">
                 <div class="row mb-3">
                     <div class="col-md-3">
@@ -66,8 +66,7 @@
 
             <hr>
 
-            <a href="{{ url('/modules/history-guest/download?dari=' . $dari . '&sampai=' . $sampai . '&tab=' . request('tab', 'tamu-undangan')) }}"
-                class="btn btn-success btn-sm mb-3">
+            <a href="#" class="btn btn-success btn-sm mb-3" id="btnDownload">
                 <i class="fa fa-download"></i> Download Data
             </a>
 
@@ -167,9 +166,32 @@
 
         $(document).ready(function() {
             $('.nav-tabs a').on('shown.bs.tab', function(e) {
-                var tab = $(e.target).attr('href').replace('#', '');
+
+                let tab = $(e.target)
+                    .attr('href')
+                    .replace('#', '');
+
                 $('#tab_input').val(tab);
+
             });
+        });
+
+        $('#btnDownload').click(function(e) {
+
+            e.preventDefault();
+
+            let dari = $('input[name="dari"]').val();
+            let sampai = $('input[name="sampai"]').val();
+            let tab = $('#tab_input').val();
+
+            let url =
+                "{{ url('/modules/history-guest/download') }}" +
+                "?dari=" + encodeURIComponent(dari ?? '') +
+                "&sampai=" + encodeURIComponent(sampai ?? '') +
+                "&tab=" + encodeURIComponent(tab ?? '');
+
+            window.location.href = url;
+
         });
 
         function showImage(id) {
@@ -290,5 +312,4 @@
             ]
         });
     </script>
-
 @endpush

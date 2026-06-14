@@ -34,9 +34,20 @@ class HistoryGuestController extends Controller
 
     public function download(Request $request)
     {
-        $dari = $request->get('dari', Carbon::now()->startOfMonth()->format('Y-m-d'));
-        $sampai = $request->get('sampai', Carbon::now()->endOfMonth()->format('Y-m-d'));
-        $tab = $request->get('tab', 'tamu-undangan');
+        $dari = $request->get(
+            'dari',
+            Carbon::now()->startOfMonth()->format('Y-m-d')
+        );
+
+        $sampai = $request->get(
+            'sampai',
+            Carbon::now()->endOfMonth()->format('Y-m-d')
+        );
+
+        $tab = $request->get(
+            'tab',
+            'tamu-undangan'
+        );
 
         return Excel::download(
             new HistoryGuest($dari, $sampai, $tab),
@@ -166,8 +177,8 @@ class HistoryGuestController extends Controller
                             <br>
                             <small class='text-muted'>
                                 " . \Carbon\Carbon::parse($row['guest']['inject_at'])
-                                    ->locale('id')
-                                    ->translatedFormat('d F Y H:i:s') . " WIB
+                            ->locale('id')
+                            ->translatedFormat('d F Y H:i:s') . " WIB
                             </small>
                         ";
                     } else {
