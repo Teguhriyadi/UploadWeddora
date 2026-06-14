@@ -72,8 +72,8 @@
                     <i class="fa fa-plus"></i> Tambah Data
                 </a>
                 {{-- <a href="{{ url('/modules/guest/download') }}" class="btn btn-success btn-sm">
-                <i class="fa fa-download"></i> Download Data
-            </a> --}}
+                    <i class="fa fa-download"></i> Download Data
+                </a> --}}
                 <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">
                     <i class="fa fa-book"></i> Upload Data
                 </button>
@@ -91,7 +91,7 @@
                 <div class="col-md-3">
                     <label for="filterKehadiranNikah" class="form-label"> Status Kehadiran Nikah </label>
                     <select id="filterKehadiranNikah" class="form-control form-control-sm">
-                        <option value="null">Semua Kehadiran</option>
+                        <option value="all">Semua Kehadiran</option>
                         <option value="1">Sudah Hadir</option>
                         <option value="0">Tidak Hadir</option>
                     </select>
@@ -127,6 +127,7 @@
                             <th class="text-center">No.</th>
                             <th class="text-center">Aksi</th>
                             <th class="text-center">Kategori</th>
+                            <th class="text-center">Status</th>
                             <th>Kode Token</th>
                             <th>Nama</th>
                             <th>Nama Undangan</th>
@@ -135,7 +136,6 @@
                             <th>Relasi</th>
                             <th class="text-center">Jenis Undangan</th>
                             <th>Keterangan</th>
-                            <th class="text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -190,6 +190,7 @@
 @push('style-js')
     <script src="{{ asset('templating/vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
             table = $("#dataTable").DataTable({
@@ -235,6 +236,12 @@
                         className: 'text-center'
                     },
                     {
+                        data: 'status',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                    {
                         data: 'kode_token',
                         name: 'kode_token'
                     },
@@ -267,12 +274,6 @@
                     {
                         data: 'keterangan',
                         name: 'keterangan'
-                    },
-                    {
-                        data: 'status',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
                     }
                 ]
             });
@@ -330,6 +331,53 @@
                 }
             });
 
+        });
+
+        $(document).on('click', '.change-status-kehadiran', function(e) {
+            e.preventDefault();
+
+            let id = $(this).data('id');
+            let value = $(this).data('value');
+
+            let text = value == 1 ?
+                'Sudah Hadir' :
+                'Belum Hadir';
+
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Ubah status menjadi "' + text + '" ?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Ubah',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: "{{ url('/modules/guest/update-status-kehadiran') }}",
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            id: id,
+                            status_kehadiran: value
+                        },
+                        success: function(response) {
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message
+                            }).then(() => {
+                                location.reload();
+                            });
+
+                            $('#datatable').DataTable().ajax.reload(null, false);
+                        }
+                    });
+
+                }
+            });
         });
 
         $(document).on('change', '#checkAll', function() {

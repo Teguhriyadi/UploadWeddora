@@ -23,4 +23,9 @@ class Guest extends Model
     {
         return $this->belongsTo(Kategori::class, "kategori_id");
     }
+
+    public function inject()
+    {
+        return $this->belongsTo(User::class, "inject_by", "id");
+    }
 }

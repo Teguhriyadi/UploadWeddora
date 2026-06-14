@@ -9,7 +9,9 @@ use App\Http\Requests\Guest\UpdateRequest;
 use App\Imports\GuestImport;
 use App\Models\Event;
 use App\Models\Guest;
+use App\Models\GuestCheckin;
 use App\Models\Kategori;
+use App\Models\User;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,10 +56,42 @@ class GuestController extends Controller
                 })
 
                 ->addColumn('status', function ($row) {
-                    if ($row->status_kehadiran == 1) {
-                        return '<span class="badge bg-success text-white">Sudah Hadir</span>';
-                    }
-                    return '<span class="badge bg-danger text-white">Belum Hadir</span>';
+
+                    $badgeClass = $row->status_kehadiran == 1
+                        ? 'bg-success'
+                        : 'bg-danger';
+
+                    $badgeText = $row->status_kehadiran == 1
+                        ? 'Sudah Hadir'
+                        : 'Belum Hadir';
+
+                    return '
+                        <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle text-white ' . $badgeClass . '"
+                                type="button"
+                                data-bs-toggle="dropdown">
+                                ' . $badgeText . '
+                            </button>
+
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="#" class="dropdown-item change-status-kehadiran"
+                                    data-id="' . $row->id . '"
+                                    data-value="1">
+                                    Sudah Hadir
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="#" class="dropdown-item change-status-kehadiran"
+                                    data-id="' . $row->id . '"
+                                    data-value="0">
+                                    Belum Hadir
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    ';
                 })
                 ->addColumn('kehadiran', function ($row) {
 
@@ -427,5 +461,42 @@ class GuestController extends Controller
             'success' => true,
             'message' => 'Data berhasil dihapus'
         ]);
+    }
+
+    public function update_status_kehadiran(Request $request)
+    {
+        try {
+
+            $user = Auth::user()->id;
+            $now = date("Y-m-d H:i:s");
+
+            Guest::where('id', $request->id)
+                ->update([
+                    'status_kehadiran' => $request->status_kehadiran,
+                    'inject_at' => $now,
+                    'inject_by' => $user
+                ]);
+
+            GuestCheckin::create([
+                "guest_id" => $request->id,
+                "metode" => "manual",
+                "waktu_checkin" => date("Y-m-d H:i:s"),
+                "users_id" => $user
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diperbarui'
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memperbarui status',
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
     }
 }

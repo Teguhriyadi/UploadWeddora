@@ -154,7 +154,25 @@ class HistoryGuestController extends Controller
             })
             ->editColumn("metode", function ($row) {
                 if ($row->metode == "manual") {
-                    return "<span class='badge bg-primary text-white fw-bold text-uppercase'>Input Manual</span>";
+                    if ($row->guest->inject_at) {
+                        return "
+                            <span
+                                class='badge bg-info text-white fw-bold text-uppercase'
+                                data-bs-toggle='tooltip'
+                                data-bs-placement='top'
+                                title='Status kehadiran diubah secara manual oleh: {$row['guest']['inject']['nama']}'>
+                                Inject Manual
+                            </span>
+                            <br>
+                            <small class='text-muted'>
+                                " . \Carbon\Carbon::parse($row['guest']['inject_at'])
+                                    ->locale('id')
+                                    ->translatedFormat('d F Y H:i:s') . " WIB
+                            </small>
+                        ";
+                    } else {
+                        return "<span class='badge bg-primary text-white fw-bold text-uppercase'>Input Manual</span>";
+                    }
                 } else if ($row->metode == "qr") {
                     return "<span class='badge bg-success text-white fw-bold text-uppercase'>Scan QR</span>";
                 }

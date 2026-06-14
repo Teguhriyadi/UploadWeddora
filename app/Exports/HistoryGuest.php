@@ -6,9 +6,13 @@ use App\Models\GuestCheckin;
 use App\Models\GuestPublic;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Events\AfterSheet;
 
-class HistoryGuest implements FromCollection, WithHeadings
+class HistoryGuest implements FromCollection, WithHeadings, WithTitle, WithColumnWidths, WithEvents
 {
     protected $dari;
     protected $sampai;
@@ -19,6 +23,13 @@ class HistoryGuest implements FromCollection, WithHeadings
         $this->dari = $dari;
         $this->sampai = $sampai;
         $this->tab = $tab;
+    }
+
+    public function title(): string
+    {
+        return $this->tab == 'tamu-luar'
+            ? 'Daftar Tamu Luar'
+            : 'Tamu Undangan';
     }
 
     public function collection()
@@ -58,13 +69,91 @@ class HistoryGuest implements FromCollection, WithHeadings
                     return [
                         'no' => $index + 1,
                         'kategori' => empty($item->guest->kategori) ? null : $item->guest->kategori->nama_kategori,
+                        'token' => $item->guest->kode_token,
                         'nama' => $item->guest->nama_tamu,
-                        'keluarga' => $item->guest->keluarga,
+                        'nama_undangan' => $item->guest->nama_undangan,
+                        'jenis_undangan' => $item->guest->jenis_undangan,
+                        'relasi' => $item->guest->relasi,
+                        'keterangan' => $item->guest->keterangan,
                         'metode' => strtoupper($item->metode),
-                        'waktu' => $item->waktu_checkin
+                        'waktu' => Carbon::parse($item->waktu_checkin)
+                            ->locale('id')
+                            ->translatedFormat('d F Y H:i:s') . ' WIB'
                     ];
                 });
         }
+    }
+
+    public function columnWidths(): array
+    {
+        if ($this->tab == 'tamu-luar') {
+
+            return [
+                'A' => 8,
+                'B' => 30,
+                'C' => 25,
+                'D' => 20,
+                'E' => 40,
+                'F' => 25,
+            ];
+        }
+
+        return [
+            'A' => 8,
+            'B' => 20,
+            'C' => 18,
+            'D' => 30,
+            'E' => 30,
+            'F' => 20,
+            'G' => 20,
+            'H' => 35,
+            'I' => 20,
+            'J' => 25,
+        ];
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+
+                $lastColumn = $this->tab == 'tamu-luar'
+                    ? 'F'
+                    : 'J';
+
+                $highestRow = $event->sheet->getHighestRow();
+
+                $event->sheet->getStyle("A1:{$lastColumn}{$highestRow}")
+                    ->getFont()
+                    ->setName('Arial');
+
+                $event->sheet->getStyle("A1:{$lastColumn}1")
+                    ->getFont()
+                    ->setBold(true);
+
+                $event->sheet->getStyle("A1:{$lastColumn}1")
+                    ->getAlignment()
+                    ->setHorizontal(
+                        \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
+                    );
+
+                $event->sheet->getStyle("A1:{$lastColumn}{$highestRow}")
+                    ->getAlignment()
+                    ->setVertical(
+                        \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER
+                    );
+
+                $event->sheet->getStyle("A1:{$lastColumn}{$highestRow}")
+                    ->getAlignment()
+                    ->setWrapText(true);
+
+                $event->sheet->freezePane('A2');
+
+                $event->sheet->setAutoFilter(
+                    "A1:{$lastColumn}{$highestRow}"
+                );
+            },
+        ];
     }
 
     public function headings(): array
@@ -84,9 +173,13 @@ class HistoryGuest implements FromCollection, WithHeadings
             return [
                 'No',
                 'Kategori',
+                'Kode Token',
                 'Nama Tamu',
-                'Keluarga',
-                'Metode',
+                'Nama Undangan',
+                'Jenis Undangan',
+                'Relasi',
+                'Keterangan',
+                'Metode Kehadiran',
                 'Waktu Checkin'
             ];
         }

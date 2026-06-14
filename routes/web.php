@@ -44,6 +44,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::post("/kategori/toggle-status/{id}", [KategoriController::class, "toggleStatus"]);
         Route::resource("kategori", KategoriController::class);
 
+        Route::post("/guest/update-status-kehadiran", [GuestController::class, "update_status_kehadiran"]);
         Route::get("/guest/generate-card/{token}", [GuestController::class, "show_generate"]);
         Route::get("/guest/download", [GuestController::class, "download"]);
         Route::get("/guest/generate-all", [GuestController::class, "generate_all"]);
