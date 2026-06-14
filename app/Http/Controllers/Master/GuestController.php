@@ -66,7 +66,7 @@ class GuestController extends Controller
                         : 'Belum Hadir';
 
                     return '
-                        <div class="dropdown">
+                        <div class="dropdown dropend">
                             <button
                                 class="btn ' . $badgeClass . ' btn-sm dropdown-toggle"
                                 type="button"

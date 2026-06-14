@@ -9,8 +9,12 @@
         .table-responsive {
             width: 100%;
             overflow-x: auto;
-            overflow-y: hidden;
+            overflow-y: visible !important;
             border-radius: 12px;
+        }
+
+        .dropdown-menu {
+            z-index: 999999 !important;
         }
 
         #dataTable {
