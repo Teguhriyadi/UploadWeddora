@@ -74,6 +74,7 @@
                             <th class="text-center">No.</th>
                             <th class="text-center">Module</th>
                             <th>Aksi</th>
+                            <th>User ID</th>
                             <th>Asal Model</th>
                             <th>ID Model</th>
                             <th class="text-center">Method</th>
@@ -129,6 +130,10 @@
                     {
                         data: 'action',
                         name: 'action'
+                    },
+                    {
+                        data: 'user',
+                        name: 'user',
                     },
                     {
                         data: 'subject_type',

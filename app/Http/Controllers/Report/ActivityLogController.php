@@ -13,7 +13,7 @@ class ActivityLogController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = ActivityLog::orderBy("created_at", "DESC");
+            $data = ActivityLog::with(["user:id,nama"])->orderBy("created_at", "DESC");
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -32,6 +32,9 @@ class ActivityLogController extends Controller
                         ->locale('id')
                         ->translatedFormat('d F Y H:i:s');
                 })
+                ->editColumn('user', function ($row) {
+                    return "<span class='badge bg-success text-white'>" . $row->nama . "</span>";
+                })
                 ->editColumn("method", function ($row) {
                     return "<span class='badge bg-success text-white'>" . $row->method . "</span>";
                 })
@@ -41,7 +44,7 @@ class ActivityLogController extends Controller
                 ->editColumn("ip", function ($row) {
                     return "<span class='badge bg-warning text-white'>" . $row->ip . "</span>";
                 })
-                ->rawColumns(['logged_at', 'created_at', 'updated_at', 'method', 'subject_type', 'ip'])
+                ->rawColumns(['logged_at', 'user', 'created_at', 'updated_at', 'method', 'subject_type', 'ip'])
                 ->make(true);
         }
 
