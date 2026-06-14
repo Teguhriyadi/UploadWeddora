@@ -33,7 +33,7 @@ class ActivityLogController extends Controller
                         ->translatedFormat('d F Y H:i:s');
                 })
                 ->editColumn('user', function ($row) {
-                    return "<span class='badge bg-success text-white'>" . $row->nama . "</span>";
+                    return "<span class='badge bg-success text-white'>" . $row->user->nama . "</span>";
                 })
                 ->editColumn("method", function ($row) {
                     return "<span class='badge bg-success text-white'>" . $row->method . "</span>";
