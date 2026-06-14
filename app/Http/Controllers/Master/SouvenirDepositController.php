@@ -40,13 +40,26 @@ class SouvenirDepositController extends Controller
                     }
                 })
                 ->addColumn("foto", function ($row) {
+
                     if (empty($row->foto)) {
                         return '-';
                     }
 
                     $url = Storage::disk('s3')->url('souvenir/' . $row->foto);
 
-                    return '<img src="' . $url . '" width="60" height="60" style="object-fit:cover; border-radius:6px;">';
+                    return '
+                        <img
+                            src="'.$url.'"
+                            class="preview-image"
+                            data-image="'.$url.'"
+                            width="60"
+                            height="60"
+                            style="
+                                object-fit:cover;
+                                border-radius:6px;
+                                cursor:pointer;
+                            ">
+                    ';
                 })
                 ->addColumn("waktu_dititipkan", function ($row) {
                     return \Carbon\Carbon::parse($row->waktu_dititipkan)

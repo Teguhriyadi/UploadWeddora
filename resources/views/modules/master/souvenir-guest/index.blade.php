@@ -143,6 +143,30 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="previewImageModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Preview Foto
+                    </h5>
+
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <img id="previewImage" src="" class="img-fluid rounded" style="max-height:70vh;">
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 @endpush
 
 @push('style-js')
@@ -306,6 +330,15 @@
 
             });
 
+        });
+
+        $(document).on('click', '.preview-image', function() {
+
+            let imageUrl = $(this).data('image');
+
+            $('#previewImage').attr('src', imageUrl);
+
+            $('#previewImageModal').modal('show');
         });
 
         @if (session('success'))
