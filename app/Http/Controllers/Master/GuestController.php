@@ -26,28 +26,8 @@ class GuestController extends Controller
         if ($request->ajax()) {
 
             $data = Guest::with('kategori')
+                ->filter($request)
                 ->orderBy('created_at', 'DESC');
-
-            $kehadiran = $request->kehadiran;
-
-            if ($kehadiran === 'null') {
-
-                $data->whereNull('kehadiran');
-            } elseif ($kehadiran === '0' || $kehadiran === '1' || $kehadiran === '2') {
-
-                $data->where('kehadiran', $kehadiran);
-            }
-
-            if (!empty($request->keterangan)) {
-
-                $data->where('keterangan', $request->keterangan);
-            }
-
-            $statusKehadiran = $request->status;
-
-            if (in_array($statusKehadiran, ['0', '1'])) {
-                $data->where('status_kehadiran', $statusKehadiran);
-            }
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -322,9 +302,12 @@ class GuestController extends Controller
         }
     }
 
-    public function download()
+    public function download(Request $request)
     {
-        return Excel::download(new GuestExport, 'data-guest.xlsx');
+        return Excel::download(
+            new GuestExport($request),
+            'Daftar_Guest.xlsx'
+        );
     }
 
     public function upload_file(Request $request)

@@ -28,4 +28,35 @@ class Guest extends Model
     {
         return $this->belongsTo(User::class, "inject_by", "id");
     }
+
+    public function scopeFilter($query, $request)
+    {
+        $kehadiran = $request->kehadiran;
+
+        if ($kehadiran === 'null') {
+
+            $query->whereNull('kehadiran');
+        } elseif (in_array($kehadiran, ['0', '1', '2'])) {
+
+            $query->where('kehadiran', $kehadiran);
+        }
+
+        if (!empty($request->keterangan)) {
+
+            $query->where(
+                'keterangan',
+                $request->keterangan
+            );
+        }
+
+        if (in_array($request->status, ['0', '1'])) {
+
+            $query->where(
+                'status_kehadiran',
+                $request->status
+            );
+        }
+
+        return $query;
+    }
 }

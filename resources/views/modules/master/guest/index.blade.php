@@ -75,9 +75,9 @@
                 <a href="{{ url('/modules/guest/create') }}" class="btn btn-primary btn-sm">
                     <i class="fa fa-plus"></i> Tambah Data
                 </a>
-                {{-- <a href="{{ url('/modules/guest/download') }}" class="btn btn-success btn-sm">
+                <a href="#" class="btn btn-success btn-sm" id="btnDownload">
                     <i class="fa fa-download"></i> Download Data
-                </a> --}}
+                </a>
                 <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">
                     <i class="fa fa-book"></i> Upload Data
                 </button>
@@ -286,8 +286,23 @@
         $('#filterKehadiran, #filterKeterangan, #filterKehadiranNikah').change(function() {
             table.ajax.reload();
         });
-    </script>
-    <script>
+
+        $('#btnDownload').click(function(e) {
+            e.preventDefault();
+
+            let kehadiran = $('#filterKehadiran').val();
+            let keterangan = $('#filterKeterangan').val();
+            let status = $('#filterKehadiranNikah').val();
+
+            let url =
+                "{{ url('/modules/guest/download') }}" +
+                "?kehadiran=" + encodeURIComponent(kehadiran ?? '') +
+                "&keterangan=" + encodeURIComponent(keterangan ?? '') +
+                "&status=" + encodeURIComponent(status ?? '');
+
+            window.location.href = url;
+        });
+
         $(document).on('change', '.change-kehadiran', function() {
 
             let id = $(this).data('id');
