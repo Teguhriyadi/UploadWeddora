@@ -303,11 +303,14 @@
         </div>
     </div>
 
-    <div class="modal fade" id="selfieModal" tabindex="-1" aria-labelledby="selfieModalLabel" aria-hidden="true">
+    <div class="modal fade app-modal" id="selfieModal" tabindex="-1" aria-labelledby="selfieModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="selfieModalLabel">Ambil Selfie (Opsional)</h5>
+                    <h5 class="modal-title" id="selfieModalLabel">
+                        <span class="modal-title-icon"><i class="fa fa-camera"></i></span>
+                        Ambil Selfie (Opsional)
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -329,7 +332,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-3 text-center text-muted small" id="selfieModalPreview">Preview akan tampil di halaman setelah foto diambil.</div>
+                    <div class="modal-note text-center" id="selfieModalPreview">Preview akan tampil di halaman setelah foto diambil. Selfie tetap opsional.</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Tutup</button>

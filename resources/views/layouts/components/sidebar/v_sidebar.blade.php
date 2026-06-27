@@ -1,10 +1,13 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-    <div class="sidebar-brand text-center py-4">
-        <div class="brand-title">
-            {{ config('app.name') }}
-        </div>
+    <div class="sidebar-brand text-left">
+        <span class="sidebar-brand-icon">
+            <i class="fas fa-heart"></i>
+        </span>
+        <span class="sidebar-brand-title">{{ config('app.name') }}</span>
+        <span class="sidebar-brand-subtitle">Invitation Admin Workspace</span>
     </div>
 
+    <div class="sidebar-heading">Ringkasan</div>
     <li class="nav-item {{ Request::is('modules/dashboard') ? 'active' : '' }}">
         <a class="nav-link" href="{{ url('/modules/dashboard') }}">
             <i class="fas fa-chart-line"></i>
@@ -12,6 +15,7 @@
         </a>
     </li>
 
+    <div class="sidebar-heading">Operasional Tamu</div>
     @if (Auth::user()->role->nama_role == 'Administrator')
         <li class="nav-item {{ Request::is('modules/kategori*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ url('/modules/kategori') }}">
@@ -49,6 +53,7 @@
         </a>
     </li>
 
+    <div class="sidebar-heading">Layanan Acara</div>
     <li class="nav-item {{ Request::is('modules/titip-kehadiran*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ url('/modules/titip-kehadiran') }}">
             <i class="fas fa-edit"></i>
@@ -70,6 +75,7 @@
         </a>
     </li>
 
+    <div class="sidebar-heading">Administrasi</div>
     @if (Auth::user()->username == "teguh123")
     <li class="nav-item {{ Request::is('modules/riwayat-aktifitas') ? 'active' : '' }}">
         <a class="nav-link" href="{{ url('/modules/riwayat-aktifitas') }}">

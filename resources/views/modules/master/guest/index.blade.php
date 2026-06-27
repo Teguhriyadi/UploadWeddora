@@ -148,7 +148,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade app-modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
 
         <div class="modal-dialog" role="document">
@@ -156,7 +156,8 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">
-                        <i class="fa fa-book"></i> Upload Data
+                        <span class="modal-title-icon"><i class="fa fa-book"></i></span>
+                        Upload Data
                     </h5>
 
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -174,10 +175,14 @@
                             </label>
                             <input type="file" class="form-control" name="file_upload" id="file_upload">
                         </div>
+
+                        <div class="modal-note">
+                            Gunakan file Excel yang sesuai format agar proses import tamu berjalan lebih rapi dan cepat.
+                        </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">
                             <i class="fa fa-times"></i> Batal
                         </button>
 

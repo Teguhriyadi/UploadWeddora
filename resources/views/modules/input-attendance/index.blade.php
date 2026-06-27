@@ -201,11 +201,14 @@
         </div>
     </div>
 
-    <div class="modal fade" id="selfieModal" tabindex="-1" aria-labelledby="selfieModalLabel" aria-hidden="true">
+    <div class="modal fade app-modal" id="selfieModal" tabindex="-1" aria-labelledby="selfieModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="selfieModalLabel">Ambil Selfie (Opsional)</h5>
+                    <h5 class="modal-title" id="selfieModalLabel">
+                        <span class="modal-title-icon"><i class="fa fa-camera"></i></span>
+                        Ambil Selfie (Opsional)
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -225,6 +228,10 @@
                         <div class="countdown-layer" id="selfieCountdownLayer">
                             <div class="countdown-number" id="selfieCountdownNumber">3</div>
                         </div>
+                    </div>
+
+                    <div class="modal-note">
+                        Selfie bersifat opsional. Jika kondisi ramai, Anda bisa langsung lanjut check-in tanpa foto.
                     </div>
                 </div>
                 <div class="modal-footer">
