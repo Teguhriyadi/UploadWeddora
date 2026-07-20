@@ -17,7 +17,7 @@
     <ul class="navbar-nav ml-auto align-items-center">
         <li class="nav-item d-none d-lg-flex align-items-center mr-2">
             <div class="topbar-date-simple">
-                {{ now()->translatedFormat('d M Y') }}
+                {{ now()->translatedFormat('l, d F Y') }}
             </div>
         </li>
 
