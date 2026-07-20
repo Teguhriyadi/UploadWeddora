@@ -7,6 +7,7 @@ use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GuestPublic\CreateRequest;
 use App\Http\Requests\GuestPublic\UpdateRequest;
+use App\Models\EventUsers;
 use App\Models\GuestPublic;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
@@ -22,7 +23,13 @@ class GuestPublicController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = GuestPublic::orderBy('created_at', 'DESC');
+            if (Auth::user()->role->nama_role != "Administrator") {
+                $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+                $data = GuestPublic::where("event_id", $cek->event_id)->orderBy('created_at', 'DESC');
+            } else {
+                $data = GuestPublic::orderBy('created_at', 'DESC');
+            }
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -85,6 +92,12 @@ class GuestPublicController extends Controller
 
             DB::beginTransaction();
 
+            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+            if (empty($cek)) {
+                return redirect()->to("/modules/guest-public")->with("error", "Data Event Anda Tidak Ditemukan. Silahkan Hubungi Admin Kembali");
+            }
+
             if ($request->selfie) {
                 $fileName = ImageHelper::uploadBase64ToS3($request->selfie);
             } else {
@@ -97,6 +110,7 @@ class GuestPublicController extends Controller
                 'selfie_used' => (bool) $request->selfie,
             ]);
             GuestPublic::create([
+                "event_id" => $cek["event_id"],
                 "nama" => $request['nama'],
                 "nomor_handphone" => $request["nomor_handphone"],
                 "pekerjaan" => $request["pekerjaan"],

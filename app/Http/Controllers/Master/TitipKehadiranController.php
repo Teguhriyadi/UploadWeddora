@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TitipKehadiran\CreateRequest;
 use App\Http\Requests\TitipKehadiran\UpdateRequest;
+use App\Models\EventUsers;
 use App\Models\Guest;
 use App\Models\GuestCheckin;
 use App\Models\GuestPublic;
@@ -27,6 +28,14 @@ class TitipKehadiranController extends Controller
                 "tamu_berhalangan:id,nama_tamu,nama_undangan",
                 "petugas:id,nama"
             ]);
+
+            if (Auth::user()->role->nama_role != "Administrator") {
+                $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+                $data = $data->where("event_id", $cek->event_id)->orderBy('waktu_kehadiran', 'DESC');
+            } else {
+                $data = $data->orderBy('waktu_kehadiran', 'DESC');
+            }
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -84,11 +93,28 @@ class TitipKehadiranController extends Controller
 
     public function create()
     {
-        $data["wakil"] = Guest::where("status_kehadiran", "=", "1", "and")->get(['*']);
-        $data["wakil_public"] = GuestPublic::orderBy('waktu_checkin', 'DESC')->get(['*']);
-        $data["guest"] = Guest::where("status_kehadiran", "!=", "1", "and")->get(['*']);
+        try {
+            DB::beginTransaction();
 
-        return view("modules.master.titip-kehadiran.create", $data);
+            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+            if (empty($cek)) {
+                return redirect()->to("/modules/titip-kehadiran")->with("error", "Data Event Anda Tidak Ditemukan. Silahkan Hubungi Admin Kembali");
+            }
+
+            $data["wakil"] = Guest::where("event_id", $cek->event_id)->where("status_kehadiran", "=", "1", "and")->get(['*']);
+            $data["wakil_public"] = GuestPublic::where("event_id", $cek->event_id)->orderBy('waktu_checkin', 'DESC')->get(['*']);
+            $data["guest"] = Guest::where("event_id", $cek->event_id)->where("status_kehadiran", "!=", "1", "and")->get(['*']);
+
+            DB::commit();
+
+            return view("modules.master.titip-kehadiran.create", $data);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()->with("error", $e->getMessage());
+        }
     }
 
     public function store(CreateRequest $request)
@@ -96,6 +122,12 @@ class TitipKehadiranController extends Controller
         try {
 
             DB::beginTransaction();
+
+            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+            if (empty($cek)) {
+                return redirect()->to("/modules/titip-kehadiran")->with("error", "Data Event Anda Tidak Ditemukan. Silahkan Hubungi Admin Kembali");
+            }
 
             $waktu_datang = date("Y-m-d H:i:s");
             $users = Auth::user()->id;
@@ -107,6 +139,7 @@ class TitipKehadiranController extends Controller
             ]);
 
             TitipKehadiran::create([
+                'event_id' => $cek->event_id,
                 'wakil_id' => $request->wakil_id,
                 'wakil_guest_public_id' => $request->wakil_guest_public_id,
                 'guest_id' => $request->guest_id,
@@ -153,9 +186,15 @@ class TitipKehadiranController extends Controller
 
             DB::beginTransaction();
 
-            $data["wakil"] = Guest::where("status_kehadiran", "=", "1", "and")->get(['*']);
-            $data["wakil_public"] = GuestPublic::orderBy('waktu_checkin', 'DESC')->get(['*']);
-            $data["guest"] = Guest::get(['*']);
+            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+            if (empty($cek)) {
+                return redirect()->to("/modules/titip-kehadiran")->with("error", "Data Event Anda Tidak Ditemukan. Silahkan Hubungi Admin Kembali");
+            }
+
+            $data["wakil"] = Guest::where("event_id", $cek->event_id)->where("status_kehadiran", "=", "1", "and")->get(['*']);
+            $data["wakil_public"] = GuestPublic::where("event_id", $cek->event_id)->orderBy('waktu_checkin', 'DESC')->get(['*']);
+            $data["guest"] = Guest::where("event_id", $cek->event_id)->get(['*']);
 
             $data["edit"] = TitipKehadiran::where("id", "=", $id, "and")->first(['*']);
 

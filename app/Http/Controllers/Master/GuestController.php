@@ -8,6 +8,7 @@ use App\Http\Requests\Guest\CreateRequest;
 use App\Http\Requests\Guest\UpdateRequest;
 use App\Imports\GuestImport;
 use App\Models\Event;
+use App\Models\EventUsers;
 use App\Models\Guest;
 use App\Models\GuestCheckin;
 use App\Models\Kategori;
@@ -28,8 +29,16 @@ class GuestController extends Controller
                 "kategori:id,nama_kategori",
                 "event:id,nama_event"
             ])
-                ->filter($request)
-                ->orderBy('created_at', 'DESC');
+                ->filter($request);
+
+            if (Auth::user()->role->nama_role != "Administrator") {
+
+                $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+                $data->where('event_id', $cek->event_id);
+            } else {
+                $data = $data->orderBy('created_at', 'DESC');
+            }
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -113,7 +122,7 @@ class GuestController extends Controller
                     return '<input type="checkbox" class="row-checkbox" value="' . $row->id . '">';
                 })
                 ->addColumn('action', function ($row) {
-                    if (Auth::user()->role->nama_role == "Administrator") {
+                    if (Auth::user()->role->nama_role != "Administrator") {
                         return '
                             <a href="/modules/guest/' . $row->id . '/edit" class="btn btn-warning btn-sm">
                                 <i class="fa fa-edit"></i>
@@ -136,7 +145,15 @@ class GuestController extends Controller
                             </a>
                         ';
                     } else {
-                        return "-";
+                        return '
+                            <a href="' . env('APP_URL') . '/qr/' . $row['kode_token'] . '" class="btn btn-info btn-sm" target="_blank">
+                                <i class="fa fa-search"></i>
+                            </a>
+
+                            <a href="' . url('/modules/guest/generate-card/' . $row['kode_token']) . '" class="btn btn-success btn-sm">
+                                <i class="fa fa-download"></i>
+                            </a>
+                        ';
                     }
                 })
 
@@ -173,6 +190,12 @@ class GuestController extends Controller
 
             DB::beginTransaction();
 
+            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+            if (empty($cek)) {
+                return redirect()->to("/modules/guest")->with("error", "Data Event Anda Tidak Ditemukan. Silahkan Hubungi Admin Kembali");
+            }
+
             $token = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, rand(6, 8));
 
             ActivityLogger::setContext('Tamu Undangan', 'create', [
@@ -181,7 +204,7 @@ class GuestController extends Controller
             ]);
 
             Guest::create([
-                "event_id" => $request["event_id"],
+                "event_id" => $cek["event_id"],
                 "kategori_id" => $request["kategori_id"],
                 "kode_token" => $token,
                 "nama_tamu" => $request["nama_tamu"],
@@ -234,7 +257,6 @@ class GuestController extends Controller
                 'guest_id' => $guest?->id,
             ]);
             $guest->update([
-                "event_id" => $request["event_id"],
                 "kategori_id" => $request["kategori_id"],
                 "nama_tamu" => $request["nama_tamu"],
                 "nama_undangan" => $request["nama_undangan"],

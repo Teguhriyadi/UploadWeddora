@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Report;
 
 use App\Exports\HistoryGuest;
 use App\Http\Controllers\Controller;
+use App\Models\EventUsers;
 use App\Models\GuestCheckin;
 use App\Models\GuestPublic;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
@@ -57,7 +59,13 @@ class HistoryGuestController extends Controller
 
     public function show($id)
     {
-        $data["show"] = GuestCheckin::where("id", $id)->first();
+        $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+        if (empty($cek)) {
+            return redirect()->to("/modules/history-guest")->with("error", "Data Event Anda Tidak Ditemukan. Silahkan Hubungi Admin Kembali");
+        }
+
+        $data["show"] = GuestCheckin::where("event_id", $cek->event_id)->where("id", $id)->first();
 
         return view("modules.report.history-guest.show", $data);
     }

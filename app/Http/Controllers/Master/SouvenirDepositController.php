@@ -6,6 +6,7 @@ use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TitipKado\CreateRequest;
 use App\Http\Requests\TitipKado\UpdateRequest;
+use App\Models\EventUsers;
 use App\Models\Guest;
 use App\Models\GuestPublic;
 use App\Models\SouvenirDeposit;
@@ -27,6 +28,14 @@ class SouvenirDepositController extends Controller
                 "guest_public:id,nama",
                 "petugas:id,nama"
             ]);
+
+            if (Auth::user()->role->nama_role != "Administrator") {
+                $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+                $data = $data->where("event_id", $cek->event_id)->orderBy('waktu_dititipkan', 'DESC');
+            } else {
+                $data = $data->orderBy('waktu_dititipkan', 'DESC');
+            }
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -114,10 +123,27 @@ class SouvenirDepositController extends Controller
 
     public function create()
     {
-        $data["guest"] = Guest::get(['*']);
-        $data["guest_public"] = GuestPublic::orderBy('waktu_checkin', 'DESC')->get(['*']);
+        try {
+            DB::beginTransaction();
 
-        return view("modules.master.souvenir-guest.create", $data);
+            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+            if (empty($cek)) {
+                return redirect()->to("/modules/titip-kado")->with("error", "Data Event Anda Tidak Ditemukan. Silahkan Hubungi Admin Kembali");
+            }
+
+            $data["guest"] = Guest::where("event_id", $cek->event_id)->get(['*']);
+            $data["guest_public"] = GuestPublic::where("event_id", $cek->event_id)->orderBy('waktu_checkin', 'DESC')->get(['*']);
+
+            DB::commit();
+
+            return view("modules.master.souvenir-guest.create", $data);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()->with("error", $e->getMessage());
+        }
     }
 
     public function store(CreateRequest $request)
@@ -125,6 +151,12 @@ class SouvenirDepositController extends Controller
         try {
 
             DB::beginTransaction();
+
+            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+            if (empty($cek)) {
+                return redirect()->to("/modules/titip-kado")->with("error", "Data Event Anda Tidak Ditemukan. Silahkan Hubungi Admin Kembali");
+            }
 
             if ($request->foto) {
                 $foto = ImageHelper::uploadFileToS3Souvenir($request->foto);
@@ -138,6 +170,7 @@ class SouvenirDepositController extends Controller
                 'foto_uploaded' => (bool) $request->foto,
             ]);
             SouvenirDeposit::create([
+                'event_id' => $cek->event_id,
                 'guest_id' => $request->guest_id,
                 'guest_public_id' => $request->guest_public_id,
                 'nama_tamu' => $request->guest_public_id ? GuestPublic::where("id", "=", $request->guest_public_id, "and")->first(['*'])?->nama : null,
