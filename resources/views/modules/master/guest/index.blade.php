@@ -70,7 +70,7 @@
 
 @push('content-modules')
     <div class="card shadow mb-4">
-        @if (Auth::user()->role->nama_role == 'Administrator')
+        @if (Auth::user()->role->nama_role == 'Administrator' || Auth::user()->role->nama_role == "Customer")
             <div class="card-header py-3">
                 <a href="{{ url('/modules/guest/create') }}" class="btn btn-primary btn-sm">
                     <i class="fa fa-plus"></i> Tambah Data

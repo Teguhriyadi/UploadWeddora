@@ -89,8 +89,8 @@
         </a>
     </li>
 
-    <div class="sidebar-heading">Administrasi</div>
     @if (Auth::user()->username == "teguh123")
+    <div class="sidebar-heading">Administrasi</div>
     <li class="nav-item {{ Request::is('modules/riwayat-aktifitas') ? 'active' : '' }}">
         <a class="nav-link" href="{{ url('/modules/riwayat-aktifitas') }}">
             <i class="fas fa-book"></i>

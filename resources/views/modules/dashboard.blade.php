@@ -380,7 +380,7 @@
             color: #21554b;
         }
 
-        .tab-content > .tab-pane {
+        .tab-content>.tab-pane {
             margin-top: 1rem;
         }
 
@@ -418,6 +418,7 @@
         }
 
         @media (max-width: 767.98px) {
+
             .dashboard-hero,
             .soft-card {
                 padding: 1rem;
@@ -446,12 +447,21 @@
 @endpush
 
 @push('content-modules')
-    @php
-        $peakTotal = !empty($chartTotal) ? max($chartTotal) : 0;
-        $peakIndex = !empty($chartTotal) ? array_search($peakTotal, $chartTotal) : null;
-        $peakHour = $peakIndex !== null && isset($chartJam[$peakIndex]) ? $chartJam[$peakIndex] : '-';
-        $presentPercent = $totalTamu > 0 ? round(($tamuHadir / $totalTamu) * 100) : 0;
-    @endphp
+    @if (!Auth::user()->role->nama_role == "Administrator" || $selectedEvent)
+        @php
+            $peakTotal = !empty($chartTotal) ? max($chartTotal) : 0;
+            $peakIndex = !empty($chartTotal) ? array_search($peakTotal, $chartTotal) : null;
+            $peakHour = $peakIndex !== null && isset($chartJam[$peakIndex]) ? $chartJam[$peakIndex] : '-';
+            $presentPercent = $totalTamu > 0 ? round(($tamuHadir / $totalTamu) * 100) : 0;
+        @endphp
+    @else
+        @php
+            $peakTotal = 0;
+            $peakIndex = null;
+            $peakHour = '-';
+            $presentPercent = 0;
+        @endphp
+    @endif
 
     <div class="content-page-header">
         <div class="content-page-label">
@@ -465,341 +475,394 @@
         </p>
     </div>
 
-    <div class="dashboard-hero dashboard-section">
-        <div class="row align-items-center">
-            <div class="col-xl-8 mb-4 mb-xl-0">
-                <div class="hero-label">
-                    <i class="fas fa-heart"></i>
-                    Dashboard Admin
-                </div>
-                <div class="hero-title mt-3">Operasional tamu lebih cepat, rapi, dan mudah dipantau.</div>
-                <p class="hero-description mt-3 mb-4">
-                    Gunakan halaman ini untuk melihat progres check-in, kepadatan kedatangan, dan akses cepat ke modul
-                    yang paling sering dipakai saat acara berlangsung.
-                </p>
-
-                <div class="hero-summary">
-                    <div class="hero-summary-item">
-                        <strong>{{ now()->translatedFormat('d F Y') }}</strong>
-                        <span>Ringkasan dashboard untuk hari ini</span>
+    @if (Auth::user()->role->nama_role == "Administrator")
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <form method="GET">
+                    <div class="row align-items-end">
+                        <div class="col-md-8">
+                            <label>
+                                Pilih Event
+                            </label>
+                            <select name="event_id" class="form-control">
+                                <option value="">
+                                    -- Pilih Event --
+                                </option>
+                                @foreach ($events as $event)
+                                    <option value="{{ $event->id }}"
+                                        {{ request('event_id') == $event->id ? 'selected' : '' }}>
+                                        {{ $event->nama_event }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary btn-block">
+                                Tampilkan
+                            </button>
+                        </div>
                     </div>
-                    <div class="hero-summary-item">
-                        <strong>{{ $peakHour }}</strong>
-                        <span>Jam kedatangan paling ramai</span>
-                    </div>
-                    <div class="hero-summary-item">
-                        <strong>{{ $presentPercent }}%</strong>
-                        <span>Persentase check-in tamu undangan</span>
-                    </div>
-                </div>
+                </form>
             </div>
-            <div class="col-xl-4">
-                <div class="hero-side-card">
-                    <div class="hero-side-title">Check-in Hari Ini</div>
-                    <div class="hero-side-value">{{ $tamuHadir }}</div>
-                    <div class="hero-side-note">
-                        Tamu yang sudah terverifikasi masuk ke area acara melalui QR maupun input manual.
-                    </div>
+        </div>
 
-                    <div class="hero-mini-stats">
-                        <div class="hero-mini-stat">
+    @endif
+
+    @if (!Auth::user()->role->nama_role == "Administrator" || $selectedEvent)
+        <div class="dashboard-hero dashboard-section">
+            <div class="row align-items-center">
+                <div class="col-xl-8 mb-4 mb-xl-0">
+                    <div class="hero-label">
+                        <i class="fas fa-heart"></i>
+                        Dashboard Admin
+                    </div>
+                    <div class="hero-title mt-3">Operasional tamu lebih cepat, rapi, dan mudah dipantau.</div>
+                    <p class="hero-description mt-3 mb-4">
+                        Gunakan halaman ini untuk melihat progres check-in, kepadatan kedatangan, dan akses cepat ke modul
+                        yang paling sering dipakai saat acara berlangsung.
+                    </p>
+
+                    <div class="hero-summary">
+                        <div class="hero-summary-item">
+                            <strong>{{ now()->translatedFormat('d F Y') }}</strong>
+                            <span>Ringkasan dashboard untuk hari ini</span>
+                        </div>
+                        <div class="hero-summary-item">
                             <strong>{{ $peakHour }}</strong>
-                            <span>Jam paling ramai</span>
+                            <span>Jam kedatangan paling ramai</span>
                         </div>
-                        <div class="hero-mini-stat">
-                            <strong>{{ $persen }}%</strong>
-                            <span>Persentase hadir</span>
+                        <div class="hero-summary-item">
+                            <strong>{{ $presentPercent }}%</strong>
+                            <span>Persentase check-in tamu undangan</span>
                         </div>
-                        <div class="hero-mini-stat">
-                            <strong>{{ $totalHadir }}</strong>
-                            <span>Total orang hadir</span>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="hero-side-card">
+                        <div class="hero-side-title">Check-in Hari Ini</div>
+                        <div class="hero-side-value">{{ $tamuHadir }}</div>
+                        <div class="hero-side-note">
+                            Tamu yang sudah terverifikasi masuk ke area acara melalui QR maupun input manual.
                         </div>
-                        <div class="hero-mini-stat">
-                            <strong>{{ $totalTamuLuarHadir }}</strong>
-                            <span>Tamu luar tercatat</span>
+
+                        <div class="hero-mini-stats">
+                            <div class="hero-mini-stat">
+                                <strong>{{ $peakHour }}</strong>
+                                <span>Jam paling ramai</span>
+                            </div>
+                            <div class="hero-mini-stat">
+                                <strong>{{ $persen }}%</strong>
+                                <span>Persentase hadir</span>
+                            </div>
+                            <div class="hero-mini-stat">
+                                <strong>{{ $totalHadir }}</strong>
+                                <span>Total orang hadir</span>
+                            </div>
+                            <div class="hero-mini-stat">
+                                <strong>{{ $totalTamuLuarHadir }}</strong>
+                                <span>Tamu luar tercatat</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="dashboard-section">
-        <div class="d-flex align-items-start justify-content-between flex-wrap mb-3" style="gap: 12px;">
-            <div>
-                <h3 class="section-title">Akses Cepat</h3>
-                <p class="section-subtitle">Shortcut ke modul yang paling sering dipakai saat operasional berlangsung.</p>
+        <div class="dashboard-section">
+            <div class="d-flex align-items-start justify-content-between flex-wrap mb-3" style="gap: 12px;">
+                <div>
+                    <h3 class="section-title">Akses Cepat</h3>
+                    <p class="section-subtitle">Shortcut ke modul yang paling sering dipakai saat operasional berlangsung.
+                    </p>
+                </div>
             </div>
-        </div>
 
-        <div class="quick-grid">
-            <a href="{{ url('/modules/scan-qr-guest') }}" class="quick-link">
-                <div class="quick-link-icon"><i class="fas fa-qrcode"></i></div>
-                <div>
-                    <div class="quick-link-title">Scan QR</div>
-                    <div class="quick-link-text">Check-in cepat lewat kamera</div>
-                </div>
-            </a>
-            <a href="{{ url('/modules/input-attendance') }}" class="quick-link">
-                <div class="quick-link-icon"><i class="fas fa-keyboard"></i></div>
-                <div>
-                    <div class="quick-link-title">Input Manual</div>
-                    <div class="quick-link-text">Alternatif saat QR tidak dipakai</div>
-                </div>
-            </a>
-            <a href="{{ url('/modules/guest') }}" class="quick-link">
-                <div class="quick-link-icon"><i class="fas fa-user-friends"></i></div>
-                <div>
-                    <div class="quick-link-title">Tamu Undangan</div>
-                    <div class="quick-link-text">Kelola data tamu utama</div>
-                </div>
-            </a>
-            <a href="{{ url('/modules/history-guest') }}" class="quick-link">
-                <div class="quick-link-icon"><i class="fas fa-history"></i></div>
-                <div>
-                    <div class="quick-link-title">Riwayat Tamu</div>
-                    <div class="quick-link-text">Lihat data kehadiran terbaru</div>
-                </div>
-            </a>
-        </div>
-    </div>
-
-    <div class="stats-grid dashboard-section">
-        <div class="stat-card">
-            <div class="stat-top">
-                <div>
-                    <div class="stat-label">Total Tamu Terdaftar</div>
-                    <div class="stat-value">{{ $totalTamu }}</div>
-                    <div class="stat-caption">Seluruh daftar undangan yang sudah masuk sistem.</div>
-                </div>
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-            </div>
-        </div>
-        <div class="stat-card success">
-            <div class="stat-top">
-                <div>
-                    <div class="stat-label">Tamu Sudah Check-in</div>
-                    <div class="stat-value">{{ $tamuHadir }}</div>
-                    <div class="stat-caption">Tamu yang berhasil masuk lewat QR atau input manual.</div>
-                </div>
-                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-            </div>
-        </div>
-        <div class="stat-card warning">
-            <div class="stat-top">
-                <div>
-                    <div class="stat-label">Belum Hadir</div>
-                    <div class="stat-value">{{ $belumHadir }}</div>
-                    <div class="stat-caption">Masih bisa dipantau untuk kebutuhan follow up lapangan.</div>
-                </div>
-                <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
-            </div>
-        </div>
-        <div class="stat-card info">
-            <div class="stat-top">
-                <div>
-                    <div class="stat-label">Tamu Luar Hadir</div>
-                    <div class="stat-value">{{ $totalTamuLuarHadir }}</div>
-                    <div class="stat-caption">Tambahan tamu luar yang tercatat hadir di acara.</div>
-                </div>
-                <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xl-4 mb-4">
-            <div class="soft-card">
-                <div class="d-flex align-items-start justify-content-between">
+            <div class="quick-grid">
+                <a href="{{ url('/modules/scan-qr-guest') }}" class="quick-link">
+                    <div class="quick-link-icon"><i class="fas fa-qrcode"></i></div>
                     <div>
-                        <h3 class="section-title">Persentase Kehadiran</h3>
-                        <p class="section-subtitle">Membandingkan tamu yang sudah check-in dan yang belum hadir.</p>
+                        <div class="quick-link-title">Scan QR</div>
+                        <div class="quick-link-text">Check-in cepat lewat kamera</div>
                     </div>
-                    <span class="badge badge-success">{{ $persen }}%</span>
-                </div>
+                </a>
+                <a href="{{ url('/modules/input-attendance') }}" class="quick-link">
+                    <div class="quick-link-icon"><i class="fas fa-keyboard"></i></div>
+                    <div>
+                        <div class="quick-link-title">Input Manual</div>
+                        <div class="quick-link-text">Alternatif saat QR tidak dipakai</div>
+                    </div>
+                </a>
+                <a href="{{ url('/modules/guest') }}" class="quick-link">
+                    <div class="quick-link-icon"><i class="fas fa-user-friends"></i></div>
+                    <div>
+                        <div class="quick-link-title">Tamu Undangan</div>
+                        <div class="quick-link-text">Kelola data tamu utama</div>
+                    </div>
+                </a>
+                <a href="{{ url('/modules/history-guest') }}" class="quick-link">
+                    <div class="quick-link-icon"><i class="fas fa-history"></i></div>
+                    <div>
+                        <div class="quick-link-title">Riwayat Tamu</div>
+                        <div class="quick-link-text">Lihat data kehadiran terbaru</div>
+                    </div>
+                </a>
+            </div>
+        </div>
 
-                <div class="text-center mt-4">
-                    <div class="chart-wrap-sm mx-auto" style="max-width: 260px;">
-                        <canvas id="chartPersen"></canvas>
+        <div class="stats-grid dashboard-section">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div>
+                        <div class="stat-label">Total Tamu Terdaftar</div>
+                        <div class="stat-value">{{ $totalTamu }}</div>
+                        <div class="stat-caption">Seluruh daftar undangan yang sudah masuk sistem.</div>
                     </div>
-                    <div class="progress mt-3" style="height: 10px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ $persen }}%"
-                            aria-valuenow="{{ $persen }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                </div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-top">
+                    <div>
+                        <div class="stat-label">Tamu Sudah Check-in</div>
+                        <div class="stat-value">{{ $tamuHadir }}</div>
+                        <div class="stat-caption">Tamu yang berhasil masuk lewat QR atau input manual.</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                </div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-top">
+                    <div>
+                        <div class="stat-label">Belum Hadir</div>
+                        <div class="stat-value">{{ $belumHadir }}</div>
+                        <div class="stat-caption">Masih bisa dipantau untuk kebutuhan follow up lapangan.</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+                </div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-top">
+                    <div>
+                        <div class="stat-label">Tamu Luar Hadir</div>
+                        <div class="stat-value">{{ $totalTamuLuarHadir }}</div>
+                        <div class="stat-caption">Tambahan tamu luar yang tercatat hadir di acara.</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4 mb-4">
+                <div class="soft-card">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                            <h3 class="section-title">Persentase Kehadiran</h3>
+                            <p class="section-subtitle">Membandingkan tamu yang sudah check-in dan yang belum hadir.</p>
+                        </div>
+                        <span class="badge badge-success">{{ $persen }}%</span>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <div class="chart-wrap-sm mx-auto" style="max-width: 260px;">
+                            <canvas id="chartPersen"></canvas>
+                        </div>
+                        <div class="progress mt-3" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $persen }}%"
+                                aria-valuenow="{{ $persen }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+
+                    <div class="status-list">
+                        <div class="status-item">
+                            <div class="status-item-label">
+                                <span class="status-dot" style="background:#1cc88a;"></span>
+                                <span>Tamu hadir</span>
+                            </div>
+                            <div class="status-item-value">{{ $tamuHadir }}</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-item-label">
+                                <span class="status-dot" style="background:#f6c23e;"></span>
+                                <span>Belum hadir</span>
+                            </div>
+                            <div class="status-item-value">{{ $belumHadir }}</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-item-label">
+                                <span class="status-dot" style="background:#36b9cc;"></span>
+                                <span>Tamu luar</span>
+                            </div>
+                            <div class="status-item-value">{{ $totalTamuLuarHadir }}</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-item-label">
+                                <span class="status-dot" style="background:#21554b;"></span>
+                                <span>Puncak kedatangan</span>
+                            </div>
+                            <div class="status-item-value">{{ $peakHour }}</div>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="status-list">
-                    <div class="status-item">
-                        <div class="status-item-label">
-                            <span class="status-dot" style="background:#1cc88a;"></span>
-                            <span>Tamu hadir</span>
+            <div class="col-xl-8 mb-4">
+                <div class="soft-card">
+                    <div class="d-flex align-items-start justify-content-between flex-wrap" style="gap: 12px;">
+                        <div>
+                            <h3 class="section-title">Kedatangan Tamu per Jam</h3>
+                            <p class="section-subtitle">Memudahkan tim melihat rentang waktu yang sedang paling sibuk.</p>
                         </div>
-                        <div class="status-item-value">{{ $tamuHadir }}</div>
+                        <div class="text-md-right">
+                            <div class="small text-muted">Puncak kedatangan</div>
+                            <div class="font-weight-bold text-dark">{{ $peakHour }} · {{ $peakTotal }} tamu</div>
+                        </div>
                     </div>
-                    <div class="status-item">
-                        <div class="status-item-label">
-                            <span class="status-dot" style="background:#f6c23e;"></span>
-                            <span>Belum hadir</span>
+
+                    <div class="mt-3">
+                        <div class="chart-wrap">
+                            <canvas id="chartJam"></canvas>
                         </div>
-                        <div class="status-item-value">{{ $belumHadir }}</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-item-label">
-                            <span class="status-dot" style="background:#36b9cc;"></span>
-                            <span>Tamu luar</span>
-                        </div>
-                        <div class="status-item-value">{{ $totalTamuLuarHadir }}</div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-item-label">
-                            <span class="status-dot" style="background:#21554b;"></span>
-                            <span>Puncak kedatangan</span>
-                        </div>
-                        <div class="status-item-value">{{ $peakHour }}</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-8 mb-4">
-            <div class="soft-card">
-                <div class="d-flex align-items-start justify-content-between flex-wrap" style="gap: 12px;">
-                    <div>
-                        <h3 class="section-title">Kedatangan Tamu per Jam</h3>
-                        <p class="section-subtitle">Memudahkan tim melihat rentang waktu yang sedang paling sibuk.</p>
-                    </div>
-                    <div class="text-md-right">
-                        <div class="small text-muted">Puncak kedatangan</div>
-                        <div class="font-weight-bold text-dark">{{ $peakHour }} · {{ $peakTotal }} tamu</div>
-                    </div>
-                </div>
-
-                <div class="mt-3">
-                    <div class="chart-wrap">
-                        <canvas id="chartJam"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xl-12 mb-4">
-            <div class="soft-card">
-                <div class="activity-head">
-                    <div>
-                        <h3 class="section-title">Aktivitas Kehadiran Terakhir</h3>
-                        <p class="section-subtitle">Pantau check-in tamu undangan maupun tamu luar dari satu tempat.</p>
-                    </div>
-                    <input type="text" class="form-control form-control-sm search-input" id="tableSearch"
+        <div class="row">
+            <div class="col-xl-12 mb-4">
+                <div class="soft-card">
+                    <div class="activity-head">
+                        <div>
+                            <h3 class="section-title">Aktivitas Kehadiran Terakhir</h3>
+                            <p class="section-subtitle">Pantau check-in tamu undangan maupun tamu luar dari satu tempat.
+                            </p>
+                        </div>
+                        <input type="text" class="form-control form-control-sm search-input" id="tableSearch"
                             placeholder="Cari nama / token...">
-                </div>
-
-                <ul class="nav nav-tabs border-0" id="myTab">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request('tab', 'tamu-undangan') == 'tamu-undangan' ? 'active' : '' }}"
-                            data-toggle="tab" href="#tamu-undangan">
-                            Tamu Undangan
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request('tab') == 'tamu-luar' ? 'active' : '' }}" data-toggle="tab"
-                            href="#tamu-luar">
-                            Tamu Luar
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="tab-content">
-                    <div class="tab-pane fade {{ request('tab', 'tamu-undangan') == 'tamu-undangan' ? 'show active' : '' }}"
-                        id="tamu-undangan">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-compact mb-0" id="tableInvitation">
-                                <thead>
-                                    <tr>
-                                        <th>Kode Token</th>
-                                        <th>Nama</th>
-                                        <th>Nama di Undangan</th>
-                                        <th>Keterangan</th>
-                                        <th>Kategori</th>
-                                        <th>Relasi</th>
-                                        <th>Waktu Kehadiran</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($guest_invitation as $invitation)
-                                        <tr>
-                                            <td>
-                                                <button type="button" class="token-button"
-                                                    data-copy-token="{{ $invitation->guest->kode_token }}">
-                                                    {{ $invitation->guest->kode_token }}
-                                                </button>
-                                            </td>
-                                            <td>{{ $invitation->guest->nama_tamu }}</td>
-                                            <td>{{ $invitation->guest->nama_undangan }}</td>
-                                            <td>{{ $invitation->guest->keterangan }}</td>
-                                            <td>{{ $invitation->guest->kategori ? $invitation->guest->kategori->nama_kategori : '' }}
-                                            </td>
-                                            <td>{{ $invitation->guest->relasi }}</td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($invitation->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i') }}
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="7"><strong>Riwayat belum ada</strong></td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
-                    <div class="tab-pane fade {{ request('tab') == 'tamu-luar' ? 'show active' : '' }}"
-                        id="tamu-luar">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-compact mb-0" id="tablePublic">
-                                <thead>
-                                    <tr>
-                                        <th>Nama</th>
-                                        <th>No. Handphone</th>
-                                        <th>Alamat</th>
-                                        <th>Pekerjaan</th>
-                                        <th>Relasi</th>
-                                        <th>Keterangan</th>
-                                        <th>Waktu Kehadiran</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($guest_public as $public)
+
+                    <ul class="nav nav-tabs border-0" id="myTab">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request('tab', 'tamu-undangan') == 'tamu-undangan' ? 'active' : '' }}"
+                                data-toggle="tab" href="#tamu-undangan">
+                                Tamu Undangan
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ request('tab') == 'tamu-luar' ? 'active' : '' }}" data-toggle="tab"
+                                href="#tamu-luar">
+                                Tamu Luar
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade {{ request('tab', 'tamu-undangan') == 'tamu-undangan' ? 'show active' : '' }}"
+                            id="tamu-undangan">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-compact mb-0" id="tableInvitation">
+                                    <thead>
                                         <tr>
-                                            <td>{{ $public->nama }}</td>
-                                            <td>{{ $public->nomor_handphone }}</td>
-                                            <td>{{ $public->alamat }}</td>
-                                            <td>{{ $public->pekerjaan ?? '-' }}</td>
-                                            <td>{{ $public->relasi }}</td>
-                                            <td>{{ $public->keterangan }}</td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($public->waktu_checkin)->locale('id')->translatedFormat('d F Y H:i') }}
-                                            </td>
+                                            <th>Kode Token</th>
+                                            <th>Nama</th>
+                                            <th>Nama di Undangan</th>
+                                            <th>Keterangan</th>
+                                            <th>Kategori</th>
+                                            <th>Relasi</th>
+                                            <th>Waktu Kehadiran</th>
                                         </tr>
-                                    @empty
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($guest_invitation as $invitation)
+                                            <tr>
+                                                <td>
+                                                    <button type="button" class="token-button"
+                                                        data-copy-token="{{ $invitation->guest->kode_token }}">
+                                                        {{ $invitation->guest->kode_token }}
+                                                    </button>
+                                                </td>
+                                                <td>{{ $invitation->guest->nama_tamu }}</td>
+                                                <td>{{ $invitation->guest->nama_undangan }}</td>
+                                                <td>{{ $invitation->guest->keterangan }}</td>
+                                                <td>{{ $invitation->guest->kategori ? $invitation->guest->kategori->nama_kategori : '' }}
+                                                </td>
+                                                <td>{{ $invitation->guest->relasi }}</td>
+                                                <td>
+                                                    {{ \Carbon\Carbon::parse($invitation->waktu_checkin)->locale('id')->translatedFormat('d
+                                                                                            F Y H:i') }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7"><strong>Riwayat belum ada</strong></td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade {{ request('tab') == 'tamu-luar' ? 'show active' : '' }}"
+                            id="tamu-luar">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-compact mb-0" id="tablePublic">
+                                    <thead>
                                         <tr>
-                                            <td colspan="7"><strong>Riwayat belum ada</strong></td>
+                                            <th>Nama</th>
+                                            <th>No. Handphone</th>
+                                            <th>Alamat</th>
+                                            <th>Pekerjaan</th>
+                                            <th>Relasi</th>
+                                            <th>Keterangan</th>
+                                            <th>Waktu Kehadiran</th>
                                         </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($guest_public as $public)
+                                            <tr>
+                                                <td>{{ $public->nama }}</td>
+                                                <td>{{ $public->nomor_handphone }}</td>
+                                                <td>{{ $public->alamat }}</td>
+                                                <td>{{ $public->pekerjaan ?? '-' }}</td>
+                                                <td>{{ $public->relasi }}</td>
+                                                <td>{{ $public->keterangan }}</td>
+                                                <td>
+                                                    {{ \Carbon\Carbon::parse($public->waktu_checkin)->locale('id')->translatedFormat('d
+                                                                                            F Y H:i') }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7"><strong>Riwayat belum ada</strong></td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    @else
+        <div class="alert alert-info">
+            <h6>
+                <strong>
+                    Silakan pilih event terlebih dahulu.
+                </strong>
+            </h6>
+            <p class="mb-0">
+                Setelah event dipilih, seluruh statistik, grafik, dan aktivitas check-in akan ditampilkan.
+            </p>
+        </div>
+
+    @endif
+
 @endpush
 
 @push('style-js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     @if (!Auth::user()->role->nama_role == "Administrator" || $selectedEvent)
     <script>
         const persenChart = document.getElementById('chartPersen');
 
@@ -906,4 +969,5 @@
             });
         });
     </script>
+    @endif
 @endpush

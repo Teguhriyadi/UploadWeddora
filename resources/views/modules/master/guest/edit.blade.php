@@ -53,31 +53,6 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="event_id" class="col-sm-2 col-form-label">
-                                Nama Event
-                                <small class="text-center">*</small>
-                            </label>
-                            <div class="col-sm-6">
-                                <select name="event_id"
-                                    class="form-control select2 @error('event_id') is-invalid @enderror"
-                                    id="event_id">
-                                    <option value=""></option>
-                                    @foreach ($event as $item)
-                                        <option value="{{ $item['id'] }}"
-                                            {{ old('event_id', $edit['event_id']) == $item['id'] ? 'selected' : '' }}>
-                                            {{ $item['nama_event'] }}
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                @error('event_id')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
                             <label for="staticEmail" class="col-sm-2 col-form-label">
                                 Nama Tamu
                                 <span class="text-danger">*</span>
