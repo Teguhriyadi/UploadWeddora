@@ -33,7 +33,7 @@ class AppController extends Controller
             $cek = EventUsers::where('user_id', Auth::id())->first();
 
             if (!$cek) {
-                abort(403);
+                return back()->with("error", "Data Event Belum di Setting");
             }
 
             $eventId = $cek->event_id;
