@@ -18,4 +18,9 @@ class Event extends Model
     protected $keyType = "string";
 
     public $primaryKey = "id";
+
+    public function cabang()
+    {
+        return $this->belongsTo(Cabang::class, "cabang_id");;
+    }
 }
