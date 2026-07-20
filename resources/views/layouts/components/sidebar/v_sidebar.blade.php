@@ -113,6 +113,13 @@
                 <span>Users</span>
             </a>
         </li>
+
+        <li class="nav-item {{ Request::is('modules/assign-users*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/assign-users') }}">
+                <i class="fas fa-book"></i>
+                <span>Assign Users</span>
+            </a>
+        </li>
     @endif
 
 </ul>
