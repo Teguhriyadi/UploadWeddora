@@ -154,57 +154,6 @@ class EventController extends Controller
         }
     }
 
-    public function datatable(Request $request, $id)
-    {
-        if ($request->ajax()) {
-
-            $data = Kategori::where("id", "!=", $id, "and")
-                ->orderBy('created_at', 'DESC');
-
-            return DataTables::of($data)
-                ->addIndexColumn()
-
-                ->addColumn('status', function ($row) {
-                    if ($row->is_active == 1) {
-                        return '
-                        <button class="btn btn-success btn-sm btn-toggle-status"
-                            data-id="' . $row->id . '"
-                            data-status="0">
-                            <i class="fa fa-check"></i> Aktif
-                        </button>
-                    ';
-                    }
-
-                    return '
-                    <button class="btn btn-danger btn-sm btn-toggle-status"
-                        data-id="' . $row->id . '"
-                        data-status="1">
-                        <i class="fa fa-times"></i> Non Aktif
-                    </button>
-                ';
-                })
-
-                ->addColumn('action', function ($row) {
-                    return '
-                    <a href="/modules/kategori/' . $row->id . '/edit" class="btn btn-warning btn-sm">
-                        <i class="fa fa-edit"></i> Edit
-                    </a>
-
-                    <form action="/modules/kategori/' . $row->id . '" method="POST" style="display:inline;">
-                        ' . csrf_field() . '
-                        ' . method_field("DELETE") . '
-                        <button onclick="return confirm(\'Yakin? Apakah Anda Ingin Menghapus Data Ini?\')" class="btn btn-danger btn-sm">
-                            <i class="fa fa-trash"></i> Hapus
-                        </button>
-                    </form>
-                ';
-                })
-
-                ->rawColumns(['status', 'action'])
-                ->make(true);
-        }
-    }
-
     public function update(UpdateRequest $request, $id)
     {
         try {
@@ -290,21 +239,5 @@ class EventController extends Controller
 
             return back()->with("error", $e->getMessage());
         }
-    }
-
-    public function toggleStatus($id)
-    {
-        $kategori = Kategori::findOrFail($id);
-
-        ActivityLogger::setContext('Master Kategori', 'ubah_status', [
-            'kategori_id' => $kategori->id,
-            'status' => request('status'),
-        ]);
-        $kategori->is_active = request('status');
-        $kategori->save();
-
-        return response()->json([
-            'message' => 'OK'
-        ]);
     }
 }

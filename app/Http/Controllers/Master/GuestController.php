@@ -11,7 +11,6 @@ use App\Models\Event;
 use App\Models\Guest;
 use App\Models\GuestCheckin;
 use App\Models\Kategori;
-use App\Models\User;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +24,10 @@ class GuestController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = Guest::with('kategori')
+            $data = Guest::with([
+                "kategori:id,nama_kategori",
+                "event:id,nama_event"
+            ])
                 ->filter($request)
                 ->orderBy('created_at', 'DESC');
 
@@ -34,7 +36,9 @@ class GuestController extends Controller
                 ->addColumn('kategori', function ($row) {
                     return $row->kategori?->nama_kategori;
                 })
-
+                ->addColumn('event', function ($row) {
+                    return $row->event->nama_event;
+                })
                 ->addColumn('status', function ($row) {
 
                     $badgeClass = $row->status_kehadiran == 1
@@ -150,6 +154,7 @@ class GuestController extends Controller
             DB::beginTransaction();
 
             $data["kategori"] = Kategori::get(['*']);
+            $data["event"] = Event::get(['*']);
 
             DB::commit();
 
@@ -168,16 +173,15 @@ class GuestController extends Controller
 
             DB::beginTransaction();
 
-            $event = Event::first(['*']);
-
             $token = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, rand(6, 8));
 
             ActivityLogger::setContext('Tamu Undangan', 'create', [
                 'kode_token' => $token,
                 'nama_tamu' => $request["nama_tamu"],
             ]);
+
             Guest::create([
-                "event_id" => $event["id"],
+                "event_id" => $request["event_id"],
                 "kategori_id" => $request["kategori_id"],
                 "kode_token" => $token,
                 "nama_tamu" => $request["nama_tamu"],
@@ -206,6 +210,7 @@ class GuestController extends Controller
 
             $data["kategori"] = Kategori::get(['*']);
             $data["edit"] = Guest::where("id", "=", $id, "and")->first(['*']);
+            $data["event"] = Event::get(['*']);
 
             DB::commit();
 
@@ -229,6 +234,7 @@ class GuestController extends Controller
                 'guest_id' => $guest?->id,
             ]);
             $guest->update([
+                "event_id" => $request["event_id"],
                 "kategori_id" => $request["kategori_id"],
                 "nama_tamu" => $request["nama_tamu"],
                 "nama_undangan" => $request["nama_undangan"],
