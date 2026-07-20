@@ -23,6 +23,13 @@
                 <span>Kategori</span>
             </a>
         </li>
+
+        <li class="nav-item {{ Request::is('modules/event*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/event') }}">
+                <i class="fas fa-book"></i>
+                <span>Event</span>
+            </a>
+        </li>
     @endif
 
     <li class="nav-item {{ Request::is('modules/guest') || Request::is('modules/guest/*') ? 'active' : '' }}">
