@@ -4,6 +4,7 @@ namespace App\Http\Controllers\InputManual;
 
 use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
+use App\Models\EventUsers;
 use App\Models\Guest;
 use App\Models\GuestCheckin;
 use App\Support\ActivityLogger;
@@ -19,7 +20,13 @@ class InputAttendanceController extends Controller
 
             DB::beginTransaction();
 
-            $data["guest"] = Guest::get(['*']);
+            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+            if (empty($cek)) {
+                return back()->with("error", "Data Anda Tidak Ditemukan");
+            }
+
+            $data["guest"] = Guest::where("event_id", $cek->event_id)->get(['*']);
 
             DB::commit();
 
@@ -42,13 +49,24 @@ class InputAttendanceController extends Controller
 
             DB::beginTransaction();
 
-            $guest = Guest::where("id", "=", $request["guest_id"], "and")->first(['*']);
+            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+            if (empty($cek)) {
+                return back()->with("error", "Data Anda Tidak Ditemukan");
+            }
+
+            $guest = Guest::where("event_id", $cek->event_id)
+                ->where("id", "=", $request["guest_id"], "and")
+                ->first(['*']);
+
             if (!$guest) {
                 DB::rollBack();
                 return back()->with("error", "Tamu tidak ditemukan");
             }
 
-            $sudahCheckin = GuestCheckin::where('guest_id', '=', $guest->id, 'and')->exists();
+            $sudahCheckin = GuestCheckin::where("event_id", $cek->event_id)
+                ->where('guest_id', '=', $guest->id, 'and')
+                ->exists();
 
             if ($sudahCheckin) {
                 DB::rollBack();
@@ -66,6 +84,7 @@ class InputAttendanceController extends Controller
                 'selfie_used' => (bool) $request->selfie,
             ]);
             GuestCheckin::create([
+                "event_id" => $cek->event_id,
                 "guest_id" => $guest["id"],
                 "metode" => "manual",
                 "waktu_checkin" => now(),
@@ -94,7 +113,9 @@ class InputAttendanceController extends Controller
 
     public function info_guest($id)
     {
-        $guest = Guest::with('kategori')->findOrFail($id);
+        $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+        $guest = Guest::where("event_id", $cek->event_id)->with('kategori')->findOrFail($id);
+
         return response()->json([
             'nama' => $guest->nama_tamu,
             'nama_undangan' => $guest->nama_undangan,
@@ -109,7 +130,10 @@ class InputAttendanceController extends Controller
     {
         $q = $request->q;
 
-        $data = Guest::where(function ($query) use ($q) {
+        $cek = EventUsers::where("user_id", Auth::user()->id)->first();
+
+        $data = Guest::where("event_id", $cek->event_id)
+            ->where(function ($query) use ($q) {
                 $query->where('nama_tamu', 'like', '%' . $q . '%')
                     ->orWhere('nama_undangan', 'like', '%' . $q . '%');
             })
