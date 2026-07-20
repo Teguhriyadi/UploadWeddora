@@ -16,4 +16,14 @@ class EventUsers extends Model
     public $incrementing = false;
 
     protected $keyType = 'string';
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, "event_id");
+    }
+
+    public function users()
+    {
+        return $this->belongsTo(User::class, "user_id");
+    }
 }
