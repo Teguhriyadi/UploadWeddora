@@ -146,12 +146,8 @@ class GuestController extends Controller
                         ';
                     } else {
                         return '
-                            <a href="' . env('APP_URL') . '/qr/' . $row['kode_token'] . '" class="btn btn-info btn-sm" target="_blank">
-                                <i class="fa fa-search"></i>
-                            </a>
-
                             <a href="' . url('/modules/guest/generate-card/' . $row['kode_token']) . '" class="btn btn-success btn-sm">
-                                <i class="fa fa-download"></i>
+                                <i class="fa fa-download"></i> Download
                             </a>
                         ';
                     }
