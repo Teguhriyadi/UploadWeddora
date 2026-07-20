@@ -5,6 +5,7 @@
 @push('style-css')
     <link href="{{ asset('templating/select2/css/select2.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('templating/select2/css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
+    @include("layouts.components.css.is-invalid")
 @endpush
 
 @push('content-modules')
@@ -36,8 +37,7 @@
                             </label>
                             <div class="col-sm-4">
                                 <select name="cabang_id"
-                                    class="form-control select2 @error('cabang_id') is-invalid @enderror"
-                                    id="cabang_id">
+                                    class="form-control select2 @error('cabang_id') is-invalid @enderror" id="cabang_id">
                                     <option value=""></option>
                                     @foreach ($cabang as $item)
                                         <option value="{{ $item['id'] }}"
@@ -47,7 +47,7 @@
                                     @endforeach
                                 </select>
 
-                                @error('kategori_id')
+                                @error('cabang_id')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>
@@ -94,7 +94,9 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-6">
-                                <input type="text" class="form-control @error('nama_event') is-invalid @enderror" name="nama_event" id="nama_event" placeholder="Masukkan Nama Event" value="{{ old('nama_event') }}">
+                                <input type="text" class="form-control @error('nama_event') is-invalid @enderror"
+                                    name="nama_event" id="nama_event" placeholder="Masukkan Nama Event"
+                                    value="{{ old('nama_event') }}">
 
                                 @error('nama_event')
                                     <div class="invalid-feedback">
@@ -109,7 +111,8 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-3">
-                                <input type="date" class="form-control @error('tanggal') is-invalid @enderror" id="tanggal" name="tanggal" value="{{ old('tanggal') }}">
+                                <input type="date" class="form-control @error('tanggal') is-invalid @enderror"
+                                    id="tanggal" name="tanggal" value="{{ old('tanggal') }}">
 
                                 @error('tanggal')
                                     <div class="invalid-feedback">
@@ -124,7 +127,9 @@
                                 <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-6">
-                                <input type="text" class="form-control @error('lokasi') is-invalid @enderror" name="lokasi" id="lokasi" value="{{ old('lokasi') }}" placeholder="Masukkan Lokasi">
+                                <input type="text" class="form-control @error('lokasi') is-invalid @enderror"
+                                    name="lokasi" id="lokasi" value="{{ old('lokasi') }}"
+                                    placeholder="Masukkan Lokasi">
 
                                 @error('lokasi')
                                     <div class="invalid-feedback">

@@ -161,7 +161,9 @@ class GuestController extends Controller
                 ->make(true);
         }
 
-        return view("modules.master.guest.index");
+        $data["event"] = Event::get(["*"]);
+
+        return view("modules.master.guest.index", $data);
     }
 
     public function create()

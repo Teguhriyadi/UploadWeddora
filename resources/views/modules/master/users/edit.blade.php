@@ -5,6 +5,7 @@
 @push('style-css')
     <link href="{{ asset('templating/select2/css/select2.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('templating/select2/css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
+    @include("layouts.components.css.is-invalid")
 @endpush
 
 @push('content-modules')

@@ -3,9 +3,8 @@
 @push('title-modules', 'Master Role')
 
 @push('style-css')
-
     <link href="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-
+    @include("layouts.components.css.is-invalid")
 @endpush
 
 @push('content-modules')
