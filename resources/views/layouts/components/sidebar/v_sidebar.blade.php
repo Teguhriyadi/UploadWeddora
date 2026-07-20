@@ -24,6 +24,13 @@
             </a>
         </li>
 
+        <li class="nav-item {{ Request::is('modules/cabang*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/cabang') }}">
+                <i class="fas fa-bars"></i>
+                <span>Cabang</span>
+            </a>
+        </li>
+
         <li class="nav-item {{ Request::is('modules/event*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ url('/modules/event') }}">
                 <i class="fas fa-book"></i>

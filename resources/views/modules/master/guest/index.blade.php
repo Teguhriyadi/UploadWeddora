@@ -132,6 +132,7 @@
                             <th class="text-center">Aksi</th>
                             <th class="text-center">Kategori</th>
                             <th class="text-center">Status</th>
+                            <th>Nama Event</th>
                             <th>Kode Token</th>
                             <th>Nama</th>
                             <th>Nama Undangan</th>
@@ -249,6 +250,10 @@
                         orderable: false,
                         searchable: false,
                         className: 'text-center'
+                    },
+                    {
+                        data: 'event',
+                        name: 'event'
                     },
                     {
                         data: 'kode_token',
