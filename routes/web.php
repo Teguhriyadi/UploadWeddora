@@ -4,6 +4,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\Authentication\LoginController;
 use App\Http\Controllers\InputManual\GuestPublicController;
 use App\Http\Controllers\InputManual\InputAttendanceController;
+use App\Http\Controllers\Master\EventController;
 use App\Http\Controllers\Master\GuestController;
 use App\Http\Controllers\Master\KategoriController;
 use App\Http\Controllers\Master\RoleController;
@@ -83,6 +84,8 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::resource("titip-kado", SouvenirDepositController::class);
 
         Route::get("/riwayat-aktifitas", [ActivityLogController::class, "index"]);
+
+        Route::resource('event', EventController::class);
 
         Route::get("/activity-log", [ActivityLogController::class, "index"]);
         Route::get("/error-page", [AppController::class, "error_page"]);
