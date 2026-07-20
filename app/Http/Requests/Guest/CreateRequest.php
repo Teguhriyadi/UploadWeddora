@@ -10,7 +10,6 @@ class CreateRequest extends FormRequest
     {
         return [
             'nama_tamu' => 'required',
-            'event_id' => 'required',
             'nama_undangan' => 'required',
             'relasi' => 'required',
             'jenis_undangan' => 'required',
@@ -22,7 +21,6 @@ class CreateRequest extends FormRequest
     {
         return [
             'nama_tamu.required' => 'Nama Tamu Wajib Diisi',
-            'event_id.required' => 'Nama Event Wajib Diisi',
             'nama_undangan.required' => 'Nama Undangan Wajib Diisi',
             'relasi.required' => 'Relasi Wajib Diisi',
             'jenis_undangan.required' => 'Jenis Undangan Wajib Diisi',
