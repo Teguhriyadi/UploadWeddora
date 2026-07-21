@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\QRCode;
 
+use App\Events\GuestCheckedIn;
 use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
@@ -175,6 +176,10 @@ class ScanQRGuestController extends Controller
             'users_id' => Auth::user()->id,
             "selfie_path" => $fileName,
         ]);
+
+        broadcast(new GuestCheckedIn([
+            'nama' => $guest->nama_undangan,
+        ]));
 
         ActivityLogger::setContext('Tamu Undangan', 'ubah_kehadiran', [
             'guest_id' => $guest->id,

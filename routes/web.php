@@ -13,6 +13,7 @@ use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\SouvenirDepositController;
 use App\Http\Controllers\Master\TitipKehadiranController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Master\WelcomeDisplayController;
 use App\Http\Controllers\QRCode\ScanQRGuestController;
 use App\Http\Controllers\Report\ActivityLogController;
 use App\Http\Controllers\Report\HistoryGuestController;
@@ -22,6 +23,7 @@ Route::get("/", function() {
     return redirect()->to("/login");
 });
 
+Route::get("/welcome-display", [WelcomeDisplayController::class, "welcome"]);
 Route::get('/qr/{kode_token}', [ScanQRGuestController::class, 'poster']);
 
 Route::middleware(["web", "guest"])->group(function () {
