@@ -177,10 +177,6 @@ class ScanQRGuestController extends Controller
             "selfie_path" => $fileName,
         ]);
 
-        broadcast(new GuestCheckedIn([
-            'nama' => $guest->nama_undangan,
-        ]));
-
         ActivityLogger::setContext('Tamu Undangan', 'ubah_kehadiran', [
             'guest_id' => $guest->id,
             'metode' => 'qr',

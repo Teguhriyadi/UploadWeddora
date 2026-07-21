@@ -23,7 +23,13 @@ Route::get("/", function() {
     return redirect()->to("/login");
 });
 
-Route::get("/welcome-display", [WelcomeDisplayController::class, "welcome"]);
+Route::prefix('welcome-display')->group(function () {
+    Route::get('/', [WelcomeDisplayController::class, 'index'])
+        ->name('welcome.display');
+    Route::get('/latest', [WelcomeDisplayController::class, 'latest'])
+        ->name('welcome.latest');
+});
+
 Route::get('/qr/{kode_token}', [ScanQRGuestController::class, 'poster']);
 
 Route::middleware(["web", "guest"])->group(function () {
