@@ -4,17 +4,26 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\LPKategori;
-use Illuminate\Http\Request;
+use App\Models\LPTema;
 use Illuminate\Support\Facades\DB;
 
-class KategoriController extends Controller
+class TemaController extends Controller
 {
-    public function index()
+    public function index($kategori_id)
     {
         try {
             DB::beginTransaction();
 
-            $data["kategori"] = LPKategori::select(["id", "nama_kategori", "slug", "is_active"])->get(["*"]);
+            $cek = LPKategori::where("id", $kategori_id)->first();
+
+            if (empty($cek)) {
+                return response()->json([
+                    "message" => "Data Kategori Tidak Ditemukan",
+                    "data" => null
+                ]);
+            }
+
+            $data["tema"] = LPTema::where("lp_kategori_id", $kategori_id)->first();
 
             DB::commit();
 
