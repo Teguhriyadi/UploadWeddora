@@ -15,6 +15,16 @@
         </a>
     </li>
 
+    @if (Auth::user()->role->nama_role == 'Administrator')
+    <div class="sidebar-heading">Landing Page</div>
+        <li class="nav-item {{ Request::is('modules/landing-page/kategori*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/landing-page/kategori') }}">
+                <i class="fas fa-layer-group"></i>
+                <span>Master Kategori</span>
+            </a>
+        </li>
+    @endif
+
     <div class="sidebar-heading">Operasional Tamu</div>
     @if (Auth::user()->role->nama_role == 'Administrator')
         <li class="nav-item {{ Request::is('modules/kategori*') ? 'active' : '' }}">

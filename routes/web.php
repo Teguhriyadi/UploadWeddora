@@ -4,6 +4,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\Authentication\LoginController;
 use App\Http\Controllers\InputManual\GuestPublicController;
 use App\Http\Controllers\InputManual\InputAttendanceController;
+use App\Http\Controllers\LandingPage\KategoriController as LandingPageKategoriController;
 use App\Http\Controllers\Master\AssignUsersController;
 use App\Http\Controllers\Master\CabangController;
 use App\Http\Controllers\Master\EventController;
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\Route;
 Route::get("/", function() {
     return redirect()->to("/login");
 });
+
+Route::get("/landing-page", [AppController::class, "landing_page"]);
 
 Route::get('/qr/{kode_token}', [ScanQRGuestController::class, 'poster']);
 
@@ -53,6 +56,12 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::get('/kategori/datatable/{id}', [KategoriController::class, 'datatable']);
         Route::post("/kategori/toggle-status/{id}", [KategoriController::class, "toggleStatus"]);
         Route::resource("kategori", KategoriController::class);
+
+        Route::get('/landing-page/kategori/datatable/{id}', [LandingPageKategoriController::class, 'datatable']);
+        Route::post("/landing-page/kategori/toggle-status/{id}", [LandingPageKategoriController::class, "toggleStatus"]);
+        Route::prefix("landing-page")->group(function() {
+            Route::resource("kategori", LandingPageKategoriController::class);
+        });
 
         Route::post("/guest/update-status-kehadiran", [GuestController::class, "update_status_kehadiran"]);
         Route::get("/guest/generate-card/{token}", [GuestController::class, "show_generate"]);
