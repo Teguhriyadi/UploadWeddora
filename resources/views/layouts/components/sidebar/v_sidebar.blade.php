@@ -23,6 +23,12 @@
                 <span>Master Kategori</span>
             </a>
         </li>
+        <li class="nav-item {{ Request::is('modules/landing-page/tema*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/landing-page/tema') }}">
+                <i class="fas fa-book"></i>
+                <span>Master Tema</span>
+            </a>
+        </li>
     @endif
 
     <div class="sidebar-heading">Operasional Tamu</div>

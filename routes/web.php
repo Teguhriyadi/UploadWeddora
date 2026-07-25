@@ -5,6 +5,7 @@ use App\Http\Controllers\Authentication\LoginController;
 use App\Http\Controllers\InputManual\GuestPublicController;
 use App\Http\Controllers\InputManual\InputAttendanceController;
 use App\Http\Controllers\LandingPage\KategoriController as LandingPageKategoriController;
+use App\Http\Controllers\LandingPage\TemaController;
 use App\Http\Controllers\Master\AssignUsersController;
 use App\Http\Controllers\Master\CabangController;
 use App\Http\Controllers\Master\EventController;
@@ -61,6 +62,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::post("/landing-page/kategori/toggle-status/{id}", [LandingPageKategoriController::class, "toggleStatus"]);
         Route::prefix("landing-page")->group(function() {
             Route::resource("kategori", LandingPageKategoriController::class);
+            Route::resource("tema", TemaController::class);
         });
 
         Route::post("/guest/update-status-kehadiran", [GuestController::class, "update_status_kehadiran"]);
