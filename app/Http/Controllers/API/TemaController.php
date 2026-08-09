@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\APITemaResource;
 use App\Models\LPKategori;
 use App\Models\LPTema;
 use Illuminate\Support\Facades\DB;
@@ -12,33 +13,28 @@ class TemaController extends Controller
     public function index($kategori_id)
     {
         try {
-            DB::beginTransaction();
+            $cek = LPKategori::find($kategori_id);
 
-            $cek = LPKategori::where("id", $kategori_id)->first();
-
-            if (empty($cek)) {
+            if (!$cek) {
                 return response()->json([
-                    "message" => "Data Kategori Tidak Ditemukan",
-                    "data" => null
-                ]);
+                    'message' => 'Data Kategori Tidak Ditemukan',
+                    'data' => null
+                ], 404);
             }
 
-            $data["tema"] = LPTema::where("lp_kategori_id", $kategori_id)->first();
-
-            DB::commit();
+            $tema = LPTema::with("kategori:id,nama_kategori")->where('lp_kategori_id', $kategori_id)->get();
 
             return response()->json([
-                "message" => "Data Berhasil di Temukan",
-                "data" => $data
+                'message' => 'Data Berhasil Ditemukan',
+                'data' => [
+                    'tema' => APITemaResource::collection($tema)
+                ]
             ]);
-
         } catch (\Exception $e) {
-            DB::rollBack();
-
             return response()->json([
-                "message" => $e->getMessage(),
-                "data" => null
-            ]);
+                'message' => $e->getMessage(),
+                'data' => null
+            ], 500);
         }
     }
 }

@@ -92,6 +92,7 @@
                                     <th>Subtitle</th>
                                     <th>Badge</th>
                                     <th>Deskripsi</th>
+                                    <th>Gambar Background</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -161,6 +162,14 @@
                     {
                         data: 'deskripsi',
                         name: 'deskripsi',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center',
+                        width: '100px'
+                    },
+                    {
+                        data: 'image',
+                        name: 'image',
                         orderable: false,
                         searchable: false,
                         className: 'text-center',

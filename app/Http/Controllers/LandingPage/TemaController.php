@@ -11,6 +11,7 @@ use App\Models\LPTema;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class TemaController extends Controller
@@ -25,6 +26,28 @@ class TemaController extends Controller
                 ->addIndexColumn()
                 ->addColumn('kategori', function ($row) {
                     return $row->kategori->nama_kategori;
+                })
+                ->addColumn("image", function ($row) {
+
+                    if (empty($row->img_bg)) {
+                        return '-';
+                    }
+
+                    $url = Storage::disk('s3')->url('souvenir/' . $row->img_bg);
+
+                    return '
+                        <img
+                            src="'.$url.'"
+                            class="preview-image"
+                            data-image="'.$url.'"
+                            width="60"
+                            height="60"
+                            style="
+                                object-fit:cover;
+                                border-radius:6px;
+                                cursor:pointer;
+                            ">
+                    ';
                 })
                 ->addColumn('action', function ($row) {
                     return '
@@ -42,7 +65,7 @@ class TemaController extends Controller
                 ';
                 })
 
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'image'])
                 ->make(true);
         }
 
