@@ -3,74 +3,12 @@
 @push('title-modules', 'Master Tamu Undangan')
 
 @push('style-css')
-
-    <link href="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-    <style>
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            overflow-y: visible !important;
-            border-radius: 12px;
-        }
-
-        .dropdown-menu {
-            z-index: 999999 !important;
-        }
-
-        #dataTable {
-            width: 100% !important;
-            min-width: 1100px;
-        }
-
-        #dataTable th,
-        #dataTable td {
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-
-        #dataTable thead th {
-            background: #f8f9fc;
-        }
-
-        div.dataTables_wrapper {
-            width: 100%;
-        }
-
-        div.dataTables_wrapper .dataTables_length,
-        div.dataTables_wrapper .dataTables_filter {
-            margin-bottom: 15px;
-        }
-
-        div.dataTables_wrapper .dataTables_paginate {
-            margin-top: 15px;
-        }
-
-        div.dataTables_wrapper .dataTables_info {
-            padding-top: 15px;
-        }
-
-        @media (max-width: 768px) {
-
-            div.dataTables_wrapper .dataTables_length,
-            div.dataTables_wrapper .dataTables_filter,
-            div.dataTables_wrapper .dataTables_info,
-            div.dataTables_wrapper .dataTables_paginate {
-                text-align: center;
-                float: none !important;
-            }
-
-            div.dataTables_wrapper .dataTables_filter input {
-                width: 100%;
-                margin-left: 0 !important;
-                margin-top: 10px;
-            }
-        }
-    </style>
+    @include("layouts.components.dataTable.css.dataTable-css")
 @endpush
 
 @push('content-modules')
     <div class="card shadow mb-4">
-        @if (Auth::user()->role->nama_role == "Customer")
+        @notadmin
             <div class="card-header py-3">
                 <a href="{{ url('/modules/guest/create') }}" class="btn btn-primary btn-sm">
                     <i class="fa fa-plus"></i> Tambah Data
@@ -89,7 +27,7 @@
                     <i class="fa fa-trash"></i> Hapus Terpilih
                 </button>
             </div>
-        @endif
+        @endnotadmin
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-3">
@@ -125,11 +63,13 @@
                 <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th class="text-center">
-                                <input type="checkbox" id="checkAll">
-                            </th>
-                            <th class="text-center">No.</th>
-                            <th class="text-center">Aksi</th>
+                           @notadmin
+                                <th class="text-center">
+                                    <input type="checkbox" id="checkAll">
+                                </th>
+                                <th class="text-center">No.</th>
+                                <th class="text-center">Aksi</th>
+                            @endnotadmin
                             <th class="text-center">Kategori</th>
                             <th class="text-center">Status</th>
                             <th>Nama Event</th>
@@ -198,8 +138,7 @@
 @endpush
 
 @push('style-js')
-    <script src="{{ asset('templating/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    @include("layouts.components.dataTable.js.dataTable-js")
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -223,7 +162,9 @@
                         d.event = $('#filterEvent').val();
                     }
                 },
-                columns: [{
+                columns: [
+                    @notadmin
+                        {
                         data: 'checkbox',
                         orderable: false,
                         searchable: false,
@@ -241,6 +182,7 @@
                         searchable: false,
                         className: 'text-center'
                     },
+                    @endnotadmin
                     {
                         data: 'kategori',
                         name: 'kategori.nama_kategori',

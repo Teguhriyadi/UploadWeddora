@@ -3,69 +3,7 @@
 @push('title-modules', 'Master Assign Users')
 
 @push('style-css')
-
-    <link href="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-    <style>
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            overflow-y: visible !important;
-            border-radius: 12px;
-        }
-
-        .dropdown-menu {
-            z-index: 999999 !important;
-        }
-
-        #dataTable {
-            width: 100% !important;
-            min-width: 1100px;
-        }
-
-        #dataTable th,
-        #dataTable td {
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-
-        #dataTable thead th {
-            background: #f8f9fc;
-        }
-
-        div.dataTables_wrapper {
-            width: 100%;
-        }
-
-        div.dataTables_wrapper .dataTables_length,
-        div.dataTables_wrapper .dataTables_filter {
-            margin-bottom: 15px;
-        }
-
-        div.dataTables_wrapper .dataTables_paginate {
-            margin-top: 15px;
-        }
-
-        div.dataTables_wrapper .dataTables_info {
-            padding-top: 15px;
-        }
-
-        @media (max-width: 768px) {
-
-            div.dataTables_wrapper .dataTables_length,
-            div.dataTables_wrapper .dataTables_filter,
-            div.dataTables_wrapper .dataTables_info,
-            div.dataTables_wrapper .dataTables_paginate {
-                text-align: center;
-                float: none !important;
-            }
-
-            div.dataTables_wrapper .dataTables_filter input {
-                width: 100%;
-                margin-left: 0 !important;
-                margin-top: 10px;
-            }
-        }
-    </style>
+    @include("layouts.components.dataTable.css.dataTable-css")
 @endpush
 
 @push('content-modules')
@@ -78,36 +16,6 @@
             </div>
         @endif
         <div class="card-body">
-            {{-- <div class="row mb-3">
-                <div class="col-md-3">
-                    <label for="filterKehadiranNikah" class="form-label"> Status Kehadiran Nikah </label>
-                    <select id="filterKehadiranNikah" class="form-control form-control-sm">
-                        <option value="all">Semua Kehadiran</option>
-                        <option value="1">Sudah Hadir</option>
-                        <option value="0">Tidak Hadir</option>
-                    </select>
-                </div>
-
-                <div class="col-md-3">
-                    <label for="filterKehadiran" class="form-label"> Status Kehadiran </label>
-                    <select id="filterKehadiran" class="form-control form-control-sm">
-                        <option value="null">Belum Ditentukan</option>
-                        <option value="1">Pasti Hadir</option>
-                        <option value="0">Kemungkinan Tidak Hadir</option>
-                        <option value="2">Tidak Hadir</option>
-                        <option value="" selected>Semua Kehadiran</option>
-                    </select>
-                </div>
-
-                <div class="col-md-3">
-                    <label for="filterKeterangan" class="form-label"> Keterangan Keluarga </label>
-                    <select id="filterKeterangan" class="form-control form-control-sm">
-                        <option value="" selected>Semua Keterangan</option>
-                        <option value="CPP">CPP</option>
-                        <option value="CPW">CPW</option>
-                    </select>
-                </div>
-            </div> --}}
             <div class="table-responsive">
                 <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -127,8 +35,7 @@
 @endpush
 
 @push('style-js')
-    <script src="{{ asset('templating/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('templating/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    @include("layouts.components.dataTable.js.dataTable-js")
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {

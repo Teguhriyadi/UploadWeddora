@@ -12,8 +12,9 @@ use App\Models\SouvenirDeposit;
 use App\Models\TitipKehadiran;
 use App\Models\User;
 use App\Observers\ActivityObserver;
+use App\Service\UserService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -59,6 +60,10 @@ class AppServiceProvider extends ServiceProvider
 
                 $view->with('events', $events);
             }
+        });
+
+        Blade::if('notadmin', function () {
+            return UserService::isNotAdmin();
         });
     }
 }

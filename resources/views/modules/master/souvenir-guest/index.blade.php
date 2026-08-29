@@ -66,7 +66,7 @@
 
 @push('content-modules')
     <div class="card shadow mb-4">
-        @if (Auth::user()->role->nama_role != 'Administrator')
+        @notadmin
             <div class="card-header py-3">
                 <a href="{{ url('/modules/titip-kado/create') }}" class="btn btn-primary btn-sm">
                     <i class="fa fa-plus"></i> Tambah Data
@@ -76,17 +76,19 @@
                     <i class="fa fa-trash"></i> Hapus Terpilih
                 </button>
             </div>
-        @endif
+        @endnotadmin
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th class="text-center">
-                                <input type="checkbox" id="checkAll">
-                            </th>
-                            <th class="text-center">No.</th>
-                            <th class="text-center">Aksi</th>
+                            @notadmin
+                                <th class="text-center">
+                                    <input type="checkbox" id="checkAll">
+                                </th>
+                                <th class="text-center">No.</th>
+                                <th class="text-center">Aksi</th>
+                            @endnotadmin
                             <th>Nama Tamu</th>
                             <th>Nama Kado</th>
                             <th class="text-center">QTY</th>
@@ -196,24 +198,27 @@
                 ajax: {
                     url: "{{ url('/modules/titip-kado') }}",
                 },
-                columns: [{
-                        data: 'checkbox',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    },
-                    {
-                        data: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    },
-                    {
-                        data: 'action',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    },
+                columns: [
+                    @notadmin
+                        {
+                            data: 'checkbox',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center'
+                        },
+                        {
+                            data: 'DT_RowIndex',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center'
+                        },
+                        {
+                            data: 'action',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center'
+                        },
+                    @endnotadmin
                     {
                         data: 'nama_tamu',
                         name: 'nama_tamu'

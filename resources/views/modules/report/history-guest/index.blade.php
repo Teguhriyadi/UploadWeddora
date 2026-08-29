@@ -93,7 +93,9 @@
                         <table class="table table-bordered" id="dataTableInvitation">
                             <thead>
                                 <tr>
-                                    <th style="width: 5%" class="text-center">No</th>
+                                    @notadmin
+                                        <th style="width: 5%" class="text-center">No</th>
+                                    @endnotadmin
                                     <th style="width: 10%" class="text-center">Foto Kehadiran</th>
                                     <th>Nama di Undangan</th>
                                     <th>Nama Tamu</th>
@@ -113,7 +115,9 @@
                         <table class="table table-bordered" id="dataTablePublic">
                             <thead>
                                 <tr>
-                                    <th style="width: 5%" class="text-center">No</th>
+                                    @notadmin
+                                        <th style="width: 5%" class="text-center">No</th>
+                                    @endnotadmin
                                     <th style="width: 10%" class="text-center">Foto Kehadiran</th>
                                     <th>Nama Tamu</th>
                                     <th>No Handphone</th>
@@ -231,18 +235,21 @@
                     d.sampai = $('input[name="sampai"]').val();
                 }
             },
-            columns: [{
-                    data: 'DT_RowIndex',
-                    searchable: false,
-                    orderable: false,
-                    className: 'text-center'
-                },
-                {
-                    data: 'foto',
-                    searchable: false,
-                    orderable: false,
-                    className: 'text-center'
-                },
+            columns: [
+                @notadmin
+                    {
+                        data: 'DT_RowIndex',
+                        searchable: false,
+                        orderable: false,
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'foto',
+                        searchable: false,
+                        orderable: false,
+                        className: 'text-center'
+                    },
+                @endnotadmin
                 {
                     data: 'nama_undangan'
                 },
@@ -276,18 +283,21 @@
                     d.sampai = $('input[name="sampai"]').val();
                 }
             },
-            columns: [{
-                    data: 'DT_RowIndex',
-                    searchable: false,
-                    orderable: false,
-                    className: 'text-center'
-                },
-                {
-                    data: 'foto',
-                    searchable: false,
-                    orderable: false,
-                    className: 'text-center'
-                },
+            columns: [
+                @notadmin
+                    {
+                        data: 'DT_RowIndex',
+                        searchable: false,
+                        orderable: false,
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'foto',
+                        searchable: false,
+                        orderable: false,
+                        className: 'text-center'
+                    },
+                @endnotadmin
                 {
                     data: 'nama'
                 },
