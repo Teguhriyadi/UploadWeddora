@@ -20,6 +20,8 @@ class TitipKehadiranController extends Controller
 {
     public function index(Request $request)
     {
+        $eventId = $this->getActiveEventId();
+
         if ($request->ajax()) {
 
             $data = TitipKehadiran::with([
@@ -27,15 +29,7 @@ class TitipKehadiranController extends Controller
                 "wakil_tamu_luar:id,nama",
                 "tamu_berhalangan:id,nama_tamu,nama_undangan",
                 "petugas:id,nama"
-            ]);
-
-            if (Auth::user()->role->nama_role != "Administrator") {
-                $cek = EventUsers::where("user_id", Auth::user()->id)->first();
-
-                $data = $data->where("event_id", $cek->event_id)->orderBy('waktu_kehadiran', 'DESC');
-            } else {
-                $data = $data->orderBy('waktu_kehadiran', 'DESC');
-            }
+            ])->where("event_id", $eventId);
 
             return DataTables::of($data)
                 ->addIndexColumn()

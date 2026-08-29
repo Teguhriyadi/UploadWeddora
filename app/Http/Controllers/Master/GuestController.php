@@ -23,22 +23,16 @@ class GuestController extends Controller
 {
     public function index(Request $request)
     {
+        $eventId = $this->getActiveEventId();
+
         if ($request->ajax()) {
 
             $data = Guest::with([
                 "kategori:id,nama_kategori",
                 "event:id,nama_event"
             ])
+                ->where("event_id", $eventId)
                 ->filter($request);
-
-            if (Auth::user()->role->nama_role != "Administrator") {
-
-                $cek = EventUsers::where("user_id", Auth::user()->id)->first();
-
-                $data->where('event_id', $cek->event_id);
-            } else {
-                $data = $data->orderBy('created_at', 'DESC');
-            }
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -59,36 +53,36 @@ class GuestController extends Controller
                         : 'Belum Hadir';
 
                     return '
-                        <div class="dropdown dropend">
-                            <button
-                                class="btn ' . $badgeClass . ' btn-sm dropdown-toggle"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                ' . $badgeText . '
-                            </button>
+                    <div class="dropdown dropend">
+                        <button
+                            class="btn ' . $badgeClass . ' btn-sm dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            ' . $badgeText . '
+                        </button>
 
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item change-status-kehadiran"
-                                        href="javascript:void(0)"
-                                        data-id="' . $row->id . '"
-                                        data-value="1">
-                                        Sudah Hadir
-                                    </a>
-                                </li>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item change-status-kehadiran"
+                                    href="javascript:void(0)"
+                                    data-id="' . $row->id . '"
+                                    data-value="1">
+                                    Sudah Hadir
+                                </a>
+                            </li>
 
-                                <li>
-                                    <a class="dropdown-item change-status-kehadiran"
-                                        href="javascript:void(0)"
-                                        data-id="' . $row->id . '"
-                                        data-value="0">
-                                        Belum Hadir
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    ';
+                            <li>
+                                <a class="dropdown-item change-status-kehadiran"
+                                    href="javascript:void(0)"
+                                    data-id="' . $row->id . '"
+                                    data-value="0">
+                                    Belum Hadir
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                ';
                 })
                 ->addColumn('kehadiran', function ($row) {
 
@@ -98,13 +92,13 @@ class GuestController extends Controller
                     $selected2 = $row->kehadiran == '2' ? 'selected' : '';
 
                     return '
-                    <select class="form-control form-select-sm change-kehadiran" data-id="' . $row->id . '">
-                        <option value="" ' . $selectedNull . '>Belum Ditentukan</option>
-                        <option value="0" ' . $selected0 . '>Kemungkinan Tidak Hadir</option>
-                        <option value="1" ' . $selected1 . '>Pasti Hadir</option>
-                        <option value="2" ' . $selected2 . '>Tidak Hadir</option>
-                    </select>
-                ';
+                <select class="form-control form-select-sm change-kehadiran" data-id="' . $row->id . '">
+                    <option value="" ' . $selectedNull . '>Belum Ditentukan</option>
+                    <option value="0" ' . $selected0 . '>Kemungkinan Tidak Hadir</option>
+                    <option value="1" ' . $selected1 . '>Pasti Hadir</option>
+                    <option value="2" ' . $selected2 . '>Tidak Hadir</option>
+                </select>
+            ';
                 })
                 ->addColumn('status_undangan', function ($row) {
 
@@ -112,11 +106,11 @@ class GuestController extends Controller
                     $selected1 = $row->status_undangan == '1' ? 'selected' : '';
 
                     return '
-                        <select class="form-control form-select-sm change-status-undangan" data-id="' . $row->id . '">
-                            <option value="0" ' . $selected0 . '>Belum Terkirim</option>
-                            <option value="1" ' . $selected1 . '>Terkirim</option>
-                        </select>
-                    ';
+                    <select class="form-control form-select-sm change-status-undangan" data-id="' . $row->id . '">
+                        <option value="0" ' . $selected0 . '>Belum Terkirim</option>
+                        <option value="1" ' . $selected1 . '>Terkirim</option>
+                    </select>
+                ';
                 })
                 ->addColumn('checkbox', function ($row) {
                     return '<input type="checkbox" class="row-checkbox" value="' . $row->id . '">';
@@ -124,32 +118,32 @@ class GuestController extends Controller
                 ->addColumn('action', function ($row) {
                     if (Auth::user()->role->nama_role != "Administrator") {
                         return '
-                            <a href="/modules/guest/' . $row->id . '/edit" class="btn btn-warning btn-sm">
-                                <i class="fa fa-edit"></i>
-                            </a>
+                        <a href="/modules/guest/' . $row->id . '/edit" class="btn btn-warning btn-sm">
+                            <i class="fa fa-edit"></i>
+                        </a>
 
-                            <form action="/modules/guest/' . $row->id . '" method="POST" style="display:inline;" class="delete-form">
-                                ' . csrf_field() . '
-                                ' . method_field("DELETE") . '
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </form>
+                        <form action="/modules/guest/' . $row->id . '" method="POST" style="display:inline;" class="delete-form">
+                            ' . csrf_field() . '
+                            ' . method_field("DELETE") . '
+                            <button class="btn btn-danger btn-sm">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>
 
-                            <a href="' . env('APP_URL') . '/qr/' . $row['kode_token'] . '" class="btn btn-info btn-sm" target="_blank">
-                                <i class="fa fa-search"></i>
-                            </a>
+                        <a href="' . env('APP_URL') . '/qr/' . $row['kode_token'] . '" class="btn btn-info btn-sm" target="_blank">
+                            <i class="fa fa-search"></i>
+                        </a>
 
-                            <a href="' . url('/modules/guest/generate-card/' . $row['kode_token']) . '" class="btn btn-success btn-sm">
-                                <i class="fa fa-download"></i>
-                            </a>
-                        ';
+                        <a href="' . url('/modules/guest/generate-card/' . $row['kode_token']) . '" class="btn btn-success btn-sm">
+                            <i class="fa fa-download"></i>
+                        </a>
+                    ';
                     } else {
                         return '
-                            <a href="' . url('/modules/guest/generate-card/' . $row['kode_token']) . '" class="btn btn-success btn-sm">
-                                <i class="fa fa-download"></i> Download
-                            </a>
-                        ';
+                        <a href="' . url('/modules/guest/generate-card/' . $row['kode_token']) . '" class="btn btn-success btn-sm">
+                            <i class="fa fa-download"></i> Download
+                        </a>
+                    ';
                     }
                 })
 

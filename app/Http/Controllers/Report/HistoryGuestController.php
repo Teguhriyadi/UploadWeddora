@@ -79,10 +79,13 @@ class HistoryGuestController extends Controller
 
     public function dataPublic(Request $request)
     {
+        $eventId = $this->getActiveEventId();
+
         $data = GuestPublic::whereBetween('waktu_checkin', [
             $request->dari . ' 00:00:00',
             $request->sampai . ' 23:59:59'
         ])
+            ->where("event_id", $eventId)
             ->latest();
 
         return DataTables::of($data)
@@ -123,6 +126,8 @@ class HistoryGuestController extends Controller
 
     public function dataInvitation(Request $request)
     {
+        $eventId = $this->getActiveEventId();
+        
         $data = GuestCheckin::with([
             "guest.kategori"
         ])
@@ -130,6 +135,7 @@ class HistoryGuestController extends Controller
                 $request->dari . ' 00:00:00',
                 $request->sampai . ' 23:59:59'
             ])
+            ->where("event_id", $eventId)
             ->latest();
 
         return DataTables::of($data)

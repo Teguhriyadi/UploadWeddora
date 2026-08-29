@@ -66,15 +66,17 @@
 
 @push('content-modules')
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <a href="{{ url('/modules/titip-kehadiran/create') }}" class="btn btn-primary btn-sm">
-                <i class="fa fa-plus"></i> Tambah Data
-            </a>
+        @if (Auth::user()->role->nama_role != 'Administrator')
+            <div class="card-header py-3">
+                <a href="{{ url('/modules/titip-kehadiran/create') }}" class="btn btn-primary btn-sm">
+                    <i class="fa fa-plus"></i> Tambah Data
+                </a>
 
-            <button type="button" class="btn btn-danger btn-sm" id="btnDeleteSelected">
-                <i class="fa fa-trash"></i> Hapus Terpilih
-            </button>
-        </div>
+                <button type="button" class="btn btn-danger btn-sm" id="btnDeleteSelected">
+                    <i class="fa fa-trash"></i> Hapus Terpilih
+                </button>
+            </div>
+        @endif
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">

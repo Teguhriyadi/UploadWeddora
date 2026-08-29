@@ -16,27 +16,7 @@ class InputAttendanceController extends Controller
 {
     public function index()
     {
-        try {
-
-            DB::beginTransaction();
-
-            $cek = EventUsers::where("user_id", Auth::user()->id)->first();
-
-            if (empty($cek)) {
-                return back()->with("error", "Data Anda Tidak Ditemukan");
-            }
-
-            $data["guest"] = Guest::where("event_id", $cek->event_id)->get(['*']);
-
-            DB::commit();
-
-            return view("modules.input-attendance.index", $data);
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            return back()->with("error", $e->getMessage());
-        }
+        return view("modules.input-attendance.index");
     }
 
     public function store(Request $request)
@@ -113,8 +93,9 @@ class InputAttendanceController extends Controller
 
     public function info_guest($id)
     {
-        $cek = EventUsers::where("user_id", Auth::user()->id)->first();
-        $guest = Guest::where("event_id", $cek->event_id)->with('kategori')->findOrFail($id);
+        $eventId = $this->getActiveEventId();
+
+        $guest = Guest::where("event_id", $eventId)->with('kategori')->findOrFail($id);
 
         return response()->json([
             'nama' => $guest->nama_tamu,

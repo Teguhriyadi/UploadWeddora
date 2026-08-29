@@ -95,6 +95,7 @@
                                     <th>Tanggal</th>
                                     <th>Lokasi</th>
                                     <th class="text-center">Status</th>
+                                    <th class="text-center">Is Active</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -179,6 +180,14 @@
                     {
                         data: 'status',
                         name: 'status',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center',
+                        width: '100px'
+                    },
+                    {
+                        data: 'is_active',
+                        name: 'is_active',
                         orderable: false,
                         searchable: false,
                         className: 'text-center',

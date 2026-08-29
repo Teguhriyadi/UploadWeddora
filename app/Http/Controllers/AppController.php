@@ -14,39 +14,41 @@ class AppController extends Controller
 {
     public function dashboard(Request $request)
     {
-        if (Auth::user()->role->nama_role == "Administrator") {
+        $user = Auth::user();
+        $eventId = null;
 
-            $events = Event::orderBy('nama_event')->get();
-
-            // Kalau belum memilih event
-            if (!$request->event_id) {
-                return view('modules.dashboard', [
-                    'events' => $events,
-                    'selectedEvent' => null
-                ]);
-            }
-
-            $eventId = $request->event_id;
+        if ($user->role->nama_role == "Administrator") {
+            // Ambil event yang sedang aktif di database
+            $activeEvent = Event::where('is_active', "1")->first() ?? Event::first();
+            $eventId = $activeEvent ? $activeEvent->id : null;
         } else {
-
-            // Admin Event
-            $cek = EventUsers::where('user_id', Auth::id())->first();
-
+            $cek = EventUsers::where('user_id', $user->id)->first();
             if (!$cek) {
                 abort(403);
             }
-
             $eventId = $cek->event_id;
-
-            $events = collect();
         }
 
         $selectedEvent = Event::find($eventId);
 
+        if (!$selectedEvent) {
+            return view('modules.dashboard', [
+                'selectedEvent' => null,
+                'totalTamu' => 0,
+                'tamuHadir' => 0,
+                'belumHadir' => 0,
+                'totalHadir' => 0,
+                'persen' => 0,
+                'guest_invitation' => collect(),
+                'guest_public' => collect(),
+                'chartJam' => [],
+                'chartTotal' => [],
+                'totalTamuLuarHadir' => 0
+            ]);
+        }
+
         $totalTamu = Guest::where("event_id", $eventId)->count();
-
         $tamuHadir = GuestCheckin::where("event_id", $eventId)->count();
-
         $belumHadir = $totalTamu - $tamuHadir;
 
         $totalHadir = Guest::where("event_id", $eventId)
@@ -85,7 +87,6 @@ class AppController extends Controller
         }
 
         return view('modules.dashboard', compact(
-            'events',
             'selectedEvent',
             'totalTamu',
             'tamuHadir',

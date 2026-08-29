@@ -109,6 +109,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
         Route::post("/cabang/toggle-status/{id}", [CabangController::class, "toggleStatus"]);
         Route::resource('cabang', CabangController::class);
 
+        Route::post("/event/switch", [EventController::class, "switchEvent"]);
         Route::resource('event', EventController::class);
 
         Route::resource("assign-users", AssignUsersController::class);

@@ -92,20 +92,6 @@
         @endif
         <div class="card-body">
             <div class="row mb-3">
-                @if (Auth::user()->role->nama_role == "Administrator")
-                <div class="col-md-3">
-                    <label for="filterEvent" class="form-label"> Nama Event </label>
-                    <select id="filterEvent" class="form-control form-control-sm">
-                        <option value="all">Semua Event</option>
-                        @foreach ($event as $item)
-                            <option value="{{ $item->id }}">
-                                {{ $item->nama_event }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                @endif
-
                 <div class="col-md-3">
                     <label for="filterKehadiranNikah" class="form-label"> Status Kehadiran Nikah </label>
                     <select id="filterKehadiranNikah" class="form-control form-control-sm">
@@ -308,7 +294,7 @@
             });
         });
 
-        $('#filterKehadiran, #filterKeterangan, #filterKehadiranNikah, #filterEvent').change(function() {
+        $('#filterKehadiran, #filterKeterangan, #filterKehadiranNikah').change(function() {
             table.ajax.reload();
         });
 

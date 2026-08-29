@@ -21,13 +21,15 @@ class SouvenirDepositController extends Controller
 {
     public function index(Request $request)
     {
+        $eventId = $this->getActiveEventId();
+
         if ($request->ajax()) {
 
             $data = SouvenirDeposit::with([
                 "guest:id,nama_tamu,nama_undangan",
                 "guest_public:id,nama",
                 "petugas:id,nama"
-            ]);
+            ])->where("event_id", $eventId);
 
             if (Auth::user()->role->nama_role != "Administrator") {
                 $cek = EventUsers::where("user_id", Auth::user()->id)->first();

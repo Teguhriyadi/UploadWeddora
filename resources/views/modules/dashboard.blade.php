@@ -447,68 +447,30 @@
 @endpush
 
 @push('content-modules')
-    @if (!Auth::user()->role->nama_role == "Administrator" || $selectedEvent)
-        @php
-            $peakTotal = !empty($chartTotal) ? max($chartTotal) : 0;
-            $peakIndex = !empty($chartTotal) ? array_search($peakTotal, $chartTotal) : null;
-            $peakHour = $peakIndex !== null && isset($chartJam[$peakIndex]) ? $chartJam[$peakIndex] : '-';
-            $presentPercent = $totalTamu > 0 ? round(($tamuHadir / $totalTamu) * 100) : 0;
-        @endphp
+    @php
+        $isAdmin = Auth::user()->role->nama_role == 'Administrator';
+        $peakTotal = !empty($chartTotal) ? max($chartTotal) : 0;
+        $peakIndex = !empty($chartTotal) ? array_search($peakTotal, $chartTotal) : null;
+        $peakHour = $peakIndex !== null && isset($chartJam[$peakIndex]) ? $chartJam[$peakIndex] : '-';
+        $presentPercent = isset($totalTamu) && $totalTamu > 0 ? round(($tamuHadir / $totalTamu) * 100) : 0;
+
+        // Safety variables
+        $persen = $persen ?? 0;
+        $totalHadir = $totalHadir ?? 0;
+        $totalTamuLuarHadir = $totalTamuLuarHadir ?? 0;
+        $belumHadir = $belumHadir ?? 0;
+        $tamuHadir = $tamuHadir ?? 0;
+        $totalTamu = $totalTamu ?? 0;
+        $guest_invitation = $guest_invitation ?? collect();
+        $guest_public = $guest_public ?? collect();
+    @endphp
+
+    @if (!isset($selectedEvent) || !$selectedEvent)
+        <div class="dashboard-hero dashboard-section text-center py-5">
+            <div class="hero-title">Belum Ada Event yang Dipilih / Tersedia</div>
+            <p class="hero-description mt-2">Silakan pilih event melalui dropdown di bagian atas navbar.</p>
+        </div>
     @else
-        @php
-            $peakTotal = 0;
-            $peakIndex = null;
-            $peakHour = '-';
-            $presentPercent = 0;
-        @endphp
-    @endif
-
-    <div class="content-page-header">
-        <div class="content-page-label">
-            <i class="fas fa-sparkles"></i>
-            Ringkasan Hari Ini
-        </div>
-        <h1 class="content-page-title">Dashboard operasional acara</h1>
-        <p class="content-page-subtitle">
-            Pantau pergerakan kehadiran tamu, akses proses check-in lebih cepat, dan lihat ringkasan data utama
-            tanpa harus berpindah-pindah halaman.
-        </p>
-    </div>
-
-    @if (Auth::user()->role->nama_role == "Administrator")
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-                <form method="GET">
-                    <div class="row align-items-end">
-                        <div class="col-md-8">
-                            <label>
-                                Pilih Event
-                            </label>
-                            <select name="event_id" class="form-control">
-                                <option value="">
-                                    -- Pilih Event --
-                                </option>
-                                @foreach ($events as $event)
-                                    <option value="{{ $event->id }}"
-                                        {{ request('event_id') == $event->id ? 'selected' : '' }}>
-                                        {{ $event->nama_event }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-primary btn-block">
-                                Tampilkan
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-    @endif
-
-    @if (!Auth::user()->role->nama_role == "Administrator" || $selectedEvent)
         <div class="dashboard-hero dashboard-section">
             <div class="row align-items-center">
                 <div class="col-xl-8 mb-4 mb-xl-0">
@@ -790,7 +752,7 @@
                                                 <td>{{ $invitation->guest->relasi }}</td>
                                                 <td>
                                                     {{ \Carbon\Carbon::parse($invitation->waktu_checkin)->locale('id')->translatedFormat('d
-                                                                                            F Y H:i') }}
+                                                                                                                                                                                                    F Y H:i') }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -828,7 +790,7 @@
                                                 <td>{{ $public->keterangan }}</td>
                                                 <td>
                                                     {{ \Carbon\Carbon::parse($public->waktu_checkin)->locale('id')->translatedFormat('d
-                                                                                            F Y H:i') }}
+                                                                                                                                                                                                    F Y H:i') }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -844,130 +806,118 @@
                 </div>
             </div>
         </div>
-    @else
-        <div class="alert alert-info">
-            <h6>
-                <strong>
-                    Silakan pilih event terlebih dahulu.
-                </strong>
-            </h6>
-            <p class="mb-0">
-                Setelah event dipilih, seluruh statistik, grafik, dan aktivitas check-in akan ditampilkan.
-            </p>
-        </div>
-
     @endif
 
 @endpush
 
 @push('style-js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-     @if (!Auth::user()->role->nama_role == "Administrator" || $selectedEvent)
-    <script>
-        const persenChart = document.getElementById('chartPersen');
+    @if (!Auth::user()->role->nama_role == 'Administrator' || $selectedEvent)
+        <script>
+            const persenChart = document.getElementById('chartPersen');
 
-        new Chart(persenChart, {
-            type: 'doughnut',
-            data: {
-                labels: ['Hadir', 'Belum Hadir'],
-                datasets: [{
-                    data: [{{ $tamuHadir }}, {{ $belumHadir }}],
-                    backgroundColor: [
-                        '#1cc88a',
-                        '#f6c23e'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '70%',
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: (ctx) => `${ctx.label}: ${ctx.raw}`
+            new Chart(persenChart, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Hadir', 'Belum Hadir'],
+                    datasets: [{
+                        data: [{{ $tamuHadir }}, {{ $belumHadir }}],
+                        backgroundColor: [
+                            '#1cc88a',
+                            '#f6c23e'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.label}: ${ctx.raw}`
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        const jamChart = document.getElementById('chartJam');
+            const jamChart = document.getElementById('chartJam');
 
-        new Chart(jamChart, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($chartJam) !!},
-                datasets: [{
-                    label: 'Jumlah Tamu',
-                    data: {!! json_encode($chartTotal) !!},
-                    backgroundColor: '#4e73df',
-                    borderRadius: 8,
-                    maxBarThickness: 30
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
+            new Chart(jamChart, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($chartJam) !!},
+                    datasets: [{
+                        label: 'Jumlah Tamu',
+                        data: {!! json_encode($chartTotal) !!},
+                        backgroundColor: '#4e73df',
+                        borderRadius: 8,
+                        maxBarThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
                             display: false
                         }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
                     }
                 }
-            }
-        });
-
-        const tableSearch = document.getElementById('tableSearch');
-        const tableInvitation = document.getElementById('tableInvitation');
-        const tablePublic = document.getElementById('tablePublic');
-
-        function filterTable(table, query) {
-            if (!table) return;
-            const q = (query || '').toLowerCase();
-            const rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(q) ? '' : 'none';
             });
-        }
 
-        tableSearch?.addEventListener('input', (e) => {
-            const q = e.target.value;
-            const activeTab = document.querySelector('.tab-pane.active.show');
-            if (activeTab?.id === 'tamu-luar') {
-                filterTable(tablePublic, q);
-            } else {
-                filterTable(tableInvitation, q);
+            const tableSearch = document.getElementById('tableSearch');
+            const tableInvitation = document.getElementById('tableInvitation');
+            const tablePublic = document.getElementById('tablePublic');
+
+            function filterTable(table, query) {
+                if (!table) return;
+                const q = (query || '').toLowerCase();
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    row.style.display = text.includes(q) ? '' : 'none';
+                });
             }
-        });
 
-        document.querySelectorAll('[data-copy-token]').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const token = btn.getAttribute('data-copy-token') || '';
-                try {
-                    await navigator.clipboard.writeText(token);
-                    btn.classList.add('text-success');
-                    setTimeout(() => btn.classList.remove('text-success'), 800);
-                } catch (e) {}
+            tableSearch?.addEventListener('input', (e) => {
+                const q = e.target.value;
+                const activeTab = document.querySelector('.tab-pane.active.show');
+                if (activeTab?.id === 'tamu-luar') {
+                    filterTable(tablePublic, q);
+                } else {
+                    filterTable(tableInvitation, q);
+                }
             });
-        });
-    </script>
+
+            document.querySelectorAll('[data-copy-token]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const token = btn.getAttribute('data-copy-token') || '';
+                    try {
+                        await navigator.clipboard.writeText(token);
+                        btn.classList.add('text-success');
+                        setTimeout(() => btn.classList.remove('text-success'), 800);
+                    } catch (e) {}
+                });
+            });
+        </script>
     @endif
 @endpush

@@ -21,15 +21,11 @@ class GuestPublicController extends Controller
 {
     public function index(Request $request)
     {
+        $eventId = $this->getActiveEventId();
+        
         if ($request->ajax()) {
 
-            if (Auth::user()->role->nama_role != "Administrator") {
-                $cek = EventUsers::where("user_id", Auth::user()->id)->first();
-
-                $data = GuestPublic::where("event_id", $cek->event_id)->orderBy('created_at', 'DESC');
-            } else {
-                $data = GuestPublic::orderBy('created_at', 'DESC');
-            }
+            $data = GuestPublic::where("event_id", $eventId);
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -71,19 +67,7 @@ class GuestPublicController extends Controller
 
     public function create()
     {
-        try {
-
-            DB::beginTransaction();
-
-            DB::commit();
-
-            return view("modules.master.guest-public.create");
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            return back()->with("error", $e->getMessage());
-        }
+        return view("modules.master.guest-public.create");
     }
 
     public function store(CreateRequest $request)

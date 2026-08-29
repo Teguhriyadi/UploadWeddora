@@ -29,7 +29,7 @@ class EventController extends Controller
                 ->addColumn("tanggal", function ($row) {
                     return \Carbon\Carbon::parse($row->tanggal)
                         ->locale('id')
-                        ->translatedFormat('d F Y H:i:s');
+                        ->translatedFormat('d F Y');
                 })
                 ->addColumn('status', function ($row) {
                     if ($row->status == "DRAFT") {
@@ -58,7 +58,25 @@ class EventController extends Controller
                         ';
                     }
                 })
-
+                ->addColumn('is_active', function ($row) {
+                    if ($row->is_active == "1") {
+                        return '
+                            <button class="btn btn-success btn-sm btn-toggle-status"
+                                data-id="' . $row->id . '"
+                                data-status="DRAFT">
+                                AKTIF
+                            </button>
+                        ';
+                    } else if ($row->is_active == "0") {
+                        return '
+                            <button class="btn btn-danger btn-sm btn-toggle-status"
+                                data-id="' . $row->id . '"
+                                data-status="AKTIF">
+                                TIDAK AKTIF
+                            </button>
+                        ';
+                    }
+                })
                 ->addColumn('action', function ($row) {
                     return '
                     <a href="/modules/event/' . $row->id . '/edit" class="btn btn-warning btn-sm">
@@ -75,7 +93,7 @@ class EventController extends Controller
                 ';
                 })
 
-                ->rawColumns(['status', 'action'])
+                ->rawColumns(['status', 'action', 'is_active'])
                 ->make(true);
         }
 
@@ -239,5 +257,27 @@ class EventController extends Controller
 
             return back()->with("error", $e->getMessage());
         }
+    }
+
+    public function switchEvent(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|exists:event,id',
+        ]);
+
+        $newEventId = $request->event_id;
+
+        DB::transaction(function () use ($newEventId) {
+            // Nonaktifkan semua event
+            Event::where('is_active', "1")->update([
+                'is_active' => "0"
+            ]);
+
+            // Aktifkan event yang dipilih
+            Event::where('id', $newEventId)
+                ->update(['is_active' => "1"]);
+        });
+
+        return redirect()->back()->with('success', 'Berhasil beralih event.');
     }
 }

@@ -24,7 +24,6 @@ class AssignUsersController extends Controller
                 "event:id,nama_event",
                 "users:id,nama"
             ])
-                // ->filter($request)
                 ->orderBy('created_at', 'DESC');
 
             return DataTables::of($data)
@@ -35,48 +34,6 @@ class AssignUsersController extends Controller
                 ->addColumn('user', function ($row) {
                     return $row->users->nama;
                 })
-                // ->addColumn('status', function ($row) {
-
-                //     $badgeClass = $row->status_kehadiran == 1
-                //         ? 'btn-success'
-                //         : 'btn-danger';
-
-                //     $badgeText = $row->status_kehadiran == 1
-                //         ? 'Sudah Hadir'
-                //         : 'Belum Hadir';
-
-                //     return '
-                //         <div class="dropdown dropend">
-                //             <button
-                //                 class="btn ' . $badgeClass . ' btn-sm dropdown-toggle"
-                //                 type="button"
-                //                 data-bs-toggle="dropdown"
-                //                 aria-expanded="false">
-                //                 ' . $badgeText . '
-                //             </button>
-
-                //             <ul class="dropdown-menu">
-                //                 <li>
-                //                     <a class="dropdown-item change-status-kehadiran"
-                //                         href="javascript:void(0)"
-                //                         data-id="' . $row->id . '"
-                //                         data-value="1">
-                //                         Sudah Hadir
-                //                     </a>
-                //                 </li>
-
-                //                 <li>
-                //                     <a class="dropdown-item change-status-kehadiran"
-                //                         href="javascript:void(0)"
-                //                         data-id="' . $row->id . '"
-                //                         data-value="0">
-                //                         Belum Hadir
-                //                     </a>
-                //                 </li>
-                //             </ul>
-                //         </div>
-                //     ';
-                // })
                 ->addColumn('action', function ($row) {
                     return '
                             <a href="/modules/assign-users/' . $row->id . '/edit" class="btn btn-warning btn-sm">

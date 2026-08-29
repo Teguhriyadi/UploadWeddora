@@ -15,11 +15,23 @@
     </div>
 
     <ul class="navbar-nav ml-auto align-items-center">
-        <li class="nav-item d-none d-lg-flex align-items-center mr-2">
-            <div class="topbar-date-simple">
-                {{ now()->translatedFormat('l, d F Y') }}
-            </div>
-        </li>
+        @if (Auth::user()->role->nama_role == 'Administrator')
+            <li class="nav-item d-none d-lg-flex align-items-center mr-2">
+                <form action="{{ url('/modules/event/switch') }}" method="POST" id="switchEventForm" class="mb-0">
+                    @csrf
+                    <select name="event_id" id="eventSelect"
+                        class="form-control form-control-sm border-0 shadow-sm font-weight-bold text-dark bg-light"
+                        onchange="document.getElementById('switchEventForm').submit()">
+                        <option value="" disabled>Pilih Event / Pernikahan</option>
+                        @foreach ($events as $event)
+                            <option value="{{ $event->id }}" {{ $event->is_active == '1' ? 'selected' : '' }}>
+                                {{ $event->nama_event }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            </li>
+        @endif
 
         <li class="nav-item dropdown no-arrow">
             <a class="nav-link dropdown-toggle px-2 topbar-user-link" href="#" id="userDropdown" role="button"
@@ -33,7 +45,8 @@
                 </div>
             </a>
 
-            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in topbar-profile-menu" aria-labelledby="userDropdown">
+            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in topbar-profile-menu"
+                aria-labelledby="userDropdown">
                 <div class="topbar-profile-head">
                     <img class="rounded-circle" src="{{ asset('templating/img/undraw_profile.svg') }}" alt="Profile">
                     <div>

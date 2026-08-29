@@ -69,19 +69,21 @@
         </a>
     </li>
 
-    <li class="nav-item {{ Request::is('modules/scan-qr-guest') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/modules/scan-qr-guest') }}">
-            <i class="fas fa-qrcode"></i>
-            <span>Scan QR Tamu</span>
-        </a>
-    </li>
+    @if (Auth::user()->role->nama_role != "Administrator")
+        <li class="nav-item {{ Request::is('modules/scan-qr-guest') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/scan-qr-guest') }}">
+                <i class="fas fa-qrcode"></i>
+                <span>Scan QR Tamu</span>
+            </a>
+        </li>
 
-    <li class="nav-item {{ Request::is('modules/input-attendance') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/modules/input-attendance') }}">
-            <i class="fas fa-pen"></i>
-            <span>Input Kehadiran</span>
-        </a>
-    </li>
+        <li class="nav-item {{ Request::is('modules/input-attendance') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/modules/input-attendance') }}">
+                <i class="fas fa-pen"></i>
+                <span>Input Kehadiran</span>
+            </a>
+        </li>
+    @endif
 
     <div class="sidebar-heading">Layanan Acara</div>
     <li class="nav-item {{ Request::is('modules/titip-kehadiran*') ? 'active' : '' }}">
