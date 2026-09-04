@@ -324,8 +324,10 @@ class GuestController extends Controller
 
     public function download(Request $request)
     {
+        $eventId = $this->getActiveEventId();
+
         return Excel::download(
-            new GuestExport($request),
+            new GuestExport($request, $eventId),
             'Daftar_Guest.xlsx'
         );
     }
@@ -340,7 +342,9 @@ class GuestController extends Controller
                 'file_upload' => 'required|mimes:xlsx,xls,csv'
             ]);
 
-            Excel::import(new GuestImport, $request->file('file_upload'));
+            $eventId = $this->getActiveEventId();
+
+            Excel::import(new GuestImport($eventId), $request->file('file_upload'));
 
             $file = $request->file('file_upload');
             ActivityLogger::log('Tamu Undangan', 'upload_excel', null, null, null, [
@@ -441,16 +445,22 @@ class GuestController extends Controller
 
     public function generate_all()
     {
-        $guests = Guest::where('jenis_undangan', '=', 'Cetak', 'and')->get(['*']);
+        try {
+            $eventId = $this->getActiveEventId();
 
-        $event_name = Event::first(['*']);
-        $event_date = "13 Juni 2026";
+            $event = Event::findOrFail($eventId);
 
-        return view('qr-generate-all', compact(
-            'guests',
-            'event_name',
-            'event_date'
-        ));
+            $guests = Guest::where('jenis_undangan', '=', 'Cetak', 'and')
+                ->where("event_id", $eventId)
+                ->get(['*']);
+
+            return view('qr-generate-all', compact(
+                'guests',
+                'event'
+            ));
+        } catch (\Exception $e) {
+            return back()->with("error", "Terjadi kesalahan: " . $e->getMessage());
+        }
     }
 
     public function delete_selected(Request $request)

@@ -13,21 +13,24 @@ use Maatwebsite\Excel\Concerns\WithStartRow;
 
 class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStartRow
 {
+    protected $eventId;
+    
+    public function __construct($eventId)
+    {
+        $this->eventId = $eventId;
+    }
+    
     public function startRow(): int
     {
-        return 6; // 🔥 data mulai dari baris 6 (B6 ke bawah)
+        return 6;
     }
 
     public function collection(Collection $rows)
     {
-        $event = Event::first(['*']);
-
         $created = 0;
         $skipped = 0;
 
-        $cek_kategori = Kategori::where('nama_kategori', '=', "VIP", 'and')->first();
-
-        Guest::withoutEvents(function () use ($rows, $event, $cek_kategori, &$created, &$skipped) {
+        Guest::withoutEvents(function () use ($rows, &$created, &$skipped) {
             foreach ($rows as $row) {
                 $data = array_values($row->toArray());
 
@@ -60,8 +63,8 @@ class GuestSheetImport implements ToCollection, WithCalculatedFormulas, WithStar
                     'kehadiran'       => $kehadiran,
                     'keterangan'      => $keterangan,
                     'kode_token'      => $token,
-                    'event_id'        => $event->id,
-                    'kategori_id'     => empty($kategori) ? null : ($cek_kategori?->id)
+                    'event_id'        => $this->eventId,
+                    'kategori_id'     => $kategori
                 ]);
 
                 $created++;

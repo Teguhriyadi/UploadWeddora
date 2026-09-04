@@ -16,13 +16,14 @@ class GuestExport implements
     WithMapping,
     WithTitle
 {
-    protected $guest, $request;
+    protected $guest, $request, $event_id;
 
     private $no = 0;
 
-    public function __construct($request)
+    public function __construct($request, $event_id)
     {
         $this->request = $request;
+        $this->event_id = $event_id;
     }
 
     public function title(): string
@@ -33,6 +34,7 @@ class GuestExport implements
     public function collection()
     {
         $this->guest = Guest::with('kategori')
+            ->where('event_id', $this->event_id)
             ->filter($this->request)
             ->orderBy('created_at', 'DESC')
             ->get();
@@ -64,8 +66,8 @@ class GuestExport implements
             $guest->kode_token,
             $guest->nama_tamu,
             $guest->nama_undangan,
-            $guest->status_undangan,
-            $guest->status_kehadiran ? 'Sudah Hadir' : 'Tidak Hadir',
+            $guest->status_undangan == "1" ? "Sudah Terkirim" : "Belum Terkirim",
+            $guest->status_kehadiran  == "1" ? "Sudah Hadir" : "Tidak Hadir",
             $guest->relasi,
             $guest->jenis_undangan,
             $guest->keterangan

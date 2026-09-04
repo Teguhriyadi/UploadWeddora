@@ -22,7 +22,7 @@ class GuestPublicController extends Controller
     public function index(Request $request)
     {
         $eventId = $this->getActiveEventId();
-        
+
         if ($request->ajax()) {
 
             $data = GuestPublic::where("event_id", $eventId);
@@ -210,9 +210,15 @@ class GuestPublicController extends Controller
 
     public function download()
     {
-        return Excel::download(
-            new GuestPublicExport(),
-            'Daftar_Tamu_Luar.xlsx'
-        );
+        try {
+            $eventId = $this->getActiveEventId();
+
+            return Excel::download(
+                new GuestPublicExport($eventId),
+                'Daftar_Tamu_Luar.xlsx'
+            );
+        } catch (\Exception $e) {
+            return back()->with("error", "Terjadi kesalahan: " . $e->getMessage());
+        }
     }
 }

@@ -244,8 +244,10 @@
 
     <script>
         const guests = @json($guests);
-        const eventName = @json($event_name->nama_event);
-        const eventDate = @json($event_date);
+        const eventData = @json($event);
+
+        const eventName = eventData.nama_event;
+        const eventDate = eventData.tanggal_event;
 
         function buildCard(g) {
             return `
@@ -346,6 +348,8 @@
             }
 
             alert("Selesai generate semua QR");
+
+            window.location.href = "{{ url('/modules/guest') }}";
         }
 
         window.addEventListener("load", () => {

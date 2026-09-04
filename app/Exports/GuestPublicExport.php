@@ -23,7 +23,14 @@ class GuestPublicExport implements
     WithDefaultStyles,
     WithTitle
 {
+    protected $event_id;
+
     private $no = 0;
+
+    public function __construct($event_id)
+    {
+        $this->event_id = $event_id;
+    }
 
     public function title(): string
     {
@@ -32,7 +39,7 @@ class GuestPublicExport implements
 
     public function collection()
     {
-        return GuestPublic::all();
+        return GuestPublic::where("event_id", $this->event_id)->get();
     }
 
     public function map($guest): array
