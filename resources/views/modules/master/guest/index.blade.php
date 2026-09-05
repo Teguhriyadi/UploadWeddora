@@ -13,19 +13,21 @@
                 <a href="{{ url('/modules/guest/create') }}" class="btn btn-primary btn-sm">
                     <i class="fa fa-plus"></i> Tambah Data
                 </a>
-                <a href="#" class="btn btn-success btn-sm" id="btnDownload">
-                    <i class="fa fa-download"></i> Download Data
-                </a>
-                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">
-                    <i class="fa fa-book"></i> Upload Data
-                </button>
-                <a href="{{ url('/modules/guest/generate-all') }}" class="btn btn-success btn-sm">
-                    <i class="fa fa-download"></i> Generate Kategori Cetak
-                </a>
+                @if (Auth::user()->role->nama_role == "Customer")
+                    <a href="#" class="btn btn-success btn-sm" id="btnDownload">
+                        <i class="fa fa-download"></i> Download Data
+                    </a>
+                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">
+                        <i class="fa fa-book"></i> Upload Data
+                    </button>
+                    <a href="{{ url('/modules/guest/generate-all') }}" class="btn btn-success btn-sm">
+                        <i class="fa fa-download"></i> Generate Kategori Cetak
+                    </a>
 
-                <button type="button" class="btn btn-danger btn-sm" id="btnDeleteSelected">
-                    <i class="fa fa-trash"></i> Hapus Terpilih
-                </button>
+                    <button type="button" class="btn btn-danger btn-sm" id="btnDeleteSelected">
+                        <i class="fa fa-trash"></i> Hapus Terpilih
+                    </button>
+                @endif
             </div>
         @endnotadmin
         <div class="card-body">

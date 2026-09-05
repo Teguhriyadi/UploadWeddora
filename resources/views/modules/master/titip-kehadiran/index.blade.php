@@ -13,7 +13,7 @@
                 <a href="{{ url('/modules/titip-kehadiran/create') }}" class="btn btn-primary btn-sm">
                     <i class="fa fa-plus"></i> Tambah Data
                 </a>
-
+                
                 <button type="button" class="btn btn-danger btn-sm" id="btnDeleteSelected">
                     <i class="fa fa-trash"></i> Hapus Terpilih
                 </button>
