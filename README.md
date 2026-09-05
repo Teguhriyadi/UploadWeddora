@@ -1,58 +1,188 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Buku Tamu Digital Pernikahan
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <strong>Sistem Buku Tamu Digital untuk membantu proses pencatatan dan pengelolaan kehadiran tamu pada acara pernikahan.</strong>
 </p>
 
-## About Laravel
+<p align="center">
+  Dibangun menggunakan Laravel 13, MySQL, Bootstrap SB Admin, NEO Object Storage, dan ZXing.
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tentang Aplikasi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Buku Tamu Digital Pernikahan** adalah aplikasi berbasis web yang dirancang untuk mempermudah proses registrasi, pencatatan, dan pengelolaan kehadiran tamu dalam acara pernikahan.
 
-## Learning Laravel
+Aplikasi ini menyediakan beberapa metode check-in untuk memudahkan proses registrasi tamu, mulai dari **Scan QR Code**, **Selfie**, hingga **pencarian data tamu secara manual**. Selain itu, sistem juga mendukung pencatatan **tamu luar undangan** yang hadir dalam acara.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Selain proses check-in, sistem juga menyediakan fitur untuk **Titip Kehadiran**, **Titip Kado**, **Manajemen Users**, **Kelola Tamu Undangan**, dan **Kelola Laporan**.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Fitur Utama
 
-## Agentic Development
+### Check-In Tamu
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Sistem menyediakan beberapa metode untuk melakukan check-in tamu:
 
-```bash
-composer require laravel/boost --dev
+- **Scan QR Code**  
+  Tamu dapat melakukan check-in menggunakan QR Code yang terdapat pada undangan.
 
-php artisan boost:install
+- **Selfie**  
+  Tamu dapat melakukan registrasi kehadiran menggunakan foto selfie sebagai dokumentasi kehadiran.
+
+- **Pencarian Manual**  
+  Petugas dapat mencari data tamu secara manual apabila QR Code tidak tersedia atau mengalami kendala.
+
+- **Input Tamu Luar**  
+  Sistem dapat mencatat tamu yang hadir namun tidak terdaftar dalam daftar tamu undangan.
+
+---
+
+### Titip Kehadiran
+
+Fitur yang memungkinkan tamu untuk memberikan informasi atau konfirmasi kehadiran apabila tidak dapat menghadiri acara secara langsung.
+
+---
+
+### Titip Kado
+
+Fitur untuk membantu mencatat informasi titipan kado dari tamu.
+
+---
+
+### Kelola Tamu Undangan
+
+Admin dapat melakukan pengelolaan data tamu undangan, seperti:
+
+- Menambahkan data tamu.
+- Mengubah data tamu.
+- Menghapus data tamu.
+- Melihat daftar tamu.
+- Melakukan pencarian data tamu.
+
+---
+
+### Manajemen Users
+
+Fitur untuk mengelola pengguna yang memiliki akses ke dalam sistem, seperti:
+
+- Menambahkan pengguna.
+- Mengubah data pengguna.
+- Menghapus pengguna.
+- Mengelola akses pengguna.
+
+---
+
+### Kelola Laporan
+
+Sistem menyediakan informasi dan laporan terkait:
+
+- Data kehadiran tamu.
+- Total tamu yang hadir.
+- Data tamu undangan.
+- Data titip kehadiran.
+- Data titip kado.
+- Dokumentasi kehadiran tamu.
+
+---
+
+## Teknologi yang Digunakan
+
+| Teknologi | Kegunaan |
+|---|---|
+| Laravel 13 | Framework utama aplikasi |
+| PHP | Bahasa pemrograman backend |
+| MySQL | Database Management System |
+| Bootstrap | Framework antarmuka pengguna |
+| SB Admin | Template dashboard administrasi |
+| NEO Object Storage | Penyimpanan file dan media |
+| ZXing | Pembacaan dan pemindaian QR Code |
+
+---
+
+## Metode Check-In
+
+Aplikasi menyediakan beberapa pilihan metode check-in agar proses registrasi tamu dapat dilakukan dengan lebih fleksibel.
+
+```text
+                    TAMU DATANG
+                         │
+                         ▼
+                PILIH METODE CHECK-IN
+                         │
+        ┌────────────────┼────────────────┐
+        │                │                │
+        ▼                ▼                ▼
+    SCAN QR CODE       SELFIE       SEARCH MANUAL
+        │                │                │
+        └────────────────┼────────────────┘
+                         │
+                         ▼
+                DATA TAMU DITEMUKAN
+                         │
+                         ▼
+               KEHADIRAN TERCATAT
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## QR Code Scanner
 
-## Contributing
+Sistem menggunakan **ZXing** untuk membantu proses pembacaan dan pemindaian QR Code.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+QR Code digunakan sebagai salah satu metode untuk mengidentifikasi tamu undangan secara lebih cepat sehingga proses check-in dapat dilakukan tanpa perlu mencari data tamu secara manual.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Penyimpanan File
 
-## Security Vulnerabilities
+Aplikasi menggunakan **NEO Object Storage** untuk menyimpan file dan media yang berkaitan dengan sistem.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Beberapa file yang dapat disimpan meliputi:
+
+- Foto selfie tamu.
+- Dokumentasi kehadiran.
+- Media atau file pendukung lainnya.
+
+---
+
+## Dashboard Administrasi
+
+Dashboard administrasi digunakan untuk membantu pengelolaan seluruh data dalam sistem.
+
+Admin dapat melakukan:
+
+- Manajemen users.
+- Kelola tamu undangan.
+- Monitoring kehadiran tamu.
+- Kelola titip kehadiran.
+- Kelola titip kado.
+- Melihat dan mengelola laporan.
+
+---
+
+## Tujuan Sistem
+
+Sistem Buku Tamu Digital Pernikahan ini dikembangkan untuk membantu proses pengelolaan tamu agar menjadi lebih:
+
+- Cepat.
+- Praktis.
+- Terorganisir.
+- Digital.
+- Mudah dikelola.
+
+Selain itu, sistem diharapkan dapat mengurangi proses pencatatan kehadiran secara manual dan membantu panitia dalam memantau jumlah tamu yang hadir.
+
+---
+
+## Developer
+
+**Mohammad Ilham Teguhriyadi**
+
+Fullstack Developer
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Project ini dikembangkan untuk kebutuhan sistem **Buku Tamu Digital Pernikahan**.
